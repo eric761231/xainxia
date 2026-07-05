@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  角色選擇 UI 布局與尺寸配置（基準稿 1920×1080）。
+  修改後：
+  - Debug（Windows / macOS / Linux 桌面）：存檔即時預覽，無需 Hot Restart
+  - Release / 手機實機：需 Hot Restart
+
+  分工：
+  - 本檔：位置、尺寸、opacity、色票、互動疊色 → CharSelectUiSpec
+  - char_select_ui_assets.dart：PNG 路徑（複用 create_char 素材）
+-->
+<charSelect designWidth="1920" designHeight="1080"
+            scaleMin="0.65" scaleMax="1.35">
+
+  <layout>
+    <!--
+      頂部欄：返回按鈕、標題、槽位
+      height        頂欄高度（px）
+      paddingH      左右內距
+      titleFontSize 「角色列表」標題字級
+      backBtnWidth / backBtnHeight  返回按鈕外框
+      backIconSize  返回箭頭 icon 大小
+      backLabelFontSize  「返回」文字字級
+    -->
+    <topBar height="72" paddingH="16" paddingV="8"
+            titleFontSize="36"
+            backBtnWidth="200" backBtnHeight="60"
+            backIconSize="28" backLabelFontSize="24"
+            slotFontSize="20" />
+
+    <!--
+      左欄：角色卡列表
+      width         固定寬度（px）
+      widthMin / widthMax  clamp 範圍
+      topOffset     距頂欄底部間距
+      paddingH      左右內距
+      listSpacing   卡片間距
+    -->
+    <leftPanel width="320" widthMin="260" widthMax="380"
+               topOffset="8" paddingH="12" listSpacing="8" />
+
+    <!--
+      中央欄：角色立繪
+      portraitWidthFraction  立繪寬 = 中欄寬 × 此值
+      portraitBottomOffset   立繪距底部偏移（px）
+      nameFontSize           浮動角色名字級
+      levelFontSize          修為等級字級
+      namePaddingH           名稱文字左右內距
+    -->
+    <centerPanel portraitWidthFraction="0.85"
+                 portraitBottomOffset="80"
+                 nameFontSize="38" levelFontSize="22"
+                 namePaddingH="12" />
+
+    <!--
+      右欄：角色資訊欄
+      widthFraction   占螢幕寬比例
+      minWidth / maxWidth  clamp 範圍
+      topOffset       距頂欄底部間距
+      paddingH / paddingV  內距
+      sectionGap      各資訊區塊間距
+      sectionRadius   區塊圓角
+      sectionBgOpacity 區塊黑底透明度
+    -->
+    <rightPanel widthFraction="0.30" minWidth="280" maxWidth="440"
+                topOffset="8" paddingH="12" paddingV="10"
+                sectionGap="10" sectionRadius="10"
+                sectionBgOpacity="0.35" />
+
+    <!--
+      底部按鈕列
+      height        底欄高度
+      paddingH      左右內距
+      paddingV      上下內距
+      btnHeight     按鈕高度
+      btnRadius     按鈕圓角
+      enterBtnWidth  「進入遊戲」按鈕寬
+      sideBtnWidth   「建立角色」「刪除角色」按鈕寬
+      fontSize      按鈕字級
+    -->
+    <bottomBar height="80" paddingH="16" paddingV="8"
+               btnHeight="60" btnRadius="8"
+               enterBtnWidth="340" sideBtnWidth="240"
+               fontSize="26" />
+  </layout>
+
+  <styles>
+    <!--
+      角色卡片樣式（左欄列表）
+      cardHeight       每張卡片高度（px）
+      cardRadius       圓角
+      cardPaddingH     卡片左右內距
+      cardPaddingV     卡片上下內距
+      iconSize         頭像框大小（圓形裁切）
+      iconRadius       頭像圓角（≥ iconSize/2 = 圓形）
+      nameGap          頭像 → 名稱間距
+      nameFontSize     角色名稱字級
+      levelFontSize    修為等級字級
+      attrIconSize     靈根 icon 大小
+      unselectedBgOpacity   未選中底色透明度
+      selectedBgOpacity     選中底色透明度（依靈根色）
+      unselectedBorderOpacity 未選中邊框透明度
+      unselectedBorderWidth   未選中邊框線寬
+      selectedBorderOpacity   選中邊框透明度
+      selectedBorderWidth     選中邊框線寬
+      selectedGlowOpacity     選中外圈光暈透明度
+      selectedGlowBlur        光暈模糊半徑
+    -->
+    <charCard cardHeight="88" cardRadius="10"
+              cardPaddingH="12" cardPaddingV="10"
+              iconSize="56" iconRadius="28"
+              nameGap="10" nameFontSize="24" levelFontSize="18"
+              attrIconSize="28"
+              unselectedBgOpacity="0.18"
+              selectedBgOpacity="0.25"
+              unselectedBorderOpacity="0.22" unselectedBorderWidth="1.0"
+              selectedBorderOpacity="1.0" selectedBorderWidth="1.5"
+              selectedGlowOpacity="0.35" selectedGlowBlur="8" />
+
+    <!--
+      資訊欄樣式（右欄）
+      titleBarHeight      區塊標題列高度
+      titleFontSize       區塊標題字級
+      titleBarWidthFraction 標題列寬占右欄比例
+      portraitSize        資訊欄頭像大小
+      portraitRadius      頭像圓角
+      nameFontSize        角色名稱字級
+      levelBadgePaddingH  修為 badge 左右內距
+      levelBadgePaddingV  修為 badge 上下內距
+      levelBadgeRadius    修為 badge 圓角
+      levelBadgeFontSize  修為 badge 字級
+      labelFontSize       屬性標籤字級（如「靈根：」）
+      valueFontSize       屬性數值字級
+      attrIconSize        靈根 icon 大小
+      rowHeight           每行資訊列高度
+      rowSpacing          資訊列間距
+    -->
+    <infoPanel titleBarHeight="52" titleFontSize="28"
+               titleBarWidthFraction="0.90"
+               portraitSize="72" portraitRadius="36"
+               nameFontSize="26" levelBadgePaddingH="10"
+               levelBadgePaddingV="4" levelBadgeRadius="6"
+               levelBadgeFontSize="18"
+               labelFontSize="20" valueFontSize="20"
+               attrIconSize="32"
+               rowHeight="36" rowSpacing="6" />
+
+    <!--
+      共用色票（ARGB 十六進位）
+      accent      金色強調（選中邊框、badge 背景）
+      title       區塊標題文字色
+      label       資訊欄 label 文字色
+      danger      刪除按鈕色
+      cardName    卡片角色名稱色
+      cardLevel   卡片修為等級色
+    -->
+    <colors accent="FFE8C547" title="FFE5D5C5"
+            label="FFCCBBAA" danger="FFCC4444"
+            cardName="FFEEEEEE" cardLevel="FFAAAAAA" />
+
+    <!--
+      按鈕疊色（hover / pressed）
+      格式：#AARRGGBB
+    -->
+    <overlays enterBtnHover="#33FFFFFF" enterBtnPressed="#44000000"
+              createBtnHover="#22FFFFFF" createBtnPressed="#44000000"
+              deleteBtnHover="#33FF4444" deleteBtnPressed="#55000000"
+              backBtnHover="#33E8C547" backBtnPressed="#55000000"
+              cardHover="#22FFFFFF" cardPressed="#44000000" />
+  </styles>
+
+</charSelect>

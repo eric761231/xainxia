@@ -1,0 +1,41 @@
+{
+  "protocolVersion": 1,
+  "codec": "plain",
+  "connectTimeoutMs": 5000,
+  "packetTimeoutMs": 10000,
+  "defaultServerId": "dev_local",
+  "gate": {
+    "host": "YOUR_SERVER_HOST",
+    "port": 8080
+  },
+  "servers": [
+    {
+      "id": "dev_local",
+      "name": "東勝神州",
+      "host": "YOUR_SERVER_HOST",
+      "port": 8080,
+      "enabled": true
+    },
+    {
+      "id": "dev_local_2",
+      "name": "南贍部州",
+      "host": "YOUR_SERVER_HOST",
+      "port": 8080,
+      "enabled": true
+    },
+    {
+      "id": "dev_local_3",
+      "name": "西牛賀洲",
+      "host": "YOUR_SERVER_HOST",
+      "port": 8080,
+      "enabled": true
+    },
+    {
+      "id": "dev_local_4",
+      "name": "北俱蘆洲",
+      "host": "YOUR_SERVER_HOST",
+      "port": 8080,
+      "enabled": true
+    }
+  ]
+}

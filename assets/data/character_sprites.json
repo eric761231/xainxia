@@ -1,0 +1,27 @@
+{
+  "defaultKey": "male",
+  "sheets": {
+    "male": {
+      "image": "male_base.png",
+      "frameWidth": 64,
+      "frameHeight": 96,
+      "footOffsetY": 6,
+      "renderScale": 1.0,
+      "states": {
+        "idle": { "startColumn": 0, "frameCount": 4, "stepTime": 0.2 },
+        "walk": { "startColumn": 4, "frameCount": 6, "stepTime": 0.1 }
+      }
+    },
+    "female": {
+      "image": "female_base.png",
+      "frameWidth": 64,
+      "frameHeight": 96,
+      "footOffsetY": 6,
+      "renderScale": 1.0,
+      "states": {
+        "idle": { "startColumn": 0, "frameCount": 4, "stepTime": 0.2 },
+        "walk": { "startColumn": 4, "frameCount": 6, "stepTime": 0.1 }
+      }
+    }
+  }
+}

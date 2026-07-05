@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  創角 UI 布局與尺寸配置（基準稿 1920×1080）。
+  修改後：
+  - Debug（Windows / macOS / Linux 桌面）：存檔即時預覽，無需 Hot Restart
+  - Release / 手機實機：需 Hot Restart
+
+  分工：
+  - 本檔：位置、尺寸、opacity、色票、互動疊色 → CharCreateUiSpec
+  - char_create_ui_assets.dart：PNG 路徑 + allPreloadPaths
+  - char_create_ui_preloader.dart：登入過場預載 XML + PNG
+-->
+<charCreate designWidth="1920" designHeight="1080"
+            scaleMin="0.65" scaleMax="1.35">
+
+  <!-- 全屏 Stack 各層位置（character_create.dart 讀取，勿改 Dart） -->
+  <layout>
+    <!-- L2 中央立繪容器：FractionallySizedBox 占屏比例 -->
+    <!--
+      stackWidthFactor / stackHeightFactor  外層容器占屏比例
+      bottomOffset                          立繪距容器底偏移（px）
+      imageWidthFraction                      立繪寬 = 容器寬 × 此值（主控尺寸，fitWidth）
+      widthMinFraction / widthMaxFraction     imageWidthFraction 允許範圍（可選 clamp）
+    -->
+    <portrait stackWidthFactor="0.85" stackHeightFactor="1.15"
+              bottomOffset="180" imageWidthFraction="1.80"
+              widthMinFraction="0.50" widthMaxFraction="2.0" />
+
+    <!--
+      L3 主 Row：SafeArea padding + 三欄 flex（左/中留白/右）
+      leftFlex / centerFlex / rightFlex  僅管 L3 水平分配；立繪仍在 Stack 底層
+    -->
+    <screen paddingH="16" paddingV="8" columnGap="12"
+            leftFlex="3" centerFlex="2" rightFlex="3" />
+
+    <!-- L3 左欄靈根面板寬度（topOffset 避開左上返回） -->
+    <leftPanel width="380" widthMin="320" widthMax="440"
+               heightFraction="0.88" topOffset="92" />
+
+    <!-- L3 右欄寬度與高度（占屏比例 + clamp；靠上對齊，不貼底） -->
+    <rightPanel widthFraction="0.34" minWidth="300" maxWidth="480"
+                heightFraction="0.78" topOffset="92" />
+
+    <!-- L4 底中名稱輸入框（offsetH 負值往左，對齊立繪垂直中線） -->
+    <!--
+      width / height / minWidth   底圖外框尺寸
+      paddingH / paddingV         文字區域左右／上下內距（輔助垂直置中）
+      offsetH                     整條相對螢幕底中水平偏移
+      imageOffsetH / imageOffsetV 底圖在框內微調（不動文字）
+    -->
+    <nameBar bottom="16" width="300" minWidth="250" height="95"
+             paddingH="20" paddingV="0" offsetH="-12"
+             imageOffsetH="0" imageOffsetV="0" />
+
+    <!--
+      L5 右下開始按鈕（cloud04）
+      全屏錨點：bottom / right / width / height
+      imageFit         底圖縮放：fill、contain、fitWidth、cover 等
+      imageOffsetH/V   底圖在按鈕內水平／垂直偏移（px）
+    -->
+    <startBtn bottom="24" right="24" width="720" maxWidth="750"
+              height="96" maxHeight="96" fontSize="27"
+              imageFit="contain" imageOffsetH="0" imageOffsetV="0"
+              disabledOpacity="0.50" />
+
+    <!--
+      L6 左上返回（cloud04）
+      全屏錨點：top / left / width / height
+      imageFit / imageOffsetH / imageOffsetV  同上
+    -->
+    <backBtn top="16" left="16" width="240" height="72"
+             labelFontSize="27" imageFit="fill"
+             imageOffsetH="0" imageOffsetV="0"
+             disabledOpacity="0.40" safeExtra="4" />
+  </layout>
+
+  <!--
+    子元件細部樣式（<styles> 區塊）
+    ─────────────────────────────────────────────────────────
+    讀取：CharCreateUiLoader → CharCreateUiSpec → 各 char_create_*.dart
+    單位：數值皆為 px 或 0.0～1.0 透明度；色票見下方 <colors> / <overlays> 說明
+    注意：此區只管「元件內部樣式」，全屏位置請改上方 <layout>
+  -->
+  <styles>
+
+    <!--
+      <spiritRoot> — 左側八大靈根列表
+      Widget：char_create_spirit_root_panel.dart
+      選中／未選中底色、邊框、glow 皆由程式 gradient 繪製，不用 PNG
+      ── 版面 ──
+      titleFontSize   「選擇靈根」標題字級
+      iconSize        每列靈根圖示寬高（attr_*.png）
+      itemMinHeight   單列最小高度（過小易 overflow）
+      itemMaxHeight   單列最大高度
+      itemRadius      單列圓角
+      itemVMargin     列與列之間上下間距
+      itemPadding     單列內距
+      nameFontSize    靈根名稱字級（如「金」）
+      descFontSize    靈根描述字級（副標一行）
+      ── 未選中 ──
+      unselectedBgOpacity         底色黑度（gradient 下層）
+      unselectedHighlightOpacity  底色高光（gradient 上層）
+      unselectedBorderOpacity     邊框透明度
+      unselectedBorderWidth       邊框線寬
+      ── 選中 ──
+      selectedBgOpacity     選中底色（依靈根色 gradient）
+      selectedBorderOpacity 選中邊框透明度（通常 1.0）
+      selectedBorderWidth   選中邊框線寬
+      selectedGlowOpacity   外圈光暈透明度
+      selectedGlowBlur      光暈模糊半徑
+      selectedGlowSpread    光暈擴散（0 = 不擴散）
+      panelPaddingH         面板左右內距（勿超出 panel_left 寬度）
+      unselectedNameColor   未選中靈根名稱色（ARGB 十六進位）
+      unselectedDescColor   未選中靈根描述色
+      ── 底圖微調（元件內 PNG，非全屏位置）──
+      titleBarWidthFraction 「選擇靈根」cloud05 寬度占左欄比例（0～1）
+      titleImageFit         標題底圖縮放
+      titleImageOffsetH/V   標題底圖偏移（px）
+      itemImageFit          靈根列 ink04 底圖縮放
+      itemImageOffsetH/V    靈根列底圖偏移（px）
+    -->
+    <spiritRoot titleFontSize="32" iconSize="42" panelPaddingTop="8"
+                panelPaddingH="12" cloudLabelHeight="76" itemSpacing="4"
+                titleGap="4" titleBarHeight="54"
+                titleBarWidthFraction="1.0"
+                titleImageFit="fill" titleImageOffsetH="0" titleImageOffsetV="0"
+                itemImageFit="fill" itemImageOffsetH="0" itemImageOffsetV="0"
+                itemMinHeight="36" itemMaxHeight="52" itemRadius="8"
+                itemVMargin="0" itemPaddingH="8" itemPaddingV="4"
+                unselectedBgOpacity="0.20" selectedBgOpacity="0.18"
+                unselectedBorderOpacity="0.24" unselectedBorderWidth="1"
+                unselectedHighlightOpacity="0.06"
+                unselectedNameColor="FF999999" unselectedDescColor="FF666666"
+                selectedBorderOpacity="1.0" selectedGlowOpacity="0.35"
+                selectedGlowBlur="8" selectedGlowSpread="0"
+                selectedBorderWidth="1.5"
+                nameFontSize="24" descFontSize="18" />
+
+    <!--
+      <nameField> — 底中名稱輸入框內文字
+      Widget：char_create_name_bar.dart
+      輸入條外框尺寸見上方 <layout><nameBar>（width / height / bottom）
+      fontSize      玩家輸入的角色名字級
+      hintFontSize  提示「點擊輸入你的修士名號」字級
+      hintOpacity   提示文字透明度（0=全透明，1=不透明）
+      textOffsetH   輸入／hint 文字水平微調（px，正=右）
+      textOffsetV   輸入／hint 文字垂直微調（px，正=下；改 hintFontSize 後用此對齊底圖）
+    -->
+    <nameField fontSize="26" hintFontSize="25" hintOpacity="0.54"
+               textOffsetH="0" textOffsetV="-3" />
+
+    <!--
+      <gender> — 右欄「選擇仙友性別」區塊
+      Widget：char_create_gender_selector.dart（由 char_create_right_panel 引用）
+      sectionPaddingH / sectionPaddingV  區塊內距（左右 / 上下）
+      sectionRadius                        區塊圓角
+      sectionBgOpacity                     區塊半透明黑底
+      iconSize                             區塊左側裝飾圖示大小
+      titleFontSize                        「選擇仙友性別」字級
+      btnWidth / btnHeight / btnRadius     「男」「女」按鈕尺寸與圓角
+      btnGap                               男/女按鈕間距
+      btnFontSize                          「男」「女」字級
+      imageFit / imageOffsetH / imageOffsetV  cloud04 底圖縮放與偏移
+      unselectedOverlayOpacity             （deprecated）已改 btn01/btn01_selected 切圖
+      unselectedTextOpacity                （deprecated）
+      selectedBorderWidth                  （deprecated）已不用金框
+    -->
+    <gender sectionPaddingH="10" sectionPaddingV="6" sectionRadius="12"
+            sectionBgOpacity="0.30" iconSize="32" titleFontSize="14"
+            btnWidth="200" btnHeight="66" btnRadius="6" btnGap="6"
+            btnFontSize="26" imageFit="fill"
+            imageOffsetH="0" imageOffsetV="0"
+            unselectedOverlayOpacity="0.45" unselectedTextOpacity="0.70"
+            selectedBorderWidth="1.5" />
+
+    <!--
+      <stats> — 右欄「屬性配點」區塊
+      Widget：char_create_right_panel.dart + char_create_stat_row.dart
+      sectionPadding / sectionRadius / sectionBgOpacity  區塊內距、圓角、底色
+      titleFontSize      「屬性配點」標題字級
+      pointsFontSize     「剩餘點數：N」字級
+      resetBtnFontSize   「重置」按鈕字級
+      sectionPaddingTop  區塊頂部內距
+      titleGap           剩餘點數列 → 第一列素質（legacy，同 pointsRowGap）
+      headerRowGap       屬性分配列 → 剩餘點數列
+      pointsRowGap       剩餘點數列 → 第一列素質
+      titleBarHeight / titleBarWidthFraction   屬性分配列（legacy 外層高）
+      titleLineWidth / titleLineHeight / titleLineGap  左右 tileLine 裝飾
+      pointsBarHeight / pointsBarWidthFraction  剩餘點數列（legacy 外層高）
+      pointsLabelWidth / pointsLabelHeight / pointsValueGap  label 底圖與數字間距
+      genderGap          「悟性」→ 男女按鈕
+      resetGap           男女按鈕 → 「重置點數」
+      rowHeight          每一屬性列高度（智力／精神／敏捷／體質）
+      rowVMargin         屬性列上下間距
+      rowPaddingH        屬性列左右內距
+      iconOffsetH / iconOffsetV  素質 icon 列內微調
+      iconSize           屬性小 icon 寬高
+      labelFontSize      屬性名稱字級
+      labelWidth         屬性名稱欄寬（如「智力」）
+      valueLabelGap      名稱與數值間距
+      valueWidth         數值欄寬（如「10」）
+      valueFontSize      數值字級
+      adjustBtnSize      +/- 按鈕寬高（reduce_btn / add_btn）
+      adjustBtnDisabledOpacity  點數用完或達上限時 +/- 透明度
+      ── 底圖微調 ──
+      titleImageFit / titleImageOffsetH/V   「屬性分配」cloud05 底圖
+      rowImageFit / rowImageOffsetH/V       素質列 ink04 底圖
+      resetBtnWidth / resetBtnHeight        「重置點數」外框（獨立於 gender）
+      resetBtnImageFit / resetBtnImageOffsetH/V  重置按鈕底圖
+    -->
+    <stats sectionPadding="12" sectionPaddingTop="8" sectionRadius="12"
+           sectionBgOpacity="0.35"
+           titleFontSize="32" pointsFontSize="26"
+           titleBarHeight="54" titleBarWidthFraction="0.92"
+           titleImageFit="fill" titleImageOffsetH="0" titleImageOffsetV="0"
+           rowImageFit="fill" rowImageOffsetH="0" rowImageOffsetV="0"
+           resetBtnWidth="120" resetBtnHeight="48"
+           resetBtnImageFit="fill" resetBtnImageOffsetH="0" resetBtnImageOffsetV="0"
+           titleLineWidth="48" titleLineHeight="24" titleLineGap="8"
+           pointsBarHeight="60" pointsBarWidthFraction="0.92"
+           pointsLabelWidth="180" pointsLabelHeight="48" pointsValueGap="4"
+           resetPointsRowGap="12"
+           headerRowGap="6" pointsRowGap="10" titleGap="10"
+           genderGap="14" resetGap="6"
+           rowHeight="72" rowVMargin="3" rowPaddingH="8"
+           rowWidthFraction="1.0" contentPaddingLeft="0"
+           adjustBtnGap="12" adjustBtnPaddingRight="0"
+           adjustSymbolFontSize="34"
+           iconLabelGap="9" labelOffsetH="0"
+           iconOffsetH="0" iconOffsetV="0"
+           iconSize="0" labelFontSize="22" labelWidth="54"
+           valueLabelGap="6" valueWidth="54"
+           valueFontSize="20" adjustBtnSize="30"
+           adjustBtnDisabledOpacity="0.40"
+           resetBtnFontSize="26" />
+
+    <!--
+      <colors> — 共用色票（ARGB 十六進位，不含 # 前綴）
+      title        區塊標題色（靈根標題、配點標題）→ spirit_root / right_panel
+      accent       強調色（開始按鈕字、選中邊框、返回 hover）→ start / back / gender
+      genderTitle  性別區塊標題色
+      statLabel    屬性列名稱色（智力、精神…）
+    -->
+    <colors title="FFE5D5C5" accent="FFE8C547"
+            genderTitle="FFE4E4E4" statLabel="FFEEEEEE" />
+
+    <!--
+      <overlays> — 按鈕 hover / 按下時的半透明疊色
+      格式：#AARRGGBB（8 位含 alpha）或 #RRGGBB（6 位，alpha 預設 FF）
+      startBtnHover / startBtnPressed     右下「開始」→ char_create_start_button.dart
+      backBtnHover / backBtnPressed       左上「返回」→ char_create_back_button.dart
+      interactiveHover / interactivePressed  通用可點元件 → char_create_pressable.dart
+    -->
+    <overlays startBtnHover="#33FFFFFF" startBtnPressed="#44000000"
+              backBtnHover="#33E8C547" backBtnPressed="#55000000"
+              interactiveHover="#22FFFFFF" interactivePressed="#44000000" />
+
+    <!--
+      <textShadows> — 水墨按鈕文字三態陰影（不換底圖）
+      btnHoverShadow / btnHoverBlur       hover 金色光暈
+      btnPressedShadow / btnPressedBlur   pressed 加深黑邊
+      btnSelectedShadow / btnSelectedBlur 性別 toggle 選中
+    -->
+    <textShadows btnNormalShadow="#88444444" btnNormalBlur="4"
+                btnHoverShadow="#88AAAAAA" btnHoverBlur="5"
+                btnPressedShadow="#88CCCCCC" btnPressedBlur="4"
+                btnSelectedShadow="#88999999" btnSelectedBlur="5" />
+
+    <!-- 祥雲底按鈕 / label 文字色（深黑 ↔ 淺灰） -->
+    <cloudTextShadows normalColor="#FF000000"
+                      hoverColor="#FFAAAAAA"
+                      pressedColor="#FFCCCCCC"
+                      selectedColor="#FF888888" />
+  </styles>
+
+</charCreate>
