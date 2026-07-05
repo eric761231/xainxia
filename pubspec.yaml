@@ -41,9 +41,6 @@ dependencies:
 # flame_forge2d: ^0.19.0   # 物理引擎（選用）
 # flame_audio: ^3.0.0     # 音訊處理（選用）
 
-#Flame遊戲引擎(核心)
-flame: ^1.6.0
-
 #Flame核心功能擴展
 flame_forge2d: ^0.19.0   #物理引擎，用於物體碰撞和運動（選用）
 flame_audio: ^3.0.0     #音訊處理，用於背景音樂和音效（選用）
@@ -91,7 +88,7 @@ flutter:
     - assets/font/
     - assets/ui/common/
     - assets/ui/layouts/
-    - assets/ui/create_char/
+    - assets/ui/char_create/
     - assets/ui/natal_weapons/
     - assets/characters/
     - assets/data/server_connection.json
@@ -125,3 +122,10 @@ flutter:
     - family: KingHwaOldSongMN
       fonts:
         - asset: assets/font/KingHwaOldSong-MN.ttf
+    # 以下 2 個字型目前程式碼未使用，先註冊為可用 family 供日後套用。
+    - family: HuangKaiLvShiShouXieTi
+      fonts:
+        - asset: assets/font/HuangKaiLvShiShouXieTi.ttf
+    - family: HuangKaiHuaLawyer
+      fonts:
+        - asset: assets/font/huangkaihuaLawyerfont-2.ttf

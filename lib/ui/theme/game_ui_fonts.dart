@@ -5,4 +5,16 @@ abstract final class GameUiFonts {
 
   static const String kingHwaOldSongAsset =
       'assets/font/KingHwaOldSong-MN.ttf';
+
+  /// 黃楷綠獅手寫體（目前未使用，保留供日後套用）。
+  static const String huangKaiLvShiShouXieTi = 'HuangKaiLvShiShouXieTi';
+
+  static const String huangKaiLvShiShouXieTiAsset =
+      'assets/font/HuangKaiLvShiShouXieTi.ttf';
+
+  /// 黃楷華律師體（目前未使用，保留供日後套用）。
+  static const String huangKaiHuaLawyer = 'HuangKaiHuaLawyer';
+
+  static const String huangKaiHuaLawyerAsset =
+      'assets/font/huangkaihuaLawyerfont-2.ttf';
 }
