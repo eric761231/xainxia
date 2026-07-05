@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../game/my_game.dart';
 import '../theme/game_ui_styles.dart';
-import '../widgets/shared/loading_bar.dart';
+import '../widgets/shared/progress_overlay_scaffold.dart';
 
 /// 載入 overlay：Flutter 層顯示背景與進度，不依賴 Flame sprite 是否已就緒。
 class LoadingOverlay extends StatelessWidget {
@@ -28,49 +28,15 @@ class LoadingOverlay extends StatelessWidget {
     );
   }
 
-  Widget _loadingFooter(double width) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '載入中...',
-          style: GameUiStyles.shadowTextStyle(fontSize: 24),
-        ),
-        const SizedBox(height: 12),
-        ValueListenableBuilder<double>(
-          valueListenable: game.progressNotifier,
-          builder: (context, value, child) {
-            return LoadingBar(progress: value, width: width);
-          },
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned.fill(child: _backgroundImage(_primaryBg)),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 36),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth > 0
-                      ? constraints.maxWidth * 0.6
-                      : 360.0;
-                  return _loadingFooter(width);
-                },
-              ),
-            ),
-          ),
-        ],
+    return ProgressOverlayScaffold(
+      background: _backgroundImage(_primaryBg),
+      message: Text(
+        '載入中...',
+        style: GameUiStyles.shadowTextStyle(fontSize: 24),
       ),
+      progress: game.progressNotifier,
     );
   }
 }

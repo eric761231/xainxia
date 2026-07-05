@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/character_summary.dart';
-import '../../layout/char_select/char_select_ui_assets.dart';
+import '../../../models/game_character.dart';
+import '../../layout/char_create/char_create_ui_assets.dart';
 import '../../layout/char_select/char_select_ui_spec.dart';
 
 /// 中央欄：角色立繪。
@@ -31,7 +31,7 @@ class CharSelectCenterPanel extends StatelessWidget {
               width: portraitW,
               height: availHeight,
               child: Image.asset(
-                CharSelectUiAssets.portrait(character.sex),
+                CharCreateUiAssets.portrait(character.sex),
                 fit: BoxFit.fitWidth,
                 alignment: Alignment.bottomCenter,
               ),

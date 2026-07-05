@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/character_summary.dart';
+import '../../../models/game_character.dart';
 import '../../theme/game_ui_fonts.dart';
 import '../../layout/char_select/char_select_ui_spec.dart';
 import '../char_create/char_create_cloud_label.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../game/world_scene.dart';
-import '../models/character_summary.dart';
-import '../models/player_live_stats.dart';
+import '../models/game_character.dart';
 import '../network/packet_dispatcher.dart';
 import '../network/packets/client/c_breakthrough.dart';
 import '../network/packets/client/c_gain_exp.dart';
@@ -20,8 +19,8 @@ class GameWorldService {
 
   final GameSessionService _session;
 
-  final ValueNotifier<PlayerLiveStats?> liveStatsNotifier =
-      ValueNotifier<PlayerLiveStats?>(null);
+  final ValueNotifier<GameCharacter?> liveStatsNotifier =
+      ValueNotifier<GameCharacter?>(null);
   final ValueNotifier<List<String>> systemMessagesNotifier =
       ValueNotifier<List<String>>([]);
 
@@ -38,8 +37,7 @@ class GameWorldService {
     _activeCharName = charName;
     _worldScene = worldScene;
     if (initialCharacter != null) {
-      liveStatsNotifier.value =
-          PlayerLiveStats.fromGameCharacter(initialCharacter);
+      liveStatsNotifier.value = initialCharacter;
     }
     _wireHandlers();
   }
@@ -91,10 +89,9 @@ class GameWorldService {
   }
 
   void _onCharStatsUpdate(SCharStatsUpdate update) {
-    final charName = _activeCharName;
-    if (charName == null) return;
-    liveStatsNotifier.value =
-        PlayerLiveStats.fromCharStatsUpdate(update, charName: charName);
+    final current = liveStatsNotifier.value;
+    if (current == null) return;
+    liveStatsNotifier.value = current.applyStatsUpdate(update);
   }
 
   void _onLevelUpResult(SLevelUpResult result) {
@@ -102,7 +99,7 @@ class GameWorldService {
       final current = liveStatsNotifier.value;
       if (current != null) {
         liveStatsNotifier.value = current.copyWith(
-          realmLevel: result.realmLevel,
+          level: result.realmLevel,
           exp: result.exp,
           expMax: result.expMax,
         );

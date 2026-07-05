@@ -6,7 +6,7 @@ import '../config/server_connection_loader.dart';
 import '../models/server_status.dart';
 import '../network/codec/codec_factory.dart';
 import '../network/game_socket.dart';
-import '../network/models/game_packet.dart';
+import '../network/transport/game_packet.dart';
 import '../network/packet_dispatcher.dart';
 import '../network/packets/client/c_server_list.dart';
 import '../network/packets/server/s_server_list.dart';

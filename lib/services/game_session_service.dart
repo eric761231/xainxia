@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../config/server_connection_loader.dart';
 import '../network/codec/codec_factory.dart';
 import '../network/game_socket.dart';
-import '../network/models/game_packet.dart';
+import '../network/transport/game_packet.dart';
 import '../network/packet_dispatcher.dart';
 
 /// 登入成功後維持的遊戲 Socket 與封包監聽。

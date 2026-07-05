@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import '../ui/layout/char_create/char_create_ui_preloader.dart';
 import '../config/server_connection_loader.dart';
 import '../models/server_status.dart';
-import '../models/character_summary.dart';
+import '../models/game_character.dart';
 import '../network/packets/server/s_enter_game.dart';
 import '../services/auth_service.dart';
 import '../services/character_service.dart';

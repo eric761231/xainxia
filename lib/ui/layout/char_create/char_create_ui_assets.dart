@@ -110,4 +110,21 @@ abstract final class CharCreateUiAssets {
     charMale,
     charFemale,
   };
+
+  /// 依 attribute index 回傳對應靈根 icon 路徑（0=金…7=幻）。
+  static String attrIcon(int attribute) {
+    return switch (attribute) {
+      0 => attrMetal,
+      1 => attrWood,
+      2 => attrWater,
+      3 => attrFire,
+      4 => attrEarth,
+      5 => attrWind,
+      6 => attrThunder,
+      _ => attrIllusion,
+    };
+  }
+
+  /// 依 sex 回傳對應立繪路徑（0=男 1=女）。
+  static String portrait(int sex) => sex == 0 ? charMale : charFemale;
 }

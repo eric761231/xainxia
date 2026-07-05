@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'models/game_packet.dart';
+import 'transport/game_packet.dart';
 import 'opcodes/server_opcodes.dart';
 import 'packets/server/s_character_amount.dart';
 import 'packets/server/s_character_list.dart';

@@ -1,3 +1,5 @@
+import '../network/packets/server/s_breakthrough_result.dart';
+import '../network/packets/server/s_char_stats_update.dart';
 import '../network/packets/server/s_character_amount.dart';
 import '../network/packets/server/s_character_list.dart';
 
@@ -31,6 +33,9 @@ class GameCharacter {
     required this.faction,
     required this.lifeJob,
     required this.lifeJobLevel,
+    this.realmStage = 0,
+    this.hpRegen = 0,
+    this.mpRegen = 0,
   });
 
   final int objId;
@@ -90,6 +95,15 @@ class GameCharacter {
   /// 生活職業等級
   final int lifeJobLevel;
 
+  /// 境界小階段（遊戲中即時更新；選角列表預設 0）
+  final int realmStage;
+
+  /// 生命回復（遊戲中即時；選角列表預設 0）
+  final int hpRegen;
+
+  /// 法力回復（遊戲中即時；選角列表預設 0）
+  final int mpRegen;
+
   double get expFraction => expMax > 0 ? (exp / expMax).clamp(0.0, 1.0) : 0.0;
   double get hpFraction => hpMax > 0 ? (hp / hpMax).clamp(0.0, 1.0) : 0.0;
   double get mpFraction => mpMax > 0 ? (mp / mpMax).clamp(0.0, 1.0) : 0.0;
@@ -124,6 +138,118 @@ class GameCharacter {
       faction: map['faction'] as String? ?? '',
       lifeJob: map['lifeJob'] as String? ?? '',
       lifeJobLevel: map['lifeJobLevel'] as int? ?? 0,
+      realmStage: map['realmStage'] as int? ?? 0,
+      hpRegen: map['hpRegen'] as int? ?? 0,
+      mpRegen: map['mpRegen'] as int? ?? 0,
+    );
+  }
+
+  GameCharacter copyWith({
+    String? realm,
+    int? level,
+    int? realmStage,
+    int? exp,
+    int? expMax,
+    int? hp,
+    int? hpMax,
+    int? mp,
+    int? mpMax,
+    int? defense,
+    int? attack,
+    int? hit,
+    int? dodge,
+    int? hpRegen,
+    int? mpRegen,
+    int? puppetMax,
+    int? spellLearnRate,
+    int? craftProficiencyRate,
+    int? statsIntel,
+    int? statsSpirit,
+    int? statsAgility,
+    int? statsConstitution,
+  }) {
+    return GameCharacter(
+      objId: objId,
+      name: name,
+      level: level ?? this.level,
+      sex: sex,
+      attribute: attribute,
+      realm: realm ?? this.realm,
+      exp: exp ?? this.exp,
+      expMax: expMax ?? this.expMax,
+      hp: hp ?? this.hp,
+      hpMax: hpMax ?? this.hpMax,
+      mp: mp ?? this.mp,
+      mpMax: mpMax ?? this.mpMax,
+      defense: defense ?? this.defense,
+      attack: attack ?? this.attack,
+      hit: hit ?? this.hit,
+      dodge: dodge ?? this.dodge,
+      puppetMax: puppetMax ?? this.puppetMax,
+      spellLearnRate: spellLearnRate ?? this.spellLearnRate,
+      craftProficiencyRate: craftProficiencyRate ?? this.craftProficiencyRate,
+      statsIntel: statsIntel ?? this.statsIntel,
+      statsConstitution: statsConstitution ?? this.statsConstitution,
+      statsAgility: statsAgility ?? this.statsAgility,
+      statsSpirit: statsSpirit ?? this.statsSpirit,
+      natalWeapon: natalWeapon,
+      coreTechnique: coreTechnique,
+      faction: faction,
+      lifeJob: lifeJob,
+      lifeJobLevel: lifeJobLevel,
+      realmStage: realmStage ?? this.realmStage,
+      hpRegen: hpRegen ?? this.hpRegen,
+      mpRegen: mpRegen ?? this.mpRegen,
+    );
+  }
+
+  /// 由 S_CHAR_STATS_UPDATE 合併即時素質（保留身分欄位，避免顯示不同步）。
+  GameCharacter applyStatsUpdate(SCharStatsUpdate u) {
+    return copyWith(
+      realm: u.realm,
+      realmStage: u.realmStage,
+      level: u.realmLevel,
+      exp: u.exp,
+      expMax: u.expMax,
+      hp: u.hp,
+      hpMax: u.hpMax,
+      mp: u.mp,
+      mpMax: u.mpMax,
+      defense: u.defense,
+      attack: u.attack,
+      hit: u.hit,
+      dodge: u.dodge,
+      hpRegen: u.hpRegen,
+      mpRegen: u.mpRegen,
+      puppetMax: u.puppetMax,
+      spellLearnRate: u.spellLearnRate,
+      craftProficiencyRate: u.craftProficiencyRate,
+      statsIntel: u.statsIntel,
+      statsSpirit: u.statsSpirit,
+      statsAgility: u.statsAgility,
+      statsConstitution: u.statsConstitution,
+    );
+  }
+
+  /// 由突破結果合併（保留身分與素質點）。
+  GameCharacter mergeBreakthrough(SBreakthroughResult r) {
+    return copyWith(
+      realm: r.realm,
+      realmStage: r.realmStage,
+      level: r.realmLevel,
+      hp: r.hp,
+      hpMax: r.hpMax,
+      mp: r.mp,
+      mpMax: r.mpMax,
+      defense: r.defense,
+      attack: r.attack,
+      hit: r.hit,
+      dodge: r.dodge,
+      hpRegen: r.hpRegen,
+      mpRegen: r.mpRegen,
+      puppetMax: r.puppetMax,
+      spellLearnRate: r.spellLearnRate,
+      craftProficiencyRate: r.craftProficiencyRate,
     );
   }
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../game/my_game.dart';
-import '../../models/character_summary.dart';
+import '../../models/game_character.dart';
 import '../widgets/shared/game_message_dialog.dart';
 import '../theme/game_ui_fonts.dart';
-import '../layout/char_select/char_select_ui_assets.dart';
 import '../layout/char_select/char_select_ui_spec.dart';
 import '../widgets/char_create/char_create_cloud_label.dart';
 import '../widgets/char_select/char_select_char_card.dart';
@@ -172,7 +171,7 @@ class _CharacterSelectOverlayState extends State<CharacterSelectOverlay> {
               fit: StackFit.expand,
               children: [
                 // L1 背景
-                Image.asset(CharSelectUiAssets.bg, fit: BoxFit.cover),
+                Image.asset(CharCreateUiAssets.bg, fit: BoxFit.cover),
                 // L2 暗色蒙版
                 ColoredBox(color: Colors.black.withValues(alpha: 0.35)),
                 // L3 UI
@@ -284,8 +283,8 @@ class _TopBarState extends State<_TopBar> {
                           children: [
                             Image.asset(
                               _backHovered
-                                  ? CharSelectUiAssets.backIconHover
-                                  : CharSelectUiAssets.backIcon,
+                                  ? CharCreateUiAssets.backIconHover
+                                  : CharCreateUiAssets.backIcon,
                               width: CharSelectUiSpec.topBarBackIconSize,
                               height: CharSelectUiSpec.topBarBackIconSize,
                             ),

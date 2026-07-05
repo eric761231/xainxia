@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../ui_scale.dart';
 import 'char_create_ui_config.dart';
 import 'char_create_ui_dev_watcher.dart';
 import 'char_create_ui_loader.dart';
-import 'char_create_ui_scale.dart';
 
 /// 創角 UI 切圖顯示規格（邏輯像素）。
 ///
@@ -18,7 +18,7 @@ abstract final class CharCreateUiSpec {
 
   static bool get isLoaded => _loaded;
 
-  static double get scale => CharCreateUiScale.value;
+  static double get scale => UiScale.value;
 
   static Future<void> ensureLoaded() async {
     await reload();
@@ -33,10 +33,16 @@ abstract final class CharCreateUiSpec {
 
   /// 在 SafeArea 內可用區域更新等比縮放係數。
   static void updateScaleFrom(Size availableSize) {
-    CharCreateUiScale.updateFrom(availableSize, _config);
+    UiScale.updateFrom(
+      availableSize,
+      designWidth: _config.designWidth,
+      designHeight: _config.designHeight,
+      scaleMin: _config.scaleMin,
+      scaleMax: _config.scaleMax,
+    );
   }
 
-  static double s(double designPx) => CharCreateUiScale.s(designPx);
+  static double s(double designPx) => UiScale.s(designPx);
 
   static CharCreateUiConfig get _c => _config;
 

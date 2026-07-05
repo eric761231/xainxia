@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../ui_scale.dart';
 import 'char_select_ui_config.dart';
 import 'char_select_ui_loader.dart';
-import 'char_select_ui_scale.dart';
 
 /// 角色選擇 UI 切圖顯示規格（邏輯像素）。
 ///
@@ -16,7 +16,7 @@ abstract final class CharSelectUiSpec {
 
   static bool get isLoaded => _loaded;
 
-  static double get scale => CharSelectUiScale.value;
+  static double get scale => UiScale.value;
 
   static Future<void> ensureLoaded() async {
     await reload();
@@ -29,10 +29,16 @@ abstract final class CharSelectUiSpec {
   }
 
   static void updateScaleFrom(Size availableSize) {
-    CharSelectUiScale.updateFrom(availableSize, _config);
+    UiScale.updateFrom(
+      availableSize,
+      designWidth: _config.designWidth,
+      designHeight: _config.designHeight,
+      scaleMin: _config.scaleMin,
+      scaleMax: _config.scaleMax,
+    );
   }
 
-  static double s(double designPx) => CharSelectUiScale.s(designPx);
+  static double s(double designPx) => UiScale.s(designPx);
 
   static CharSelectUiConfig get _c => _config;
   static double _px(double v) => s(v);

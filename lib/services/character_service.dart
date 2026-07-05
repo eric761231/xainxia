@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '../config/server_connection_loader.dart';
-import '../models/character_summary.dart';
+import '../models/game_character.dart';
 import '../network/packets/client/c_char_list.dart';
 import '../network/packets/client/c_create_char.dart';
 import '../network/packets/client/c_delete_char.dart';

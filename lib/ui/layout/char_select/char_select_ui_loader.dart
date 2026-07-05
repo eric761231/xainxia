@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 
+import '../xml_attr.dart';
+
 import 'char_select_ui_config.dart';
 import '../char_create/char_create_ui_source_stub.dart'
     if (dart.library.io) '../char_create/char_create_ui_source_io.dart';
@@ -41,155 +43,131 @@ abstract final class CharSelectUiLoader {
   }
 
   static void _applyRoot(CharSelectUiConfig c, XmlElement root) {
-    c.designWidth = _d(root, 'designWidth', c.designWidth);
-    c.designHeight = _d(root, 'designHeight', c.designHeight);
-    c.scaleMin = _d(root, 'scaleMin', c.scaleMin);
-    c.scaleMax = _d(root, 'scaleMax', c.scaleMax);
+    c.designWidth = XmlAttr.d(root, 'designWidth', c.designWidth);
+    c.designHeight = XmlAttr.d(root, 'designHeight', c.designHeight);
+    c.scaleMin = XmlAttr.d(root, 'scaleMin', c.scaleMin);
+    c.scaleMax = XmlAttr.d(root, 'scaleMax', c.scaleMax);
   }
 
   static void _applyTopBar(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.topBarHeight = _d(el, 'height', c.topBarHeight);
-    c.topBarPaddingH = _d(el, 'paddingH', c.topBarPaddingH);
-    c.topBarPaddingV = _d(el, 'paddingV', c.topBarPaddingV);
-    c.topBarTitleFontSize = _d(el, 'titleFontSize', c.topBarTitleFontSize);
-    c.topBarBackBtnWidth = _d(el, 'backBtnWidth', c.topBarBackBtnWidth);
-    c.topBarBackBtnHeight = _d(el, 'backBtnHeight', c.topBarBackBtnHeight);
-    c.topBarBackIconSize = _d(el, 'backIconSize', c.topBarBackIconSize);
-    c.topBarBackLabelFontSize = _d(el, 'backLabelFontSize', c.topBarBackLabelFontSize);
-    c.topBarSlotFontSize = _d(el, 'slotFontSize', c.topBarSlotFontSize);
+    c.topBarHeight = XmlAttr.d(el, 'height', c.topBarHeight);
+    c.topBarPaddingH = XmlAttr.d(el, 'paddingH', c.topBarPaddingH);
+    c.topBarPaddingV = XmlAttr.d(el, 'paddingV', c.topBarPaddingV);
+    c.topBarTitleFontSize = XmlAttr.d(el, 'titleFontSize', c.topBarTitleFontSize);
+    c.topBarBackBtnWidth = XmlAttr.d(el, 'backBtnWidth', c.topBarBackBtnWidth);
+    c.topBarBackBtnHeight = XmlAttr.d(el, 'backBtnHeight', c.topBarBackBtnHeight);
+    c.topBarBackIconSize = XmlAttr.d(el, 'backIconSize', c.topBarBackIconSize);
+    c.topBarBackLabelFontSize = XmlAttr.d(el, 'backLabelFontSize', c.topBarBackLabelFontSize);
+    c.topBarSlotFontSize = XmlAttr.d(el, 'slotFontSize', c.topBarSlotFontSize);
   }
 
   static void _applyLeftPanel(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.leftPanelWidth = _d(el, 'width', c.leftPanelWidth);
-    c.leftPanelWidthMin = _d(el, 'widthMin', c.leftPanelWidthMin);
-    c.leftPanelWidthMax = _d(el, 'widthMax', c.leftPanelWidthMax);
-    c.leftPanelTopOffset = _d(el, 'topOffset', c.leftPanelTopOffset);
-    c.leftPanelPaddingH = _d(el, 'paddingH', c.leftPanelPaddingH);
-    c.leftPanelListSpacing = _d(el, 'listSpacing', c.leftPanelListSpacing);
+    c.leftPanelWidth = XmlAttr.d(el, 'width', c.leftPanelWidth);
+    c.leftPanelWidthMin = XmlAttr.d(el, 'widthMin', c.leftPanelWidthMin);
+    c.leftPanelWidthMax = XmlAttr.d(el, 'widthMax', c.leftPanelWidthMax);
+    c.leftPanelTopOffset = XmlAttr.d(el, 'topOffset', c.leftPanelTopOffset);
+    c.leftPanelPaddingH = XmlAttr.d(el, 'paddingH', c.leftPanelPaddingH);
+    c.leftPanelListSpacing = XmlAttr.d(el, 'listSpacing', c.leftPanelListSpacing);
   }
 
   static void _applyCenterPanel(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.centerPortraitWidthFraction = _d(el, 'portraitWidthFraction', c.centerPortraitWidthFraction);
-    c.centerPortraitBottomOffset = _d(el, 'portraitBottomOffset', c.centerPortraitBottomOffset);
-    c.centerNameFontSize = _d(el, 'nameFontSize', c.centerNameFontSize);
-    c.centerLevelFontSize = _d(el, 'levelFontSize', c.centerLevelFontSize);
-    c.centerNamePaddingH = _d(el, 'namePaddingH', c.centerNamePaddingH);
+    c.centerPortraitWidthFraction = XmlAttr.d(el, 'portraitWidthFraction', c.centerPortraitWidthFraction);
+    c.centerPortraitBottomOffset = XmlAttr.d(el, 'portraitBottomOffset', c.centerPortraitBottomOffset);
+    c.centerNameFontSize = XmlAttr.d(el, 'nameFontSize', c.centerNameFontSize);
+    c.centerLevelFontSize = XmlAttr.d(el, 'levelFontSize', c.centerLevelFontSize);
+    c.centerNamePaddingH = XmlAttr.d(el, 'namePaddingH', c.centerNamePaddingH);
   }
 
   static void _applyRightPanel(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.rightPanelWidthFraction = _d(el, 'widthFraction', c.rightPanelWidthFraction);
-    c.rightPanelMinWidth = _d(el, 'minWidth', c.rightPanelMinWidth);
-    c.rightPanelMaxWidth = _d(el, 'maxWidth', c.rightPanelMaxWidth);
-    c.rightPanelTopOffset = _d(el, 'topOffset', c.rightPanelTopOffset);
-    c.rightPanelPaddingH = _d(el, 'paddingH', c.rightPanelPaddingH);
-    c.rightPanelPaddingV = _d(el, 'paddingV', c.rightPanelPaddingV);
-    c.rightPanelSectionGap = _d(el, 'sectionGap', c.rightPanelSectionGap);
-    c.rightPanelSectionRadius = _d(el, 'sectionRadius', c.rightPanelSectionRadius);
-    c.rightPanelSectionBgOpacity = _d(el, 'sectionBgOpacity', c.rightPanelSectionBgOpacity);
+    c.rightPanelWidthFraction = XmlAttr.d(el, 'widthFraction', c.rightPanelWidthFraction);
+    c.rightPanelMinWidth = XmlAttr.d(el, 'minWidth', c.rightPanelMinWidth);
+    c.rightPanelMaxWidth = XmlAttr.d(el, 'maxWidth', c.rightPanelMaxWidth);
+    c.rightPanelTopOffset = XmlAttr.d(el, 'topOffset', c.rightPanelTopOffset);
+    c.rightPanelPaddingH = XmlAttr.d(el, 'paddingH', c.rightPanelPaddingH);
+    c.rightPanelPaddingV = XmlAttr.d(el, 'paddingV', c.rightPanelPaddingV);
+    c.rightPanelSectionGap = XmlAttr.d(el, 'sectionGap', c.rightPanelSectionGap);
+    c.rightPanelSectionRadius = XmlAttr.d(el, 'sectionRadius', c.rightPanelSectionRadius);
+    c.rightPanelSectionBgOpacity = XmlAttr.d(el, 'sectionBgOpacity', c.rightPanelSectionBgOpacity);
   }
 
   static void _applyBottomBar(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.bottomBarHeight = _d(el, 'height', c.bottomBarHeight);
-    c.bottomBarPaddingH = _d(el, 'paddingH', c.bottomBarPaddingH);
-    c.bottomBarPaddingV = _d(el, 'paddingV', c.bottomBarPaddingV);
-    c.bottomBarBtnHeight = _d(el, 'btnHeight', c.bottomBarBtnHeight);
-    c.bottomBarBtnRadius = _d(el, 'btnRadius', c.bottomBarBtnRadius);
-    c.bottomBarEnterBtnWidth = _d(el, 'enterBtnWidth', c.bottomBarEnterBtnWidth);
-    c.bottomBarSideBtnWidth = _d(el, 'sideBtnWidth', c.bottomBarSideBtnWidth);
-    c.bottomBarFontSize = _d(el, 'fontSize', c.bottomBarFontSize);
+    c.bottomBarHeight = XmlAttr.d(el, 'height', c.bottomBarHeight);
+    c.bottomBarPaddingH = XmlAttr.d(el, 'paddingH', c.bottomBarPaddingH);
+    c.bottomBarPaddingV = XmlAttr.d(el, 'paddingV', c.bottomBarPaddingV);
+    c.bottomBarBtnHeight = XmlAttr.d(el, 'btnHeight', c.bottomBarBtnHeight);
+    c.bottomBarBtnRadius = XmlAttr.d(el, 'btnRadius', c.bottomBarBtnRadius);
+    c.bottomBarEnterBtnWidth = XmlAttr.d(el, 'enterBtnWidth', c.bottomBarEnterBtnWidth);
+    c.bottomBarSideBtnWidth = XmlAttr.d(el, 'sideBtnWidth', c.bottomBarSideBtnWidth);
+    c.bottomBarFontSize = XmlAttr.d(el, 'fontSize', c.bottomBarFontSize);
   }
 
   static void _applyCharCard(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.cardHeight = _d(el, 'cardHeight', c.cardHeight);
-    c.cardRadius = _d(el, 'cardRadius', c.cardRadius);
-    c.cardPaddingH = _d(el, 'cardPaddingH', c.cardPaddingH);
-    c.cardPaddingV = _d(el, 'cardPaddingV', c.cardPaddingV);
-    c.cardIconSize = _d(el, 'iconSize', c.cardIconSize);
-    c.cardIconRadius = _d(el, 'iconRadius', c.cardIconRadius);
-    c.cardNameGap = _d(el, 'nameGap', c.cardNameGap);
-    c.cardNameFontSize = _d(el, 'nameFontSize', c.cardNameFontSize);
-    c.cardLevelFontSize = _d(el, 'levelFontSize', c.cardLevelFontSize);
-    c.cardAttrIconSize = _d(el, 'attrIconSize', c.cardAttrIconSize);
-    c.cardUnselectedBgOpacity = _d(el, 'unselectedBgOpacity', c.cardUnselectedBgOpacity);
-    c.cardSelectedBgOpacity = _d(el, 'selectedBgOpacity', c.cardSelectedBgOpacity);
-    c.cardUnselectedBorderOpacity = _d(el, 'unselectedBorderOpacity', c.cardUnselectedBorderOpacity);
-    c.cardUnselectedBorderWidth = _d(el, 'unselectedBorderWidth', c.cardUnselectedBorderWidth);
-    c.cardSelectedBorderOpacity = _d(el, 'selectedBorderOpacity', c.cardSelectedBorderOpacity);
-    c.cardSelectedBorderWidth = _d(el, 'selectedBorderWidth', c.cardSelectedBorderWidth);
-    c.cardSelectedGlowOpacity = _d(el, 'selectedGlowOpacity', c.cardSelectedGlowOpacity);
-    c.cardSelectedGlowBlur = _d(el, 'selectedGlowBlur', c.cardSelectedGlowBlur);
+    c.cardHeight = XmlAttr.d(el, 'cardHeight', c.cardHeight);
+    c.cardRadius = XmlAttr.d(el, 'cardRadius', c.cardRadius);
+    c.cardPaddingH = XmlAttr.d(el, 'cardPaddingH', c.cardPaddingH);
+    c.cardPaddingV = XmlAttr.d(el, 'cardPaddingV', c.cardPaddingV);
+    c.cardIconSize = XmlAttr.d(el, 'iconSize', c.cardIconSize);
+    c.cardIconRadius = XmlAttr.d(el, 'iconRadius', c.cardIconRadius);
+    c.cardNameGap = XmlAttr.d(el, 'nameGap', c.cardNameGap);
+    c.cardNameFontSize = XmlAttr.d(el, 'nameFontSize', c.cardNameFontSize);
+    c.cardLevelFontSize = XmlAttr.d(el, 'levelFontSize', c.cardLevelFontSize);
+    c.cardAttrIconSize = XmlAttr.d(el, 'attrIconSize', c.cardAttrIconSize);
+    c.cardUnselectedBgOpacity = XmlAttr.d(el, 'unselectedBgOpacity', c.cardUnselectedBgOpacity);
+    c.cardSelectedBgOpacity = XmlAttr.d(el, 'selectedBgOpacity', c.cardSelectedBgOpacity);
+    c.cardUnselectedBorderOpacity = XmlAttr.d(el, 'unselectedBorderOpacity', c.cardUnselectedBorderOpacity);
+    c.cardUnselectedBorderWidth = XmlAttr.d(el, 'unselectedBorderWidth', c.cardUnselectedBorderWidth);
+    c.cardSelectedBorderOpacity = XmlAttr.d(el, 'selectedBorderOpacity', c.cardSelectedBorderOpacity);
+    c.cardSelectedBorderWidth = XmlAttr.d(el, 'selectedBorderWidth', c.cardSelectedBorderWidth);
+    c.cardSelectedGlowOpacity = XmlAttr.d(el, 'selectedGlowOpacity', c.cardSelectedGlowOpacity);
+    c.cardSelectedGlowBlur = XmlAttr.d(el, 'selectedGlowBlur', c.cardSelectedGlowBlur);
   }
 
   static void _applyInfoPanel(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.infoPanelTitleBarHeight = _d(el, 'titleBarHeight', c.infoPanelTitleBarHeight);
-    c.infoPanelTitleFontSize = _d(el, 'titleFontSize', c.infoPanelTitleFontSize);
-    c.infoPanelTitleBarWidthFraction = _d(el, 'titleBarWidthFraction', c.infoPanelTitleBarWidthFraction);
-    c.infoPanelPortraitSize = _d(el, 'portraitSize', c.infoPanelPortraitSize);
-    c.infoPanelPortraitRadius = _d(el, 'portraitRadius', c.infoPanelPortraitRadius);
-    c.infoPanelNameFontSize = _d(el, 'nameFontSize', c.infoPanelNameFontSize);
-    c.infoPanelLevelBadgePaddingH = _d(el, 'levelBadgePaddingH', c.infoPanelLevelBadgePaddingH);
-    c.infoPanelLevelBadgePaddingV = _d(el, 'levelBadgePaddingV', c.infoPanelLevelBadgePaddingV);
-    c.infoPanelLevelBadgeRadius = _d(el, 'levelBadgeRadius', c.infoPanelLevelBadgeRadius);
-    c.infoPanelLevelBadgeFontSize = _d(el, 'levelBadgeFontSize', c.infoPanelLevelBadgeFontSize);
-    c.infoPanelLabelFontSize = _d(el, 'labelFontSize', c.infoPanelLabelFontSize);
-    c.infoPanelValueFontSize = _d(el, 'valueFontSize', c.infoPanelValueFontSize);
-    c.infoPanelAttrIconSize = _d(el, 'attrIconSize', c.infoPanelAttrIconSize);
-    c.infoPanelRowHeight = _d(el, 'rowHeight', c.infoPanelRowHeight);
-    c.infoPanelRowSpacing = _d(el, 'rowSpacing', c.infoPanelRowSpacing);
+    c.infoPanelTitleBarHeight = XmlAttr.d(el, 'titleBarHeight', c.infoPanelTitleBarHeight);
+    c.infoPanelTitleFontSize = XmlAttr.d(el, 'titleFontSize', c.infoPanelTitleFontSize);
+    c.infoPanelTitleBarWidthFraction = XmlAttr.d(el, 'titleBarWidthFraction', c.infoPanelTitleBarWidthFraction);
+    c.infoPanelPortraitSize = XmlAttr.d(el, 'portraitSize', c.infoPanelPortraitSize);
+    c.infoPanelPortraitRadius = XmlAttr.d(el, 'portraitRadius', c.infoPanelPortraitRadius);
+    c.infoPanelNameFontSize = XmlAttr.d(el, 'nameFontSize', c.infoPanelNameFontSize);
+    c.infoPanelLevelBadgePaddingH = XmlAttr.d(el, 'levelBadgePaddingH', c.infoPanelLevelBadgePaddingH);
+    c.infoPanelLevelBadgePaddingV = XmlAttr.d(el, 'levelBadgePaddingV', c.infoPanelLevelBadgePaddingV);
+    c.infoPanelLevelBadgeRadius = XmlAttr.d(el, 'levelBadgeRadius', c.infoPanelLevelBadgeRadius);
+    c.infoPanelLevelBadgeFontSize = XmlAttr.d(el, 'levelBadgeFontSize', c.infoPanelLevelBadgeFontSize);
+    c.infoPanelLabelFontSize = XmlAttr.d(el, 'labelFontSize', c.infoPanelLabelFontSize);
+    c.infoPanelValueFontSize = XmlAttr.d(el, 'valueFontSize', c.infoPanelValueFontSize);
+    c.infoPanelAttrIconSize = XmlAttr.d(el, 'attrIconSize', c.infoPanelAttrIconSize);
+    c.infoPanelRowHeight = XmlAttr.d(el, 'rowHeight', c.infoPanelRowHeight);
+    c.infoPanelRowSpacing = XmlAttr.d(el, 'rowSpacing', c.infoPanelRowSpacing);
   }
 
   static void _applyColors(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.colorAccent = _argb(el, 'accent', c.colorAccent);
-    c.colorTitle = _argb(el, 'title', c.colorTitle);
-    c.colorLabel = _argb(el, 'label', c.colorLabel);
-    c.colorDanger = _argb(el, 'danger', c.colorDanger);
-    c.colorCardName = _argb(el, 'cardName', c.colorCardName);
-    c.colorCardLevel = _argb(el, 'cardLevel', c.colorCardLevel);
+    c.colorAccent = XmlAttr.colorInt(el, 'accent', c.colorAccent);
+    c.colorTitle = XmlAttr.colorInt(el, 'title', c.colorTitle);
+    c.colorLabel = XmlAttr.colorInt(el, 'label', c.colorLabel);
+    c.colorDanger = XmlAttr.colorInt(el, 'danger', c.colorDanger);
+    c.colorCardName = XmlAttr.colorInt(el, 'cardName', c.colorCardName);
+    c.colorCardLevel = XmlAttr.colorInt(el, 'cardLevel', c.colorCardLevel);
   }
 
   static void _applyOverlays(CharSelectUiConfig c, XmlElement? el) {
     if (el == null) return;
-    c.enterBtnHoverOverlay = _color(el, 'enterBtnHover', c.enterBtnHoverOverlay);
-    c.enterBtnPressedOverlay = _color(el, 'enterBtnPressed', c.enterBtnPressedOverlay);
-    c.createBtnHoverOverlay = _color(el, 'createBtnHover', c.createBtnHoverOverlay);
-    c.createBtnPressedOverlay = _color(el, 'createBtnPressed', c.createBtnPressedOverlay);
-    c.deleteBtnHoverOverlay = _color(el, 'deleteBtnHover', c.deleteBtnHoverOverlay);
-    c.deleteBtnPressedOverlay = _color(el, 'deleteBtnPressed', c.deleteBtnPressedOverlay);
-    c.backBtnHoverOverlay = _color(el, 'backBtnHover', c.backBtnHoverOverlay);
-    c.backBtnPressedOverlay = _color(el, 'backBtnPressed', c.backBtnPressedOverlay);
-    c.cardHoverOverlay = _color(el, 'cardHover', c.cardHoverOverlay);
-    c.cardPressedOverlay = _color(el, 'cardPressed', c.cardPressedOverlay);
-  }
-
-  // ── 解析工具 ─────────────────────────────────────────────────
-
-  static double _d(XmlElement el, String attr, double fallback) {
-    final v = el.getAttribute(attr);
-    if (v == null) return fallback;
-    return double.tryParse(v) ?? fallback;
-  }
-
-  static int _argb(XmlElement el, String attr, int fallback) {
-    final v = el.getAttribute(attr);
-    if (v == null) return fallback;
-    final hex = v.replaceFirst('#', '');
-    return int.tryParse(hex, radix: 16) ?? fallback;
-  }
-
-  static Color _color(XmlElement el, String attr, Color fallback) {
-    final v = el.getAttribute(attr);
-    if (v == null) return fallback;
-    final hex = v.replaceFirst('#', '');
-    final value = int.tryParse(hex, radix: 16);
-    if (value == null) return fallback;
-    return hex.length == 6 ? Color(0xFF000000 | value) : Color(value);
+    c.enterBtnHoverOverlay = XmlAttr.color(el, 'enterBtnHover', c.enterBtnHoverOverlay);
+    c.enterBtnPressedOverlay = XmlAttr.color(el, 'enterBtnPressed', c.enterBtnPressedOverlay);
+    c.createBtnHoverOverlay = XmlAttr.color(el, 'createBtnHover', c.createBtnHoverOverlay);
+    c.createBtnPressedOverlay = XmlAttr.color(el, 'createBtnPressed', c.createBtnPressedOverlay);
+    c.deleteBtnHoverOverlay = XmlAttr.color(el, 'deleteBtnHover', c.deleteBtnHoverOverlay);
+    c.deleteBtnPressedOverlay = XmlAttr.color(el, 'deleteBtnPressed', c.deleteBtnPressedOverlay);
+    c.backBtnHoverOverlay = XmlAttr.color(el, 'backBtnHover', c.backBtnHoverOverlay);
+    c.backBtnPressedOverlay = XmlAttr.color(el, 'backBtnPressed', c.backBtnPressedOverlay);
+    c.cardHoverOverlay = XmlAttr.color(el, 'cardHover', c.cardHoverOverlay);
+    c.cardPressedOverlay = XmlAttr.color(el, 'cardPressed', c.cardPressedOverlay);
   }
 }

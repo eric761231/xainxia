@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/character_summary.dart';
+import '../../../models/game_character.dart';
 import '../../../models/char_create_template.dart';
 import '../../theme/game_ui_fonts.dart';
-import '../../layout/char_select/char_select_ui_assets.dart';
+import '../../layout/char_create/char_create_ui_assets.dart';
 import '../../layout/char_select/char_select_ui_spec.dart';
 
 /// 左欄角色卡片（單一選取項目）。
@@ -125,7 +125,7 @@ class _CharSelectCharCardState extends State<CharSelectCharCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                CharSelectUiAssets.attrIcon(widget.character.attribute),
+                CharCreateUiAssets.attrIcon(widget.character.attribute),
                 width: CharSelectUiSpec.cardAttrIconSize,
                 height: CharSelectUiSpec.cardAttrIconSize,
                 fit: BoxFit.contain,

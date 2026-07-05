@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import 'codec/packet_codec.dart';
-import 'models/game_packet.dart';
+import 'transport/game_packet.dart';
 // 遊戲 socket
 class GameSocket {
   GameSocket(this._codec);
