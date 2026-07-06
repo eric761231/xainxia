@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/c/code_workspace/XinProject/xianxia_game/linux"
+    "cmake.sourceDirectory": "C:/c/code_workspace/XinProject/xianxia_game/linux",
+    "java.compile.nullAnalysis.mode": "automatic"
 }

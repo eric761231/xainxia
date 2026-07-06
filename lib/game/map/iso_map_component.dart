@@ -44,6 +44,7 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
 
   IsoMapData? _data;
   final Map<String, ui.Image> _images = {};
+  ui.Image? _bgImage;
   IsoPlayerComponent? _player;
 
   /// 玩家在地圖 local 座標系的位置（供 WorldSceneComponent 做跟隨計算）。
@@ -53,6 +54,13 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
   Vector2? get contentCenterLocal {
     final data = _data;
     if (data == null) return null;
+    final bg = _bgImage;
+    if (bg != null) {
+      return Vector2(
+        data.originX + bg.width / 2,
+        data.originY + bg.height / 2,
+      );
+    }
     final halfW = data.halfTileWidth;
     final halfH = data.halfTileHeight;
     final minX = -(data.height - 1) * halfW - halfW;
@@ -74,6 +82,18 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
     final mapW = (data.width + data.height - 2) * data.halfTileWidth + data.tileWidth;
     final mapH = (data.width + data.height - 2) * data.halfTileHeight + data.tileHeight;
     size = Vector2(mapW, mapH);
+
+    // 背景圖模式：載入整張房間圖，hitbox 改以圖片範圍計算。
+    if (data.hasBackground) {
+      _bgImage = await SceneAssetLoader.loadTileAtlas(data.background);
+      final bg = _bgImage;
+      if (bg != null) {
+        size = Vector2(
+          data.originX + bg.width.toDouble(),
+          data.originY + bg.height.toDouble(),
+        );
+      }
+    }
 
     for (final ts in data.tilesets) {
       if (ts.image.isEmpty) continue;
@@ -143,6 +163,12 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
   void render(Canvas canvas) {
     final data = _data;
     if (data == null) return;
+
+    // 背景圖（房間手繪圖）先鋪，tile 層再疊上。
+    final bg = _bgImage;
+    if (bg != null) {
+      canvas.drawImage(bg, Offset(data.originX, data.originY), Paint());
+    }
 
     final halfW = data.halfTileWidth;
     final halfH = data.halfTileHeight;

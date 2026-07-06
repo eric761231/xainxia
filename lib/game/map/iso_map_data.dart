@@ -33,12 +33,20 @@ class IsoTileset {
       };
 }
 
-/// 單一地圖圖層（data[row][col] = tileId，0 = 空）。
+/// 單一地圖圖層（data[row][col] = 值）。
+///
+/// type 'tiles'：值為 tileId（0=空）。
+/// type 'collision'：值為碰撞（1=擋、0=可走）。
 @immutable
 class IsoTileLayer {
-  const IsoTileLayer({required this.name, required this.data});
+  const IsoTileLayer({
+    required this.name,
+    required this.data,
+    this.type = 'tiles',
+  });
 
   final String name;
+  final String type;
   final List<List<int>> data;
 
   int tileAt(int tx, int ty) {
@@ -52,6 +60,7 @@ class IsoTileLayer {
     final raw = json['data'] as List<dynamic>? ?? [];
     return IsoTileLayer(
       name: json['name'] as String? ?? '',
+      type: json['type'] as String? ?? 'tiles',
       data: raw
           .map((row) =>
               (row as List<dynamic>).map((v) => (v as num).toInt()).toList())
@@ -60,7 +69,7 @@ class IsoTileLayer {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': 'tiles',
+        'type': type,
         'name': name,
         'data': data,
       };
@@ -78,6 +87,9 @@ class IsoMapData {
     required this.tileHeight,
     required this.tilesets,
     required this.layers,
+    this.background = '',
+    this.originX = 0,
+    this.originY = 0,
   });
 
   final String id;
@@ -89,8 +101,28 @@ class IsoMapData {
   final List<IsoTileset> tilesets;
   final List<IsoTileLayer> layers;
 
+  /// 整張背景圖檔名（相對 assets/tiles/）；空＝無背景圖、走 tile 渲染。
+  final String background;
+
+  /// 背景圖左上角在地圖 local 座標的位置，用來把等距格線對齊畫上的地板。
+  final double originX;
+  final double originY;
+
+  bool get hasBackground => background.isNotEmpty;
+
   double get halfTileWidth => tileWidth / 2;
   double get halfTileHeight => tileHeight / 2;
+
+  /// 碰撞層（type=='collision'）；無則 null。
+  IsoTileLayer? get collisionLayer {
+    for (final l in layers) {
+      if (l.type == 'collision') return l;
+    }
+    return null;
+  }
+
+  /// 該格是否被擋（1=擋）。無碰撞層時一律可走。
+  bool isBlocked(int tx, int ty) => collisionLayer?.tileAt(tx, ty) == 1;
 
   factory IsoMapData.fromJson(Map<String, dynamic> json) => IsoMapData(
         id: json['id'] as String? ?? '',
@@ -105,6 +137,9 @@ class IsoMapData {
         layers: (json['layers'] as List<dynamic>? ?? [])
             .map((l) => IsoTileLayer.fromJson(l as Map<String, dynamic>))
             .toList(),
+        background: json['background'] as String? ?? '',
+        originX: (json['originX'] as num?)?.toDouble() ?? 0,
+        originY: (json['originY'] as num?)?.toDouble() ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -114,6 +149,9 @@ class IsoMapData {
         'height': height,
         'tileWidth': tileWidth,
         'tileHeight': tileHeight,
+        if (background.isNotEmpty) 'background': background,
+        if (background.isNotEmpty) 'originX': originX,
+        if (background.isNotEmpty) 'originY': originY,
         'tilesets': tilesets.map((t) => t.toJson()).toList(),
         'layers': layers.map((l) => l.toJson()).toList(),
       };

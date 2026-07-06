@@ -155,6 +155,13 @@ class IsoPlayerComponent extends PositionComponent {
       return;
     }
 
+    // 碰撞：下一格被擋則停在原地
+    if (mapData.isBlocked(newTX, newTY)) {
+      _targetTileX = null;
+      _targetTileY = null;
+      return;
+    }
+
     // 更新面向
     facing = _facingFromDelta(dx, dy);
 

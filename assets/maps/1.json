@@ -1,0 +1,16 @@
+{
+  "id": "1",
+  "name": "青雲洞府",
+  "type": "image",
+  "background": "center_room.png",
+  "width": 8,
+  "height": 8,
+  "tileWidth": 128,
+  "tileHeight": 64,
+  "originX": -512,
+  "originY": -260,
+  "tilesets": [],
+  "layers": [
+    { "type": "tiles", "name": "ground", "data": [] }
+  ]
+}
