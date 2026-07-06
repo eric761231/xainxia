@@ -75,6 +75,43 @@ class IsoTileLayer {
       };
 }
 
+/// 出口/傳送點：站到 (x,y) 格 → 切換到地圖 toMap 的 (toX,toY)。
+@immutable
+class MapExit {
+  const MapExit({
+    required this.x,
+    required this.y,
+    required this.toMap,
+    required this.toX,
+    required this.toY,
+  });
+
+  final int x;
+  final int y;
+  final int toMap;
+  final int toX;
+  final int toY;
+
+  MapExit copyWith({int? toMap, int? toX, int? toY}) => MapExit(
+        x: x,
+        y: y,
+        toMap: toMap ?? this.toMap,
+        toX: toX ?? this.toX,
+        toY: toY ?? this.toY,
+      );
+
+  factory MapExit.fromJson(Map<String, dynamic> j) => MapExit(
+        x: (j['x'] as num?)?.toInt() ?? 0,
+        y: (j['y'] as num?)?.toInt() ?? 0,
+        toMap: (j['toMap'] as num?)?.toInt() ?? 0,
+        toX: (j['toX'] as num?)?.toInt() ?? 0,
+        toY: (j['toY'] as num?)?.toInt() ?? 0,
+      );
+
+  Map<String, dynamic> toJson() =>
+      {'x': x, 'y': y, 'toMap': toMap, 'toX': toX, 'toY': toY};
+}
+
 /// 等距地圖完整資料。
 @immutable
 class IsoMapData {
@@ -90,6 +127,7 @@ class IsoMapData {
     this.background = '',
     this.originX = 0,
     this.originY = 0,
+    this.exits = const [],
   });
 
   final String id;
@@ -124,6 +162,17 @@ class IsoMapData {
   /// 該格是否被擋（1=擋）。無碰撞層時一律可走。
   bool isBlocked(int tx, int ty) => collisionLayer?.tileAt(tx, ty) == 1;
 
+  /// 出口/傳送點清單。
+  final List<MapExit> exits;
+
+  /// 該格的出口（無則 null）。
+  MapExit? exitAt(int tx, int ty) {
+    for (final e in exits) {
+      if (e.x == tx && e.y == ty) return e;
+    }
+    return null;
+  }
+
   factory IsoMapData.fromJson(Map<String, dynamic> json) => IsoMapData(
         id: json['id'] as String? ?? '',
         name: json['name'] as String? ?? '',
@@ -140,6 +189,9 @@ class IsoMapData {
         background: json['background'] as String? ?? '',
         originX: (json['originX'] as num?)?.toDouble() ?? 0,
         originY: (json['originY'] as num?)?.toDouble() ?? 0,
+        exits: (json['exits'] as List<dynamic>? ?? [])
+            .map((e) => MapExit.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -154,6 +206,7 @@ class IsoMapData {
         if (background.isNotEmpty) 'originY': originY,
         'tilesets': tilesets.map((t) => t.toJson()).toList(),
         'layers': layers.map((l) => l.toJson()).toList(),
+        if (exits.isNotEmpty) 'exits': exits.map((e) => e.toJson()).toList(),
       };
 
   /// 當地圖檔案不存在時使用的內建佔位地圖。

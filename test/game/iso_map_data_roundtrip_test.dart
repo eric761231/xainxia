@@ -22,6 +22,9 @@ void main() {
       "layers": [
         {"type": "tiles", "name": "ground", "data": [[1,2,3],[4,0,6]]},
         {"type": "collision", "name": "collision", "data": [[1,0,1],[0,0,1]]}
+      ],
+      "exits": [
+        {"x": 2, "y": 0, "toMap": 5, "toX": 3, "toY": 4}
       ]
     }
     ''';
@@ -64,5 +67,14 @@ void main() {
     expect(b.isBlocked(2, 1), isTrue); // data[1][2]=1
     expect(b.isBlocked(1, 0), isFalse); // data[0][1]=0
     expect(b.isBlocked(99, 99), isFalse); // 界外
+
+    // 出口 + exitAt
+    expect(b.exits.length, 1);
+    final e = b.exitAt(2, 0);
+    expect(e, isNotNull);
+    expect(e!.toMap, 5);
+    expect(e.toX, 3);
+    expect(e.toY, 4);
+    expect(b.exitAt(0, 0), isNull); // 非出口格
   });
 }

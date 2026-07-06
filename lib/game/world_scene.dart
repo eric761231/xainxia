@@ -15,10 +15,14 @@ class WorldSceneComponent extends PositionComponent {
     required this.enterGame,
     this.sessionService,
     this.appearanceKey = 'male',
+    this.onRequestMapChange,
   });
 
   final SEnterGame enterGame;
   final GameSessionService? sessionService;
+
+  /// 踏到出口 → 請求切換地圖（本地）：(toMap, toX, toY)。
+  final void Function(int toMap, int toX, int toY)? onRequestMapChange;
 
   /// 人物外觀鍵（依所選角色 sex 推導），往下傳給 IsoMapComponent。
   final String appearanceKey;
@@ -67,6 +71,8 @@ class WorldSceneComponent extends PositionComponent {
       appearanceKey: appearanceKey,
       onPlayerStep: _onPlayerStep,
       onPlayerFace: _onPlayerFace,
+      onEnterExit: (exit) =>
+          onRequestMapChange?.call(exit.toMap, exit.toX, exit.toY),
     );
     add(_map!);
   }

@@ -27,6 +27,7 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
     this.appearanceKey = 'male',
     this.onPlayerStep,
     this.onPlayerFace,
+    this.onEnterExit,
   }) : super(anchor: Anchor.topLeft);
 
   final int mapId;
@@ -41,6 +42,9 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
 
   /// 僅轉向回呼：(facing)，由 WorldSceneComponent 注入以送出 C_FACE。
   final void Function(int facing)? onPlayerFace;
+
+  /// 踏到出口格回呼（本地切換地圖用）。
+  final void Function(MapExit exit)? onEnterExit;
 
   IsoMapData? _data;
   final Map<String, ui.Image> _images = {};
@@ -111,7 +115,11 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
       initialTileX: spawnTileX.clamp(0, data.width - 1),
       initialTileY: spawnTileY.clamp(0, data.height - 1),
       mapData: data,
-      onStep: onPlayerStep,
+      onStep: (x, y, facing) {
+        onPlayerStep?.call(x, y, facing);
+        final exit = _data?.exitAt(x, y);
+        if (exit != null) onEnterExit?.call(exit);
+      },
       onFace: onPlayerFace,
       spriteSet: spriteSet,
     );

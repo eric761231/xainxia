@@ -420,6 +420,14 @@ class MyGame extends FlameGame {
       enterGame: enterGame,
       sessionService: sessionService,
       appearanceKey: _appearanceKeyFor(enterGame.charName),
+      // 本地切換地圖：踏到出口 → 以同角色合成 SEnterGame 重新進場。
+      onRequestMapChange: (toMap, toX, toY) => _activateWorld(SEnterGame(
+        objId: enterGame.objId,
+        charName: enterGame.charName,
+        mapId: toMap,
+        x: toX,
+        y: toY,
+      )),
     )
       ..size = gameSize
       ..anchor = Anchor.topLeft

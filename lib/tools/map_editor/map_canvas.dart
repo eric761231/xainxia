@@ -5,17 +5,19 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../game/map/iso_coord.dart';
+import '../../game/map/iso_map_data.dart';
 import '../../game/map/iso_tile_palette.dart';
 
 /// 編輯模式。
-enum EditMode { tile, collision, align }
+enum EditMode { tile, collision, exit, align }
 
 /// 等距地圖編輯畫布。
 ///
 /// - tile：左鍵塗選定 tile、右鍵擦除。
 /// - collision：左鍵擋(1)、右鍵可走(0)。
+/// - exit：左鍵放/選出口、右鍵移除。
 /// - align：左鍵拖曳移動背景圖 origin。
-/// - 通用：中鍵拖曳平移、滾輪縮放。被擋格永遠畫半透明紅（碰撞模式較亮）。
+/// - 通用：中鍵拖曳平移、滾輪縮放。被擋格永遠淡紅，出口青色。
 class MapCanvas extends StatefulWidget {
   const MapCanvas({
     super.key,
@@ -28,6 +30,10 @@ class MapCanvas extends StatefulWidget {
     required this.mode,
     required this.onPaintTile,
     required this.onPaintCollision,
+    this.exits = const [],
+    this.selectedExit,
+    this.onExitTap,
+    this.onExitRemove,
     this.background,
     this.originX = 0,
     this.originY = 0,
@@ -44,6 +50,11 @@ class MapCanvas extends StatefulWidget {
 
   final void Function(int tx, int ty, bool erase) onPaintTile;
   final void Function(int tx, int ty, bool block) onPaintCollision;
+
+  final List<MapExit> exits;
+  final MapExit? selectedExit;
+  final void Function(int tx, int ty)? onExitTap;
+  final void Function(int tx, int ty)? onExitRemove;
 
   final ui.Image? background;
   final double originX;
@@ -63,6 +74,9 @@ class _MapCanvasState extends State<MapCanvas> {
   bool _panning = false;
   Offset _lastPointer = Offset.zero;
 
+  bool get _isPaintMode =>
+      widget.mode == EditMode.tile || widget.mode == EditMode.collision;
+
   (int, int)? _cellAt(Offset localPos) {
     final halfW = widget.tileWidth / 2;
     final halfH = widget.tileHeight / 2;
@@ -75,18 +89,22 @@ class _MapCanvasState extends State<MapCanvas> {
     return (tx, ty);
   }
 
+  /// 單擊行為（tile/collision/exit）。
   void _apply(Offset pos, {required bool left}) {
+    final cell = _cellAt(pos);
+    if (cell == null) return;
     switch (widget.mode) {
       case EditMode.tile:
-        final cell = _cellAt(pos);
-        if (cell != null) widget.onPaintTile(cell.$1, cell.$2, !left);
+        widget.onPaintTile(cell.$1, cell.$2, !left);
         break;
       case EditMode.collision:
-        final cell = _cellAt(pos);
-        if (cell != null) widget.onPaintCollision(cell.$1, cell.$2, left);
+        widget.onPaintCollision(cell.$1, cell.$2, left);
+        break;
+      case EditMode.exit:
+        (left ? widget.onExitTap : widget.onExitRemove)?.call(cell.$1, cell.$2);
         break;
       case EditMode.align:
-        break; // align 用拖曳處理
+        break;
     }
   }
 
@@ -112,9 +130,9 @@ class _MapCanvasState extends State<MapCanvas> {
       final d = (e.localPosition - _lastPointer) / _scale;
       widget.onOriginDrag?.call(d.dx, d.dy);
       _lastPointer = e.localPosition;
-    } else if (_leftDown) {
+    } else if (_leftDown && _isPaintMode) {
       _apply(e.localPosition, left: true);
-    } else if (_rightDown) {
+    } else if (_rightDown && _isPaintMode) {
       _apply(e.localPosition, left: false);
     }
   }
@@ -150,6 +168,8 @@ class _MapCanvasState extends State<MapCanvas> {
           painter: _MapPainter(
             grid: widget.grid,
             collision: widget.collision,
+            exits: widget.exits,
+            selectedExit: widget.selectedExit,
             width: widget.width,
             height: widget.height,
             tileWidth: widget.tileWidth,
@@ -172,6 +192,8 @@ class _MapPainter extends CustomPainter {
   _MapPainter({
     required this.grid,
     required this.collision,
+    required this.exits,
+    required this.selectedExit,
     required this.width,
     required this.height,
     required this.tileWidth,
@@ -186,6 +208,8 @@ class _MapPainter extends CustomPainter {
 
   final List<List<int>> grid;
   final List<List<int>> collision;
+  final List<MapExit> exits;
+  final MapExit? selectedExit;
   final int width;
   final int height;
   final int tileWidth;
@@ -231,7 +255,8 @@ class _MapPainter extends CustomPainter {
     final halfH = tileHeight / 2;
     final hasBg = bg != null;
     final blockFill = Paint()
-      ..color = collisionActive ? const Color(0x66FF3B30) : const Color(0x2EFF3B30);
+      ..color =
+          collisionActive ? const Color(0x66FF3B30) : const Color(0x2EFF3B30);
 
     for (int ty = 0; ty < height; ty++) {
       for (int tx = 0; tx < width; tx++) {
@@ -253,7 +278,40 @@ class _MapPainter extends CustomPainter {
         }
       }
     }
+
+    _paintExits(canvas, halfW, halfH);
     canvas.restore();
+  }
+
+  void _paintExits(Canvas canvas, double halfW, double halfH) {
+    if (exits.isEmpty) return;
+    final tp = TextPainter(textDirection: TextDirection.ltr);
+    for (final e in exits) {
+      final sp = IsoCoord.tileToScreen(e.x, e.y, halfW, halfH);
+      final path = _diamond(sp.x, sp.y, halfW, halfH);
+      canvas.drawPath(path, Paint()..color = const Color(0x8800E5FF));
+      final sel = selectedExit != null &&
+          selectedExit!.x == e.x &&
+          selectedExit!.y == e.y;
+      canvas.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = sel ? 2.0 : 1.0
+          ..color = sel ? const Color(0xFFFFFFFF) : const Color(0xFF00E5FF),
+      );
+      tp.text = TextSpan(
+        text: '→${e.toMap}',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: halfH * 0.55,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      tp.layout();
+      tp.paint(
+          canvas, Offset(sp.x - tp.width / 2, sp.y + halfH - tp.height / 2));
+    }
   }
 
   @override

@@ -10,7 +10,7 @@ import '../../game/map/iso_map_loader.dart';
 import '../../game/map/iso_tile_palette.dart';
 import 'map_canvas.dart';
 
-/// 地圖編輯器主畫面：載入 → 塗地形／刷碰撞／對齊背景圖 → 存回 assets/maps/{id}.json。
+/// 地圖編輯器主畫面：載入 → 塗地形／刷碰撞／設出口／對齊背景 → 存回 assets/maps/{id}.json。
 class EditorScreen extends StatefulWidget {
   const EditorScreen({super.key});
 
@@ -33,6 +33,8 @@ class _EditorScreenState extends State<EditorScreen> {
   List<IsoTileset> _tilesets = const [];
   late List<List<int>> _grid;
   late List<List<int>> _collision;
+  List<MapExit> _exits = [];
+  MapExit? _selectedExit;
 
   // 背景圖
   String _background = '';
@@ -69,6 +71,8 @@ class _EditorScreenState extends State<EditorScreen> {
     _background = data.background;
     _originX = data.originX;
     _originY = data.originY;
+    _exits = List.of(data.exits);
+    _selectedExit = null;
     _grid = List.generate(_height,
         (y) => List.generate(_width, (x) => tileLayer?.tileAt(x, y) ?? 0));
     _collision = List.generate(_height,
@@ -102,6 +106,42 @@ class _EditorScreenState extends State<EditorScreen> {
     setState(() => _collision[ty][tx] = v);
   }
 
+  void _exitTap(int tx, int ty) {
+    final existing = _exits.indexWhere((e) => e.x == tx && e.y == ty);
+    setState(() {
+      if (existing >= 0) {
+        _selectedExit = _exits[existing];
+      } else {
+        final e = MapExit(x: tx, y: ty, toMap: 0, toX: 0, toY: 0);
+        _exits.add(e);
+        _selectedExit = e;
+      }
+    });
+  }
+
+  void _exitRemove(int tx, int ty) {
+    setState(() {
+      _exits.removeWhere((e) => e.x == tx && e.y == ty);
+      if (_selectedExit != null &&
+          _selectedExit!.x == tx &&
+          _selectedExit!.y == ty) {
+        _selectedExit = null;
+      }
+    });
+  }
+
+  void _updateSelectedExit({int? toMap, int? toX, int? toY}) {
+    final e = _selectedExit;
+    if (e == null) return;
+    final i = _exits.indexWhere((x) => x.x == e.x && x.y == e.y);
+    if (i < 0) return;
+    final ne = e.copyWith(toMap: toMap, toX: toX, toY: toY);
+    setState(() {
+      _exits[i] = ne;
+      _selectedExit = ne;
+    });
+  }
+
   void _nudgeOrigin(double dx, double dy) => setState(() {
         _originX += dx;
         _originY += dy;
@@ -112,6 +152,8 @@ class _EditorScreenState extends State<EditorScreen> {
           w, (x) => (y < g.length && x < g[y].length) ? g[y][x] : 0));
 
   void _resize(int w, int h) {
+    if (w < 1) w = 1;
+    if (h < 1) h = 1;
     setState(() {
       _grid = _resized(_grid, w, h);
       _collision = _resized(_collision, w, h);
@@ -136,6 +178,7 @@ class _EditorScreenState extends State<EditorScreen> {
       background: _background,
       originX: _originX,
       originY: _originY,
+      exits: _exits,
     );
     final jsonStr = const JsonEncoder.withIndent('  ').convert(map.toJson());
     final file = File('assets/maps/$_mapId.json');
@@ -186,6 +229,8 @@ class _EditorScreenState extends State<EditorScreen> {
                   child: MapCanvas(
                     grid: _grid,
                     collision: _collision,
+                    exits: _exits,
+                    selectedExit: _selectedExit,
                     width: _width,
                     height: _height,
                     tileWidth: _tileWidth,
@@ -193,6 +238,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     mode: _mode,
                     onPaintTile: _paintTile,
                     onPaintCollision: _paintCollision,
+                    onExitTap: _exitTap,
+                    onExitRemove: _exitRemove,
                     background: _bg,
                     originX: _originX,
                     originY: _originY,
@@ -209,19 +256,12 @@ class _EditorScreenState extends State<EditorScreen> {
 
   Widget _modeSelector() {
     return SegmentedButton<EditMode>(
+      showSelectedIcon: false,
       segments: const [
-        ButtonSegment(
-            value: EditMode.tile,
-            icon: Icon(Icons.grid_on),
-            label: Text('地形')),
-        ButtonSegment(
-            value: EditMode.collision,
-            icon: Icon(Icons.block),
-            label: Text('碰撞')),
-        ButtonSegment(
-            value: EditMode.align,
-            icon: Icon(Icons.open_with),
-            label: Text('對齊')),
+        ButtonSegment(value: EditMode.tile, icon: Icon(Icons.grid_on)),
+        ButtonSegment(value: EditMode.collision, icon: Icon(Icons.block)),
+        ButtonSegment(value: EditMode.exit, icon: Icon(Icons.meeting_room)),
+        ButtonSegment(value: EditMode.align, icon: Icon(Icons.open_with)),
       ],
       selected: {_mode},
       onSelectionChanged: (s) => setState(() => _mode = s.first),
@@ -292,6 +332,28 @@ class _EditorScreenState extends State<EditorScreen> {
       padding: const EdgeInsets.all(12),
       child: ListView(
         children: [
+          if (_mode == EditMode.exit) ...[
+            const Text('出口設定', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            if (_selectedExit == null)
+              const Text('點格子新增/選取出口\n右鍵移除',
+                  style: TextStyle(color: Colors.white70, fontSize: 12))
+            else ...[
+              Text('出口格 (${_selectedExit!.x}, ${_selectedExit!.y})'),
+              _intField('目標地圖 toMap', _selectedExit!.toMap,
+                  (v) => _updateSelectedExit(toMap: v)),
+              Row(children: [
+                Expanded(
+                    child: _intField('toX', _selectedExit!.toX,
+                        (v) => _updateSelectedExit(toX: v))),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _intField('toY', _selectedExit!.toY,
+                        (v) => _updateSelectedExit(toY: v))),
+              ]),
+            ],
+            const Divider(height: 24),
+          ],
           const Text('背景圖', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
           _textField('檔名 (assets/tiles/)', _background, (v) async {
@@ -319,11 +381,11 @@ class _EditorScreenState extends State<EditorScreen> {
           Row(children: [
             Expanded(
                 child: _intField('tileW', _tileWidth,
-                    (v) => setState(() => _tileWidth = v))),
+                    (v) => setState(() => _tileWidth = v < 1 ? 1 : v))),
             const SizedBox(width: 8),
             Expanded(
                 child: _intField('tileH', _tileHeight,
-                    (v) => setState(() => _tileHeight = v))),
+                    (v) => setState(() => _tileHeight = v < 1 ? 1 : v))),
           ]),
         ],
       ),
@@ -355,12 +417,13 @@ class _EditorScreenState extends State<EditorScreen> {
 
   Widget _intField(String label, int value, ValueChanged<int> onDone) {
     return TextField(
+      key: ValueKey('$label-$value'),
       decoration: InputDecoration(labelText: label, isDense: true),
       keyboardType: TextInputType.number,
       controller: TextEditingController(text: '$value'),
       onSubmitted: (v) {
         final n = int.tryParse(v);
-        if (n != null && n > 0) onDone(n);
+        if (n != null) onDone(n);
       },
     );
   }
@@ -376,6 +439,8 @@ class _HelpBar extends StatelessWidget {
       EditMode.tile => '地形模式　左鍵：塗　右鍵：擦　中鍵拖曳：平移　滾輪：縮放',
       EditMode.collision =>
         '碰撞模式　左鍵：擋(紅)　右鍵：可走　中鍵拖曳：平移　滾輪：縮放',
+      EditMode.exit =>
+        '出口模式　左鍵：放/選出口(青)　右鍵：移除　右側設定 toMap/toX/toY',
       EditMode.align => '對齊模式　左鍵拖曳：移動背景圖　中鍵拖曳：平移　滾輪：縮放',
     };
     return Container(
