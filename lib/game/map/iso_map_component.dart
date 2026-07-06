@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../../config/app_log.dart';
 import 'iso_coord.dart';
 import 'iso_map_data.dart';
+import 'iso_tile_palette.dart';
 import 'scene_asset_loader.dart';
 import 'iso_map_loader.dart';
 import 'iso_player_component.dart';
@@ -60,18 +61,7 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
     return Vector2((minX + maxX) / 2, maxY / 2);
   }
 
-  // ── fallback 顏色（tileId 1~8）─────────────────────────────
-  static const _tileColors = [
-    Color(0xFF3A8C3D), // 1 草地
-    Color(0xFF8B8070), // 2 石板路
-    Color(0xFF2B7DC4), // 3 水面
-    Color(0xFF5A5050), // 4 邊界石
-    Color(0xFF2D6A2F), // 5 深草地
-    Color(0xFF8B6914), // 6 泥土
-    Color(0xFF74C69D), // 7 淺草地
-    Color(0xFF95B8D1), // 8 淺水
-  ];
-
+  // fallback 顏色（tileId 1~8）見 IsoTilePalette。
   static const _tileShadowColor = Color(0x33000000);
   static const _tileStrokeColor = Color(0x55000000);
 
@@ -207,8 +197,7 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
 
   void _drawFallbackTile(Canvas canvas, double topX, double topY,
       double halfW, double halfH, int tileId) {
-    final colorIdx = (tileId - 1).clamp(0, _tileColors.length - 1);
-    final baseColor = _tileColors[colorIdx];
+    final baseColor = IsoTilePalette.colorFor(tileId);
 
     final topFace = Path()
       ..moveTo(topX, topY)

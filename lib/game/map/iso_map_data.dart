@@ -23,6 +23,14 @@ class IsoTileset {
         tileHeight: json['tileHeight'] as int? ?? 32,
         columns: json['columns'] as int? ?? 1,
       );
+
+  Map<String, dynamic> toJson() => {
+        'firstId': firstId,
+        'image': image,
+        'tileWidth': tileWidth,
+        'tileHeight': tileHeight,
+        'columns': columns,
+      };
 }
 
 /// 單一地圖圖層（data[row][col] = tileId，0 = 空）。
@@ -50,6 +58,12 @@ class IsoTileLayer {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'type': 'tiles',
+        'name': name,
+        'data': data,
+      };
 }
 
 /// 等距地圖完整資料。
@@ -92,6 +106,17 @@ class IsoMapData {
             .map((l) => IsoTileLayer.fromJson(l as Map<String, dynamic>))
             .toList(),
       );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'width': width,
+        'height': height,
+        'tileWidth': tileWidth,
+        'tileHeight': tileHeight,
+        'tilesets': tilesets.map((t) => t.toJson()).toList(),
+        'layers': layers.map((l) => l.toJson()).toList(),
+      };
 
   /// 當地圖檔案不存在時使用的內建佔位地圖。
   static IsoMapData get placeholder => IsoMapData(
