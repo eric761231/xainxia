@@ -8,6 +8,7 @@ import '../network/packets/server/s_char_move.dart';
 import '../network/packets/server/s_enter_game.dart';
 import '../services/game_session_service.dart';
 import 'map/iso_map_component.dart';
+import 'map/iso_map_data.dart';
 
 /// 世界場景：載入等距地圖並放置玩家出生點。
 class WorldSceneComponent extends PositionComponent {
@@ -16,13 +17,17 @@ class WorldSceneComponent extends PositionComponent {
     this.sessionService,
     this.appearanceKey = 'male',
     this.onRequestMapChange,
+    this.onInteract,
   });
 
   final SEnterGame enterGame;
   final GameSessionService? sessionService;
 
-  /// 踏到出口 → 請求切換地圖（本地）：(toMap, toX, toY)。
+  /// 踏到出口 / 傳送門 → 請求切換地圖（本地）：(toMap, toX, toY)。
   final void Function(int toMap, int toX, int toY)? onRequestMapChange;
+
+  /// 走近非傳送門互動物件（採集／對話／攻擊）→ 交由上層送封包／開介面。
+  final void Function(MapInteractable interactable)? onInteract;
 
   /// 人物外觀鍵（依所選角色 sex 推導），往下傳給 IsoMapComponent。
   final String appearanceKey;
@@ -73,8 +78,18 @@ class WorldSceneComponent extends PositionComponent {
       onPlayerFace: _onPlayerFace,
       onEnterExit: (exit) =>
           onRequestMapChange?.call(exit.toMap, exit.toX, exit.toY),
+      onInteract: _onInteract,
     );
     add(_map!);
+  }
+
+  /// 走近互動物件：傳送門本地切換地圖，其餘交給上層（送封包／開介面）。
+  void _onInteract(MapInteractable it) {
+    if (it.isPortal) {
+      onRequestMapChange?.call(it.toMap ?? 0, it.toX ?? 0, it.toY ?? 0);
+    } else {
+      onInteract?.call(it);
+    }
   }
 
   void _onPlayerStep(int x, int y, int facing) {

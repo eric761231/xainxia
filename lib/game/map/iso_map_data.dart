@@ -112,6 +112,131 @@ class MapExit {
       {'x': x, 'y': y, 'toMap': toMap, 'toX': toX, 'toY': toY};
 }
 
+/// 互動物件類型。
+/// - portal：傳送門（樓梯／門），走近後本地切換地圖。
+/// - gather：可採集資源（藥草／礦石）。
+/// - talk：可對話／調查（NPC、物件）。
+/// - attack：可攻擊目標。
+enum InteractKind { portal, gather, talk, attack }
+
+InteractKind _interactKindFromString(String? s) {
+  switch (s) {
+    case 'portal':
+      return InteractKind.portal;
+    case 'gather':
+      return InteractKind.gather;
+    case 'attack':
+      return InteractKind.attack;
+    case 'talk':
+    default:
+      return InteractKind.talk;
+  }
+}
+
+/// 地圖上的互動物件：位在 (x,y) 格，玩家走到相鄰一格後可觸發。
+///
+/// 依 [kind] 使用不同欄位：
+/// - portal：toMap/toX/toY（目標地圖與落點）。
+/// - gather：resourceId（資源節點識別碼）。
+/// - talk：npcId（對話對象）。
+/// - attack：targetId（攻擊目標）。
+@immutable
+class MapInteractable {
+  const MapInteractable({
+    required this.x,
+    required this.y,
+    required this.kind,
+    this.label = '',
+    this.toMap,
+    this.toX,
+    this.toY,
+    this.resourceId,
+    this.npcId,
+    this.targetId,
+  });
+
+  final int x;
+  final int y;
+  final InteractKind kind;
+
+  /// 顯示名（tooltip 用，可空）。
+  final String label;
+
+  // portal
+  final int? toMap;
+  final int? toX;
+  final int? toY;
+
+  // gather
+  final String? resourceId;
+
+  // talk
+  final int? npcId;
+
+  // attack
+  final int? targetId;
+
+  bool get isPortal => kind == InteractKind.portal;
+
+  MapInteractable copyWith({
+    InteractKind? kind,
+    String? label,
+    int? toMap,
+    int? toX,
+    int? toY,
+    String? resourceId,
+    int? npcId,
+    int? targetId,
+  }) =>
+      MapInteractable(
+        x: x,
+        y: y,
+        kind: kind ?? this.kind,
+        label: label ?? this.label,
+        toMap: toMap ?? this.toMap,
+        toX: toX ?? this.toX,
+        toY: toY ?? this.toY,
+        resourceId: resourceId ?? this.resourceId,
+        npcId: npcId ?? this.npcId,
+        targetId: targetId ?? this.targetId,
+      );
+
+  factory MapInteractable.fromJson(Map<String, dynamic> j) => MapInteractable(
+        x: (j['x'] as num?)?.toInt() ?? 0,
+        y: (j['y'] as num?)?.toInt() ?? 0,
+        kind: _interactKindFromString(j['type'] as String?),
+        label: j['label'] as String? ?? '',
+        toMap: (j['toMap'] as num?)?.toInt(),
+        toX: (j['toX'] as num?)?.toInt(),
+        toY: (j['toY'] as num?)?.toInt(),
+        resourceId: j['resourceId'] as String?,
+        npcId: (j['npcId'] as num?)?.toInt(),
+        targetId: (j['targetId'] as num?)?.toInt(),
+      );
+
+  Map<String, dynamic> toJson() {
+    final m = <String, dynamic>{'x': x, 'y': y, 'type': kind.name};
+    if (label.isNotEmpty) m['label'] = label;
+    switch (kind) {
+      case InteractKind.portal:
+        m['toMap'] = toMap ?? 0;
+        m['toX'] = toX ?? 0;
+        m['toY'] = toY ?? 0;
+        break;
+      case InteractKind.gather:
+        if (resourceId != null) m['resourceId'] = resourceId;
+        break;
+      case InteractKind.talk:
+        if (npcId != null) m['npcId'] = npcId;
+        break;
+      case InteractKind.attack:
+        if (targetId != null) m['targetId'] = targetId;
+        break;
+    }
+    return m;
+  }
+}
+
 /// 等距地圖完整資料。
 @immutable
 class IsoMapData {
@@ -128,6 +253,7 @@ class IsoMapData {
     this.originX = 0,
     this.originY = 0,
     this.exits = const [],
+    this.interactables = const [],
   });
 
   final String id;
@@ -173,6 +299,21 @@ class IsoMapData {
     return null;
   }
 
+  /// 互動物件清單（傳送門／採集／對話／攻擊）。
+  final List<MapInteractable> interactables;
+
+  /// 該格的互動物件（無則 null）。
+  MapInteractable? interactableAt(int tx, int ty) {
+    for (final i in interactables) {
+      if (i.x == tx && i.y == ty) return i;
+    }
+    return null;
+  }
+
+  /// 傳送門清單（供小地圖顯示切換點）。
+  List<MapInteractable> get portals =>
+      interactables.where((i) => i.isPortal).toList();
+
   factory IsoMapData.fromJson(Map<String, dynamic> json) => IsoMapData(
         id: json['id'] as String? ?? '',
         name: json['name'] as String? ?? '',
@@ -192,6 +333,9 @@ class IsoMapData {
         exits: (json['exits'] as List<dynamic>? ?? [])
             .map((e) => MapExit.fromJson(e as Map<String, dynamic>))
             .toList(),
+        interactables: (json['interactables'] as List<dynamic>? ?? [])
+            .map((i) => MapInteractable.fromJson(i as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -207,6 +351,8 @@ class IsoMapData {
         'tilesets': tilesets.map((t) => t.toJson()).toList(),
         'layers': layers.map((l) => l.toJson()).toList(),
         if (exits.isNotEmpty) 'exits': exits.map((e) => e.toJson()).toList(),
+        if (interactables.isNotEmpty)
+          'interactables': interactables.map((i) => i.toJson()).toList(),
       };
 
   /// 當地圖檔案不存在時使用的內建佔位地圖。

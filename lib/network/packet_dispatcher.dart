@@ -11,6 +11,9 @@ import 'packets/server/s_enter_game.dart';
 import 'packets/server/s_breakthrough_result.dart';
 import 'packets/server/s_char_face.dart';
 import 'packets/server/s_char_move.dart';
+import 'packets/server/s_combat_result.dart';
+import 'packets/server/s_dialog.dart';
+import 'packets/server/s_gather_result.dart';
 import 'packets/server/s_level_up_result.dart';
 import 'packets/server/s_logout_result.dart';
 import 'packets/server/s_login_result.dart';
@@ -31,6 +34,9 @@ typedef BreakthroughResultHandler = void Function(SBreakthroughResult result);
 typedef LevelUpResultHandler = void Function(SLevelUpResult result);
 typedef CharStatsUpdateHandler = void Function(SCharStatsUpdate update);
 typedef SystemMessageHandler = void Function(SSystemMessage message);
+typedef GatherResultHandler = void Function(SGatherResult result);
+typedef DialogHandler = void Function(SDialog dialog);
+typedef CombatResultHandler = void Function(SCombatResult result);
 
 /// 依封包 [GamePacket.op] 分發到對應 handler。
 class PacketDispatcher {
@@ -48,6 +54,9 @@ class PacketDispatcher {
   LevelUpResultHandler? onLevelUpResult;
   CharStatsUpdateHandler? onCharStatsUpdate;
   SystemMessageHandler? onSystemMessage;
+  GatherResultHandler? onGatherResult;
+  DialogHandler? onDialog;
+  CombatResultHandler? onCombatResult;
 
   void dispatch(GamePacket packet) {
     switch (packet.op) {
@@ -92,6 +101,15 @@ class PacketDispatcher {
         break;
       case ServerOpcodes.sSystemMessage:
         onSystemMessage?.call(SSystemMessage.fromData(packet.data));
+        break;
+      case ServerOpcodes.sGatherResult:
+        onGatherResult?.call(SGatherResult.fromData(packet.data));
+        break;
+      case ServerOpcodes.sDialog:
+        onDialog?.call(SDialog.fromData(packet.data));
+        break;
+      case ServerOpcodes.sCombatResult:
+        onCombatResult?.call(SCombatResult.fromData(packet.data));
         break;
       default:
         debugPrint('未處理的 S 封包: ${packet.op}');

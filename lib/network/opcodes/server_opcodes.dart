@@ -15,4 +15,7 @@ class ServerOpcodes {
   static const sBreakthroughResult = 'S_BREAKTHROUGH_RESULT'; // 境界突破結果
   static const sLevelUpResult = 'S_LEVEL_UP_RESULT'; // 境界內升級結果
   static const sCharStatsUpdate = 'S_CHAR_STATS_UPDATE'; // 角色屬性完整更新
+  static const sGatherResult = 'S_GATHER_RESULT'; // 採集結果
+  static const sDialog = 'S_DIALOG'; // NPC 對話內容
+  static const sCombatResult = 'S_COMBAT_RESULT'; // 戰鬥／技能結果
 }

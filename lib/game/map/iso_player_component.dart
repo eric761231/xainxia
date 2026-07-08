@@ -62,6 +62,15 @@ class IsoPlayerComponent extends PositionComponent {
 
   bool get _isMoving => _moveProgress < 1.0;
 
+  /// 是否正在移動動畫中。
+  bool get isMoving => _isMoving;
+
+  /// 是否還有待走的目標格。
+  bool get hasTarget => _targetTileX != null;
+
+  /// 停止且無待走目標（供互動框架判斷「已走到定位」）。
+  bool get isIdle => !_isMoving && _targetTileX == null;
+
   @override
   Future<void> onLoad() async {
     _snapToTile();

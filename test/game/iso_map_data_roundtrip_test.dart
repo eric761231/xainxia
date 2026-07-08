@@ -25,6 +25,12 @@ void main() {
       ],
       "exits": [
         {"x": 2, "y": 0, "toMap": 5, "toX": 3, "toY": 4}
+      ],
+      "interactables": [
+        {"x": 1, "y": 1, "type": "portal", "label": "樓梯", "toMap": 9, "toX": 2, "toY": 3},
+        {"x": 0, "y": 1, "type": "gather", "label": "靈芝", "resourceId": "herb_01"},
+        {"x": 2, "y": 1, "type": "talk", "label": "守衛", "npcId": 42},
+        {"x": 0, "y": 0, "type": "attack", "label": "妖獸", "targetId": 777}
       ]
     }
     ''';
@@ -76,5 +82,31 @@ void main() {
     expect(e.toX, 3);
     expect(e.toY, 4);
     expect(b.exitAt(0, 0), isNull); // 非出口格
+
+    // 互動物件 + interactableAt
+    expect(b.interactables.length, 4);
+    expect(b.portals.length, 1);
+
+    final portal = b.interactableAt(1, 1);
+    expect(portal, isNotNull);
+    expect(portal!.kind, InteractKind.portal);
+    expect(portal.label, '樓梯');
+    expect(portal.toMap, 9);
+    expect(portal.toX, 2);
+    expect(portal.toY, 3);
+
+    final gather = b.interactableAt(0, 1);
+    expect(gather!.kind, InteractKind.gather);
+    expect(gather.resourceId, 'herb_01');
+
+    final talk = b.interactableAt(2, 1);
+    expect(talk!.kind, InteractKind.talk);
+    expect(talk.npcId, 42);
+
+    final attack = b.interactableAt(0, 0);
+    expect(attack!.kind, InteractKind.attack);
+    expect(attack.targetId, 777);
+
+    expect(b.interactableAt(5, 5), isNull); // 非互動格
   });
 }

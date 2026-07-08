@@ -2,12 +2,13 @@ import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide PointerMoveEvent;
 import 'package:flutter/services.dart';
 
 import '../../config/app_log.dart';
 import 'iso_coord.dart';
 import 'iso_map_data.dart';
+import 'interaction_indicator.dart';
 import 'iso_tile_palette.dart';
 import 'scene_asset_loader.dart';
 import 'iso_map_loader.dart';
@@ -19,7 +20,8 @@ import 'iso_player_component.dart';
 /// 採用 topLeft 使 local 座標系與渲染／`event.localPosition`／`screenToTile`
 /// 完全一致（`localRender = 螢幕點 - position`），點擊座標不受 anchor 偏移影響。
 /// 點擊地圖 tile 時，角色會走向被點擊的格子。
-class IsoMapComponent extends PositionComponent with TapCallbacks {
+class IsoMapComponent extends PositionComponent
+    with TapCallbacks, PointerMoveCallbacks {
   IsoMapComponent({
     required this.mapId,
     required this.spawnTileX,
@@ -28,6 +30,7 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
     this.onPlayerStep,
     this.onPlayerFace,
     this.onEnterExit,
+    this.onInteract,
   }) : super(anchor: Anchor.topLeft);
 
   final int mapId;
@@ -46,10 +49,22 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
   /// 踏到出口格回呼（本地切換地圖用）。
   final void Function(MapExit exit)? onEnterExit;
 
+  /// 走到互動物件相鄰一格時觸發（傳送門／採集／對話／攻擊）。
+  final void Function(MapInteractable interactable)? onInteract;
+
   IsoMapData? _data;
   final Map<String, ui.Image> _images = {};
   ui.Image? _bgImage;
   IsoPlayerComponent? _player;
+
+  /// 動畫時鐘（驅動互動指標的循環相位）。
+  double _animClock = 0;
+
+  /// 滑鼠/手指目前指著的互動物件（hover 顯示動畫指標）。
+  MapInteractable? _hovered;
+
+  /// 點擊後正在走近、待觸發的互動物件。
+  MapInteractable? _pending;
 
   /// 玩家在地圖 local 座標系的位置（供 WorldSceneComponent 做跟隨計算）。
   Vector2? get playerLocalPosition => _player?.position;
@@ -160,8 +175,87 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
       if (dx != 0 || dy != 0) {
         player.setFacing(IsoPlayerComponent.facingFromDelta(dx, dy));
       }
+      return;
+    }
+
+    // 點到互動物件 → 走近至相鄰一格再觸發；否則一般移動。
+    final it = data.interactableAt(tx, ty);
+    if (it != null) {
+      _beginInteraction(it);
     } else {
       player.moveTo(tx, ty);
+    }
+  }
+
+  // ── 互動框架（hover → 走近 → 觸發）─────────────────────────
+
+  @override
+  void onPointerMove(PointerMoveEvent event) {
+    final data = _data;
+    if (data == null) return;
+    final (tx, ty) = IsoCoord.screenToTile(
+        event.localPosition, data.halfTileWidth, data.halfTileHeight);
+    _hovered = (tx >= 0 && tx < data.width && ty >= 0 && ty < data.height)
+        ? data.interactableAt(tx, ty)
+        : null;
+  }
+
+  @override
+  void onPointerMoveStop(PointerMoveEvent event) => _hovered = null;
+
+  void _beginInteraction(MapInteractable it) {
+    final data = _data;
+    final player = _player;
+    if (data == null || player == null) return;
+    _pending = it;
+    // 已相鄰（含同格）→ 直接由 update 觸發，不再移動。
+    if (_chebyshev(player.tileX, player.tileY, it.x, it.y) <= 1) return;
+    final (ax, ay) = _approachTileFor(it);
+    player.moveTo(ax, ay);
+  }
+
+  /// 選一個離玩家最近、可站立的相鄰格作為走近目標；都不可站則退回物件本格。
+  (int, int) _approachTileFor(MapInteractable it) {
+    final data = _data!;
+    final player = _player!;
+    int? bestX, bestY;
+    var best = 1 << 30;
+    for (var dy = -1; dy <= 1; dy++) {
+      for (var dx = -1; dx <= 1; dx++) {
+        if (dx == 0 && dy == 0) continue;
+        final nx = it.x + dx, ny = it.y + dy;
+        if (nx < 0 || nx >= data.width || ny < 0 || ny >= data.height) continue;
+        if (data.isBlocked(nx, ny)) continue;
+        final d = _chebyshev(player.tileX, player.tileY, nx, ny);
+        if (d < best) {
+          best = d;
+          bestX = nx;
+          bestY = ny;
+        }
+      }
+    }
+    if (bestX != null) return (bestX, bestY!);
+    return (it.x, it.y);
+  }
+
+  static int _chebyshev(int ax, int ay, int bx, int by) {
+    final dx = (ax - bx).abs();
+    final dy = (ay - by).abs();
+    return dx > dy ? dx : dy;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _animClock += dt;
+    final player = _player;
+    final it = _pending;
+    // 玩家走到定位（停止且無待走目標）→ 若已相鄰則觸發，否則放棄。
+    if (player != null && it != null && player.isIdle) {
+      _pending = null;
+      if (_chebyshev(player.tileX, player.tileY, it.x, it.y) <= 1) {
+        onInteract?.call(it);
+      }
     }
   }
 
@@ -183,6 +277,40 @@ class IsoMapComponent extends PositionComponent with TapCallbacks {
 
     for (final layer in data.layers) {
       _renderLayer(canvas, layer, data, halfW, halfH);
+    }
+
+    _renderInteractions(canvas, data, halfW, halfH);
+  }
+
+  /// 互動物件：常駐呼吸標記 + hover/走近時的類型動畫指標。
+  void _renderInteractions(
+      Canvas canvas, IsoMapData data, double halfW, double halfH) {
+    if (data.interactables.isEmpty && _pending == null) return;
+
+    final markerPhase = (_animClock * 0.6) % 1.0;
+    for (final it in data.interactables) {
+      final sp = IsoCoord.tileToScreen(it.x, it.y, halfW, halfH);
+      InteractionIndicator.paintMarker(
+        canvas,
+        Offset(sp.x, sp.y + halfH),
+        it.kind,
+        markerPhase,
+        halfH * 0.9,
+      );
+    }
+
+    // pending（走近中）優先，其次 hover。
+    final active = _pending ?? _hovered;
+    if (active != null) {
+      final sp = IsoCoord.tileToScreen(active.x, active.y, halfW, halfH);
+      final scale = (halfH / 16).clamp(0.8, 2.0);
+      InteractionIndicator.paint(
+        canvas,
+        Offset(sp.x, sp.y - halfH * 0.4),
+        active.kind,
+        (_animClock * 1.2) % 1.0,
+        scale: scale,
+      );
     }
   }
 

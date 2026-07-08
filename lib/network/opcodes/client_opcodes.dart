@@ -13,4 +13,7 @@ class ClientOpcodes {
   static const cFace = 'C_FACE'; // 人物轉向（不移動）
   static const cBreakthrough = 'C_BREAKTHROUGH'; // 嘗試境界突破
   static const cGainExp = 'C_GAIN_EXP'; // 獲得經驗值
+  static const cGather = 'C_GATHER'; // 採集資源節點（藥草／礦石）
+  static const cInteract = 'C_INTERACT'; // 互動／對話（NPC、可調查物件）
+  static const cUseSkill = 'C_USE_SKILL'; // 使用技能（攻擊目標）
 }
