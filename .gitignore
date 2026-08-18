@@ -1,0 +1,24 @@
+# ── 編譯輸出 ──
+/target/
+/com/
+dependency-reduced-pom.xml
+*.class
+
+# ── IDE / 工作區 ──
+/.idea/
+/.settings/
+/.metadata/
+/.vscode/
+.classpath
+.project
+*.iml
+
+# ── 本機工具設定 ──
+/.claude/
+
+# ── 機密：DB 帳密（請複製 database.properties.example → database.properties 後填入）──
+/src/main/resources/database.properties
+
+# ── 記錄檔 ──
+*.log
+/logs/

@@ -1,0 +1,25 @@
+# ============================================================================
+#  資料庫連線設定「範本」  database.properties.example
+# ----------------------------------------------------------------------------
+#  用法：複製本檔為同目錄的 database.properties，再依實際環境填入帳密。
+#  （database.properties 已列入 .gitignore，不會上傳，避免外洩帳密。）
+# ============================================================================
+
+# JDBC 驅動類別名稱（MySQL 8：com.mysql.cj.jdbc.Driver）
+db.driverClassName=com.mysql.cj.jdbc.Driver
+
+# JDBC 連線字串（host:port / schema 依實際 DB 調整）
+db.url=jdbc:mysql://localhost:3306/xin_game?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+
+# 資料庫帳號
+db.username=root
+
+# 資料庫密碼（正式環境請改用強密碼，勿沿用預設）
+db.password=root
+
+# ── HikariCP 連線池 ──
+hikari.maximumPoolSize=10
+hikari.minimumIdle=2
+hikari.idleTimeout=30000
+hikari.connectionTimeout=10000
+hikari.maxLifetime=600000
