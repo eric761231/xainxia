@@ -95,11 +95,15 @@ class SceneAssetLoader {
   SceneAssetLoader._();
 
   static final Images _tiles = Images(prefix: 'assets/tiles/');
+  static final Images _scenes = Images(prefix: 'assets/sences/');
+  static final Images _objects = Images(prefix: 'assets/objects/');
   static final Images _chars = Images(prefix: 'assets/characters/');
 
   static const _spriteDescriptorPath = 'assets/data/character_sprites.json';
 
   static final Map<String, ui.Image?> _tileCache = {};
+  static final Map<String, ui.Image?> _sceneCache = {};
+  static final Map<String, ui.Image?> _objectCache = {};
   static final Map<String, CharacterSpriteSet?> _charCache = {};
   static Map<String, dynamic>? _descriptor;
   static bool _descriptorLoaded = false;
@@ -115,6 +119,36 @@ class SceneAssetLoader {
     } catch (e) {
       debugPrint('SceneAssetLoader: tile 圖集載入失敗 $image（$e），改用 fallback');
       _tileCache[image] = null;
+      return null;
+    }
+  }
+
+  /// 載入單張場景背景圖（前綴 `assets/sences/`）；失敗回 null。
+  static Future<ui.Image?> loadSceneImage(String image) async {
+    if (image.isEmpty) return null;
+    if (_sceneCache.containsKey(image)) return _sceneCache[image];
+    try {
+      final img = await _scenes.load(image);
+      _sceneCache[image] = img;
+      return img;
+    } catch (e) {
+      debugPrint('SceneAssetLoader: 場景背景載入失敗 $image（$e），改用 fallback');
+      _sceneCache[image] = null;
+      return null;
+    }
+  }
+
+  /// 載入物件（prop）圖集（前綴 `assets/objects/`）；失敗回 null。
+  static Future<ui.Image?> loadObjectAtlas(String image) async {
+    if (image.isEmpty) return null;
+    if (_objectCache.containsKey(image)) return _objectCache[image];
+    try {
+      final img = await _objects.load(image);
+      _objectCache[image] = img;
+      return img;
+    } catch (e) {
+      debugPrint('SceneAssetLoader: 物件圖集載入失敗 $image（$e），改用 fallback');
+      _objectCache[image] = null;
       return null;
     }
   }

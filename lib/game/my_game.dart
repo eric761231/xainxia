@@ -5,12 +5,16 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:xianxia_game/l10n/app_localizations.dart';
 
 import '../ui/layout/char_create/char_create_ui_preloader.dart';
 import '../config/server_connection_loader.dart';
 import '../models/server_status.dart';
 import '../models/game_character.dart';
 import '../network/packets/server/s_enter_game.dart';
+import '../network/packets/server/s_map_change.dart';
+import '../network/packets/server/s_map_info.dart';
+import '../network/packets/server/s_server_shutdown.dart';
 import '../services/auth_service.dart';
 import '../services/character_service.dart';
 import '../services/game_session_service.dart';
@@ -29,6 +33,20 @@ class MyGame extends FlameGame {
   SpriteComponent? loadingSprite;
   PositionComponent? playerComponent;
   WorldSceneComponent? worldScene;
+  AppLocalizations? loc;
+
+  /// 當前地圖資訊（小地圖：地名 + 尺寸 + 傳送點），由 S_MAP_INFO 更新。
+  final ValueNotifier<SMapInfo?> mapInfoNotifier = ValueNotifier<SMapInfo?>(null);
+
+  /// 玩家在當前地圖的格座標 + 面向，供小地圖畫玩家箭頭。
+  final ValueNotifier<({int x, int y, int facing})?> playerMarkNotifier =
+      ValueNotifier<({int x, int y, int facing})?>(null);
+
+  /// 當前地圖的傳送點清單（供 WorldScene 踏格觸發偵測）。
+  List<PortalPoint> currentPortals = const [];
+
+  /// 最近一次進場資料，換圖時沿用同角色 objId/charName。
+  SEnterGame? _lastEnterGame;
 
   ServerConnectionConfig? connectionConfig;
   GameSessionService? sessionService;
@@ -76,6 +94,12 @@ class MyGame extends FlameGame {
 
     connectionConfig = await ServerConnectionLoader.load();
     sessionService = GameSessionService(connectionConfig!);
+    // 伺服器權威換圖 + 小地圖資訊：常駐 handler（跨換圖存活）。
+    sessionService!.dispatcher.onMapChange = _onServerMapChange;
+    sessionService!.dispatcher.onMapInfo = _onServerMapInfo;
+    sessionService!.dispatcher.onServerShutdown = _onServerShutdown;
+    // 連線被伺服器關閉／異常（含 -9／崩潰）→ 關閉遊戲視窗。
+    sessionService!.onConnectionLost = _onConnectionLost;
     authService = AuthService(connectionConfig!, sessionService!);
     characterService = CharacterService(sessionService!, connectionConfig!);
     gameWorldService = GameWorldService(sessionService!);
@@ -128,7 +152,7 @@ class MyGame extends FlameGame {
       }
       await Future.delayed(const Duration(milliseconds: 50));
     }
-    debugPrint('警告：無法取得有效 game size，使用預設 1280×720');
+    debugPrint(loc?.gameSizeWarning ?? '警告：無法取得有效 game size，使用預設 1280×720');
     return Vector2(1280, 720);
   }
 
@@ -255,7 +279,7 @@ class MyGame extends FlameGame {
     overlays.remove('Account');
 
     await runTransition(
-      message: '進入角色介面…',
+      message: loc?.enteringCharacterUI ?? '進入角色介面…',
       loadTask: (report) => CharCreateUiPreloader.preload(onProgress: report),
     );
 
@@ -272,7 +296,7 @@ class MyGame extends FlameGame {
         showCharacterSelect();
       }
     } catch (e) {
-      debugPrint('查詢角色列表失敗：$e');
+      debugPrint('${loc?.queryCharListFailed ?? '查詢角色列表失敗'}：$e');
       showCharacterCreate();
     }
   }
@@ -320,7 +344,7 @@ class MyGame extends FlameGame {
   /// 離開 App：顯示關閉過場畫面 → 登出 → 關閉。
   /// 過場畫面保持到程式結束（不移除），避免關閉前閃回底層畫面。
   Future<void> exitApplication() async {
-    transitionMessageNotifier.value = '正在關閉遊戲…';
+    transitionMessageNotifier.value = loc?.closingGame ?? '正在關閉遊戲…';
     progress = 0;
     progressNotifier.value = 0;
     overlays.add('Transition');
@@ -353,7 +377,7 @@ class MyGame extends FlameGame {
   Future<CharacterResult> deleteCharacter(String characterName) async {
     final service = characterService;
     if (service == null) {
-      return const CharacterResult(success: false, message: '角色服務尚未初始化');
+      return CharacterResult(success: false, message: loc?.charServiceUninitialized ?? '角色服務尚未初始化');
     }
     return service.deleteCharacter(characterName);
   }
@@ -369,7 +393,7 @@ class MyGame extends FlameGame {
   }) async {
     final service = characterService;
     if (service == null) {
-      return const CharacterResult(success: false, message: '角色服務尚未初始化');
+      return CharacterResult(success: false, message: loc?.charServiceUninitialized ?? '角色服務尚未初始化');
     }
     return service.createCharacter(
       name: name,
@@ -385,13 +409,13 @@ class MyGame extends FlameGame {
   Future<void> enterWorldWithCharacter(String characterName) async {
     final service = characterService;
     if (service == null) {
-      throw StateError('角色服務尚未初始化');
+      throw StateError(loc?.charServiceUninitialized ?? '角色服務尚未初始化');
     }
 
     overlays.remove('CharacterSelect');
     overlays.remove('CharacterCreate');
 
-    await runTransition(message: '進入世界…', assetPaths: _mapAssets);
+    await runTransition(message: loc?.enteringWorld ?? '進入世界…', assetPaths: _mapAssets);
 
     final result = await service.selectCharacter(characterName);
     if (!result.success || result.enterGame == null) {
@@ -413,21 +437,65 @@ class MyGame extends FlameGame {
     return 'male';
   }
 
-  Future<void> _activateWorld(SEnterGame enterGame) async {
+  /// 伺服器換圖：收到 S_MAP_CHANGE → 以同角色 objId/charName 重建世界，帶入到達面向。
+  void _onServerMapChange(SMapChange change) {
+    final prev = _lastEnterGame;
+    // 清空舊圖傳送點，等新圖 S_MAP_INFO 重填，避免用舊座標誤觸發。
+    currentPortals = const [];
+    _activateWorld(
+      SEnterGame(
+        objId: prev?.objId ?? 0,
+        charName: prev?.charName ?? '',
+        mapId: change.mapId,
+        x: change.x,
+        y: change.y,
+      ),
+      facing: change.facing,
+    );
+  }
+
+  /// 伺服器地圖資訊：收到 S_MAP_INFO → 更新小地圖 + 供 WorldScene 觸發偵測的傳送點清單。
+  void _onServerMapInfo(SMapInfo info) {
+    currentPortals = info.portals;
+    mapInfoNotifier.value = info;
+  }
+
+  /// 伺服器關閉通知：收到 S_SERVER_SHUTDOWN → 關閉遊戲視窗。
+  void _onServerShutdown(SServerShutdown info) {
+    _closeGameWindow('伺服器關閉：${info.message}');
+  }
+
+  /// 連線被伺服器關閉／異常（含 -9／崩潰）→ 關閉遊戲視窗。
+  void _onConnectionLost() {
+    _closeGameWindow('與伺服器連線中斷');
+  }
+
+  /// 關閉遊戲視窗（結束程序）。去重：避免「S_SERVER_SHUTDOWN + socket 關閉」重複觸發。
+  bool _closing = false;
+  void _closeGameWindow(String reason) {
+    if (_closing) return;
+    _closing = true;
+    debugPrint('$reason → 關閉遊戲視窗');
+    // 稍等一下讓日誌/畫面收尾，再結束程式（關閉視窗）。
+    Future.delayed(const Duration(milliseconds: 300), () => exit(0));
+  }
+
+  Future<void> _activateWorld(SEnterGame enterGame, {int facing = 2}) async {
+    _lastEnterGame = enterGame;
+    // 出生／換圖落點：先設小地圖玩家箭頭初始位置，之後隨移動更新。
+    playerMarkNotifier.value = (x: enterGame.x, y: enterGame.y, facing: facing);
     final gameSize = await _waitForGameSize();
     worldScene?.removeFromParent();
     worldScene = WorldSceneComponent(
       enterGame: enterGame,
       sessionService: sessionService,
       appearanceKey: _appearanceKeyFor(enterGame.charName),
-      // 本地切換地圖：踏到出口／傳送門 → 以同角色合成 SEnterGame 重新進場。
-      onRequestMapChange: (toMap, toX, toY) => _activateWorld(SEnterGame(
-        objId: enterGame.objId,
-        charName: enterGame.charName,
-        mapId: toMap,
-        x: toX,
-        y: toY,
-      )),
+      spawnFacing: facing,
+      // 提供當前地圖傳送點給踏格觸發偵測（隨 S_MAP_INFO 更新）。
+      portalsProvider: () => currentPortals,
+      // 玩家移動／轉向 → 更新小地圖玩家箭頭位置。
+      onPlayerMoved: (x, y, f) =>
+          playerMarkNotifier.value = (x: x, y: y, facing: f),
       // 走近採集／對話／攻擊物件 → 送出對應封包／開介面。
       onInteract: (it) => gameWorldService?.handleInteract(it),
     )
@@ -463,7 +531,7 @@ class MyGame extends FlameGame {
   ) async {
     final service = authService;
     if (service == null) {
-      return const AuthResult(success: false, message: '通訊服務尚未初始化');
+      return AuthResult(success: false, message: loc?.commServiceUninitialized ?? '通訊服務尚未初始化');
     }
 
     if (isAccountAuthenticated) {
@@ -478,9 +546,11 @@ class MyGame extends FlameGame {
 
     final serverStatus = serverListService?.findByName(server);
     if (serverStatus != null && !serverStatus.selectable) {
+      final prefix = loc?.cannotLoginPrefix ?? '目前';
+      final suffix = loc?.cannotLoginSuffix ?? '，無法登入';
       return AuthResult(
         success: false,
-        message: '${serverStatus.name}目前${serverStatus.loadStatus.label}，無法登入',
+        message: '${serverStatus.name}$prefix${serverStatus.loadStatus.label}$suffix',
       );
     }
 

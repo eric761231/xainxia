@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xianxia_game/l10n/app_localizations.dart';
 
 import '../../../models/game_character.dart';
 import '../../../models/char_create_template.dart';
@@ -131,7 +132,7 @@ class _CharSelectCharCardState extends State<CharSelectCharCard> {
                 fit: BoxFit.contain,
               ),
               Text(
-                attrName,
+                _attributeName(context, widget.character.attribute),
                 style: TextStyle(
                   color: attrColor,
                   fontSize: 10,
@@ -189,6 +190,20 @@ class _CharSelectCharCardState extends State<CharSelectCharCard> {
         ),
       ),
     );
+  }
+
+  static String _attributeName(BuildContext context, int attr) {
+    final loc = AppLocalizations.of(context);
+    return switch (attr) {
+      0 => loc?.elementMetal ?? '金',
+      1 => loc?.elementWood ?? '木',
+      2 => loc?.elementWater ?? '水',
+      3 => loc?.elementFire ?? '火',
+      4 => loc?.elementEarth ?? '土',
+      5 => loc?.elementWind ?? '風',
+      6 => loc?.elementLightning ?? '雷',
+      _ => loc?.elementIllusion ?? '幻',
+    };
   }
 
   static int _attrColor(int attr) {

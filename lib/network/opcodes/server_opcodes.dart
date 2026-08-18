@@ -18,4 +18,8 @@ class ServerOpcodes {
   static const sGatherResult = 'S_GATHER_RESULT'; // 採集結果
   static const sDialog = 'S_DIALOG'; // NPC 對話內容
   static const sCombatResult = 'S_COMBAT_RESULT'; // 戰鬥／技能結果
+  static const sMapChange = 'S_MAP_CHANGE'; // 換圖／傳送結果（含到達地圖/座標/面向）
+  static const sMapInfo = 'S_MAP_INFO'; // 地圖資訊（小地圖：地名 + 尺寸 + 傳送點）
+  static const sObjectList = 'S_OBJECT_LIST'; // 地圖物件清單（NPC／怪物／採集點／場景）
+  static const sServerShutdown = 'S_SERVER_SHUTDOWN'; // 伺服器關閉（收到後關閉遊戲視窗）
 }

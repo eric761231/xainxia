@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xianxia_game/l10n/app_localizations.dart';
 
 import '../../../models/game_character.dart';
 import '../../theme/game_ui_fonts.dart';
@@ -23,11 +24,15 @@ class CharSelectInfoPanel extends StatelessWidget {
         BorderRadius.circular(CharSelectUiSpec.rightPanelSectionRadius);
     final labelColor = Color(CharSelectUiSpec.colorLabel);
 
-    final faction = character.faction.isNotEmpty ? character.faction : '散修';
-    final natalWeapon = character.natalWeapon.isNotEmpty ? character.natalWeapon : '無';
+    final loc = AppLocalizations.of(context);
+    final defaultFaction = loc?.defaultFaction ?? '散修';
+    final defaultValueNone = loc?.defaultValueNone ?? '無';
+
+    final faction = character.faction.isNotEmpty ? character.faction : defaultFaction;
+    final natalWeapon = character.natalWeapon.isNotEmpty ? character.natalWeapon : defaultValueNone;
     final coreTechnique =
-        character.coreTechnique.isNotEmpty ? character.coreTechnique : '無';
-    final lifeJob = character.lifeJob.isNotEmpty ? character.lifeJob : '無';
+        character.coreTechnique.isNotEmpty ? character.coreTechnique : defaultValueNone;
+    final lifeJob = character.lifeJob.isNotEmpty ? character.lifeJob : defaultValueNone;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -44,7 +49,7 @@ class CharSelectInfoPanel extends StatelessWidget {
               child: FractionallySizedBox(
                 widthFactor: CharSelectUiSpec.infoPanelTitleBarWidthFraction,
                 child: CharCreateCloudLabel(
-                  text: '角色資訊',
+                  text: loc?.charInfo ?? '角色資訊',
                   height: CharSelectUiSpec.infoPanelTitleBarHeight,
                   fontSize: CharSelectUiSpec.infoPanelTitleFontSize,
                   asset: CharCreateUiAssets.cloudLabel05,
@@ -63,7 +68,7 @@ class CharSelectInfoPanel extends StatelessWidget {
                 children: [
                   // HP 條
                   _BarRow(
-                    label: '生命',
+                    label: loc?.hpLabel ?? '生命',
                     current: character.hp,
                     max: character.hpMax,
                     fraction: character.hpFraction,
@@ -73,7 +78,7 @@ class CharSelectInfoPanel extends StatelessWidget {
                   SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing),
                   // MP 條
                   _BarRow(
-                    label: '法力',
+                    label: loc?.mpLabel ?? '法力',
                     current: character.mp,
                     max: character.mpMax,
                     fraction: character.mpFraction,
@@ -83,14 +88,14 @@ class CharSelectInfoPanel extends StatelessWidget {
                   SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing * 1.5),
                   _Divider(),
                   SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing * 1.5),
-                  _InfoRow(label: '勢力', value: faction, labelColor: labelColor),
-                  SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing),
-                  _InfoRow(label: '仙藝', value: natalWeapon, labelColor: labelColor),
-                  SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing),
+                  _InfoRow(label: loc?.factionLabel ?? '勢力', value: faction, labelColor: labelColor),
+                  const SizedBox(height: 12),
+                  _InfoRow(label: loc?.natalWeaponLabel ?? '仙藝', value: natalWeapon, labelColor: labelColor),
+                  const SizedBox(height: 12),
                   _InfoRow(
-                      label: '核心功法', value: coreTechnique, labelColor: labelColor),
-                  SizedBox(height: CharSelectUiSpec.infoPanelRowSpacing),
-                  _InfoRow(label: '生活職業', value: lifeJob, labelColor: labelColor),
+                      label: loc?.coreTechniqueLabel ?? '核心功法', value: coreTechnique, labelColor: labelColor),
+                  const SizedBox(height: 12),
+                  _InfoRow(label: loc?.lifeJobLabel ?? '生活職業', value: lifeJob, labelColor: labelColor),
                 ],
               ),
             ),

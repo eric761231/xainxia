@@ -21,6 +21,9 @@ class GameSessionService {
   GameSocket? get socket => _socket;
   bool get isConnected => _socket != null;
 
+  /// 連線被伺服器關閉／異常時觸發（含 -9／崩潰／正常關閉）；客戶端主動斷線不觸發。
+  void Function()? onConnectionLost;
+
   bool _authenticated = false;
   bool get isAuthenticated => _authenticated;
 
@@ -38,6 +41,7 @@ class GameSessionService {
   }) async {
     await disconnect();
     _socket = GameSocket(CodecFactory.create(_connectionConfig.codec));
+    _socket!.onConnectionLost = () => onConnectionLost?.call();
     await _socket!.connect(
       host: host,
       port: port,

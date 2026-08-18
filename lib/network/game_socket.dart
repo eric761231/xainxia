@@ -17,6 +17,17 @@ class GameSocket {
 
   Stream<GamePacket> get incoming => _incomingController.stream; // 接收封包
 
+  /// 連線被「對方（伺服器）」關閉或發生錯誤時觸發（含伺服器 -9／崩潰／正常關閉）。
+  /// 客戶端主動 [disconnect] 會先取消訂閱，故不會觸發此回呼。只觸發一次。
+  void Function()? onConnectionLost;
+  bool _lostNotified = false;
+
+  void _notifyLost() {
+    if (_lostNotified) return;
+    _lostNotified = true;
+    onConnectionLost?.call();
+  }
+
   // 連接
   Future<void> connect({
     required String host,
@@ -24,6 +35,7 @@ class GameSocket {
     Duration timeout = const Duration(seconds: 5), // 超時
   }) async {
     await disconnect(); // 斷開連接
+    _lostNotified = false; // 新連線重置斷線旗標
     _codec.reset();
     // 連接
     _socket = await Socket.connect(host, port, timeout: timeout);
@@ -85,11 +97,13 @@ class GameSocket {
   void _onError(Object error) {
     debugPrint('GameSocket 錯誤: $error');
     _incomingController.addError(error); // 添加錯誤
+    _notifyLost(); // 伺服器端連線異常（含 RST）→ 通知斷線
   }
 
   // 完成
   void _onDone() {
     debugPrint('GameSocket 連線關閉');
+    _notifyLost(); // 伺服器端關閉連線（含 -9／崩潰／正常關閉）→ 通知斷線
   }
 
   Future<void> dispose() async {

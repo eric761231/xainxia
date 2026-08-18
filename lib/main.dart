@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xianxia_game/l10n/app_localizations.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'config/app_config.dart';
@@ -64,6 +66,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('zh', ''), // Chinese
+      ],
       home: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
@@ -72,21 +83,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           }
           unawaited(_myGame.exitApplication());
         },
-        child: GameWidget(
-          game: _myGame,
-          overlayBuilderMap: {
-            'Loading': (context, game) => LoadingOverlay(game as MyGame),
-            'Transition': (context, game) => TransitionOverlay(game as MyGame),
-            'Account': (context, game) => AccountOverlay(game as MyGame),
-            'ServerSelect': (context, game) =>
-                ServerSelectOverlay(game as MyGame),
-            'CharacterCreate': (context, game) =>
-                CharacterCreateOverlay(game as MyGame),
-            'CharacterSelect': (context, game) =>
-                CharacterSelectOverlay(game as MyGame),
-            'GameHud': (context, game) => GameHudOverlay(game as MyGame),
-          },
-          initialActiveOverlays: const ['Loading'],
+        child: Builder(
+          builder: (context) {
+            _myGame.loc = AppLocalizations.of(context);
+            return GameWidget(
+              game: _myGame,
+              overlayBuilderMap: {
+                'Loading': (context, game) => LoadingOverlay(game as MyGame),
+                'Transition': (context, game) => TransitionOverlay(game as MyGame),
+                'Account': (context, game) => AccountOverlay(game as MyGame),
+                'ServerSelect': (context, game) =>
+                    ServerSelectOverlay(game as MyGame),
+                'CharacterCreate': (context, game) =>
+                    CharacterCreateOverlay(game as MyGame),
+                'CharacterSelect': (context, game) =>
+                    CharacterSelectOverlay(game as MyGame),
+                'GameHud': (context, game) => GameHudOverlay(game as MyGame),
+              },
+              initialActiveOverlays: const ['Loading'],
+            );
+          }
         ),
       ),
     );

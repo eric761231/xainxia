@@ -61,7 +61,7 @@
 ```jsonc
 {
   "id": "0",
-  "name": "新手村",
+  "name": "梅花村",
   "width": 16, "height": 16,
   "tileWidth": 64, "tileHeight": 32,
   "tilesets": [

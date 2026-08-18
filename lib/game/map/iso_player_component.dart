@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'iso_coord.dart';
 import 'iso_map_data.dart';
+import 'iso_object_component.dart';
 import 'scene_asset_loader.dart';
 
 /// 面向定義（0-7，對應畫面方向順時針）：
@@ -24,11 +25,13 @@ class IsoPlayerComponent extends PositionComponent {
     required int initialTileX,
     required int initialTileY,
     required this.mapData,
+    int initialFacing = 2,
     this.onStep,
     this.onFace,
     this.spriteSet,
   })  : tileX = initialTileX.clamp(0, mapData.width - 1),
         tileY = initialTileY.clamp(0, mapData.height - 1),
+        facing = initialFacing.clamp(0, 7),
         super(anchor: Anchor.center, size: Vector2.zero());
 
   final IsoMapData mapData;
@@ -48,7 +51,7 @@ class IsoPlayerComponent extends PositionComponent {
 
   int tileX;
   int tileY;
-  int facing = 2; // 預設面向 SE
+  int facing; // 面向 0-7（預設 2=SE，由 initialFacing 設定）
 
   // ── 目標 tile（點選移動）─────────────────────────────────────
   int? _targetTileX;
@@ -94,6 +97,7 @@ class IsoPlayerComponent extends PositionComponent {
 
   void _snapToTile() {
     position = _tileCenter(tileX, tileY);
+    priority = mapData.characterLayer * kLayerStride + position.y.round();
     _moveFrom = position.clone();
     _moveTo = position.clone();
     _moveProgress = 1.0;
@@ -139,6 +143,10 @@ class IsoPlayerComponent extends PositionComponent {
         _moveFrom.y + (_moveTo.y - _moveFrom.y) * _moveProgress,
       );
     }
+
+    // 深度排序：characterLayer 分層 + 腳底(position.y)，與物件（IsoObjectComponent）同一
+    // 基準，讓 Flame 自動決定玩家在物件前或後（樹在屋後、花在門前）。
+    priority = mapData.characterLayer * kLayerStride + position.y.round();
 
     // 動畫到 85% 才踏下一步（流暢連走）
     if (_moveProgress < 0.85) return;

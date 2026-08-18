@@ -16,4 +16,7 @@ class ClientOpcodes {
   static const cGather = 'C_GATHER'; // 採集資源節點（藥草／礦石）
   static const cInteract = 'C_INTERACT'; // 互動／對話（NPC、可調查物件）
   static const cUseSkill = 'C_USE_SKILL'; // 使用技能（攻擊目標）
+  static const cEnterPortal = 'C_ENTER_PORTAL'; // 進入傳送點（換圖，帶 portalId + facing）
+  static const cMapInfo = 'C_MAP_INFO'; // 請求地圖資訊（小地圖：地名 + 傳送點）
+  static const cObjectList = 'C_OBJECT_LIST'; // 請求地圖物件清單（NPC／怪物／採集點／場景）
 }

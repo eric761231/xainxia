@@ -9,9 +9,10 @@ import '../../config/app_log.dart';
 import 'iso_coord.dart';
 import 'iso_map_data.dart';
 import 'interaction_indicator.dart';
-import 'iso_tile_palette.dart';
+import 'iso_object_catalog.dart';
+import 'iso_object_component.dart';
+import 'iso_object_graphic.dart';
 import 'scene_asset_loader.dart';
-import 'iso_map_loader.dart';
 import 'iso_player_component.dart';
 
 /// 等距地圖渲染元件。
@@ -26,16 +27,19 @@ class IsoMapComponent extends PositionComponent
     required this.mapId,
     required this.spawnTileX,
     required this.spawnTileY,
+    this.spawnFacing = 2,
     this.appearanceKey = 'male',
     this.onPlayerStep,
     this.onPlayerFace,
-    this.onEnterExit,
     this.onInteract,
   }) : super(anchor: Anchor.topLeft);
 
   final int mapId;
   final int spawnTileX;
   final int spawnTileY;
+
+  /// 出生面向（0-7）；由伺服器 S_MAP_CHANGE 的 facing 傳入，換圖後保留朝向。
+  final int spawnFacing;
 
   /// 人物外觀鍵（對應 character_sprites.json 的 sheet key）。
   final String appearanceKey;
@@ -46,10 +50,7 @@ class IsoMapComponent extends PositionComponent
   /// 僅轉向回呼：(facing)，由 WorldSceneComponent 注入以送出 C_FACE。
   final void Function(int facing)? onPlayerFace;
 
-  /// 踏到出口格回呼（本地切換地圖用）。
-  final void Function(MapExit exit)? onEnterExit;
-
-  /// 走到互動物件相鄰一格時觸發（傳送門／採集／對話／攻擊）。
+  /// 走到互動物件相鄰一格時觸發（採集／對話／攻擊）。
   final void Function(MapInteractable interactable)? onInteract;
 
   IsoMapData? _data;
@@ -65,6 +66,9 @@ class IsoMapComponent extends PositionComponent
 
   /// 點擊後正在走近、待觸發的互動物件。
   MapInteractable? _pending;
+
+  /// 玩家最後點擊(tap)的格；渲染時以半透明紅高亮（下次點擊更新）。
+  (int, int)? _tappedCell;
 
   /// 玩家在地圖 local 座標系的位置（供 WorldSceneComponent 做跟隨計算）。
   Vector2? get playerLocalPosition => _player?.position;
@@ -88,14 +92,25 @@ class IsoMapComponent extends PositionComponent
     return Vector2((minX + maxX) / 2, maxY / 2);
   }
 
-  // fallback 顏色（tileId 1~8）見 IsoTilePalette。
-  static const _tileShadowColor = Color(0x33000000);
-  static const _tileStrokeColor = Color(0x55000000);
+  /// 玩家目前所在格 X（未載入時回 spawn）。供小地圖標記。
+  int get playerTileX => _player?.tileX ?? spawnTileX;
+
+  /// 玩家目前所在格 Y（未載入時回 spawn）。
+  int get playerTileY => _player?.tileY ?? spawnTileY;
+
+  /// 玩家目前面向 0-7（未載入時回 spawn 面向）。
+  int get playerFacing => _player?.facing ?? spawnFacing;
 
   @override
   Future<void> onLoad() async {
-    _data = await IsoMapLoader.load(mapId);
+    // 遊戲端統一底版：程式產生的通用灰格（零 PNG），尺寸對齊伺服器 map 表
+    // （map.sql bounds 1..50 → 可走 (1,1)..(50,50) 共 50×50 格、中心 (25,25)）。
+    // 地圖美術之後再鋪。
+    _data = IsoMapData.generic();
     final data = _data!;
+
+    // 整張地圖視覺等比縮放（Flame 於 render 前套用變換）。
+    scale = Vector2.all(data.renderScale);
 
     // 設定 hit box 大小讓 TapCallbacks 能正確偵測點擊
     final mapW = (data.width + data.height - 2) * data.halfTileWidth + data.tileWidth;
@@ -104,7 +119,7 @@ class IsoMapComponent extends PositionComponent
 
     // 背景圖模式：載入整張房間圖，hitbox 改以圖片範圍計算。
     if (data.hasBackground) {
-      _bgImage = await SceneAssetLoader.loadTileAtlas(data.background);
+      _bgImage = await SceneAssetLoader.loadSceneImage(data.background);
       final bg = _bgImage;
       if (bg != null) {
         size = Vector2(
@@ -122,6 +137,10 @@ class IsoMapComponent extends PositionComponent
       }
     }
 
+    // 布置物件（prop）：依 catalog 建元件並加入為子元件（與玩家一起深度排序），
+    // blocking 物件的 footprint 格 stamp 進碰撞層 → mapData.isBlocked 生效。
+    await _loadObjects(data);
+
     // 載入人物 sprite（缺圖回 null → 玩家用 canvas fallback）。
     final spriteSet =
         await SceneAssetLoader.loadCharacterSprites(appearanceKey);
@@ -129,16 +148,72 @@ class IsoMapComponent extends PositionComponent
     _player = IsoPlayerComponent(
       initialTileX: spawnTileX.clamp(0, data.width - 1),
       initialTileY: spawnTileY.clamp(0, data.height - 1),
+      initialFacing: spawnFacing,
       mapData: data,
-      onStep: (x, y, facing) {
-        onPlayerStep?.call(x, y, facing);
-        final exit = _data?.exitAt(x, y);
-        if (exit != null) onEnterExit?.call(exit);
-      },
+      // 換圖改由伺服器權威 portal 協定驅動：每走一格回報 (x,y,facing)，
+      // 由 WorldSceneComponent 送 C_MOVE 並偵測是否踏入傳送點。
+      onStep: (x, y, facing) => onPlayerStep?.call(x, y, facing),
       onFace: onPlayerFace,
       spriteSet: spriteSet,
     );
     add(_player!);
+  }
+
+  /// 依物件層 + catalog 建立每個 prop 元件，並把 blocking 物件 stamp 進碰撞層。
+  Future<void> _loadObjects(IsoMapData data) async {
+    if (data.objects.isEmpty) return;
+    final catalog = await IsoObjectCatalog.load();
+
+    List<List<int>>? collGrid; // 需要 stamp 時才建立/取得
+    for (final obj in data.objects) {
+      final def = catalog[obj.id];
+      if (def == null) {
+        AppLog.d('ISO-OBJ', '找不到物件定義 id=${obj.id}（略過）');
+        continue;
+      }
+      final g = await ObjectGraphic.loadForDir(def.dir, def.image);
+      add(IsoObjectComponent(
+        def: def,
+        tileX: obj.x,
+        tileY: obj.y,
+        zBias: obj.zBias,
+        mapData: data,
+        graphic: g,
+        offsetX: obj.offsetX,
+        offsetY: obj.offsetY,
+        tilesW: obj.tilesW,
+        layer: obj.layer,
+      ));
+
+      if (def.blocking) {
+        collGrid ??= _ensureCollisionGrid(data);
+        // footprint 由腳底(x,y)往「後」（螢幕上方＝x,y 遞減）延伸。
+        for (var j = 0; j < def.footprintH; j++) {
+          for (var i = 0; i < def.footprintW; i++) {
+            final tx = obj.x - i;
+            final ty = obj.y - j;
+            if (tx >= 0 && tx < data.width && ty >= 0 && ty < data.height) {
+              collGrid[ty][tx] = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /// 取得（或建立）碰撞層的 grid，供物件 footprint stamp。
+  /// 建立的碰撞層只存在於執行期記憶體，不影響存檔。
+  List<List<int>> _ensureCollisionGrid(IsoMapData data) {
+    final existing = data.collisionLayer;
+    if (existing != null) return existing.data;
+    final grid = List.generate(
+      data.height,
+      (_) => List<int>.filled(data.width, 0),
+    );
+    data.layers.add(
+      IsoTileLayer(name: 'collision', type: 'collision', data: grid),
+    );
+    return grid;
   }
 
   // ── 點擊移動 ───────────────────────────────────────────────
@@ -167,6 +242,9 @@ class IsoMapComponent extends PositionComponent
         'inRange=${tx >= 0 && tx < data.width && ty >= 0 && ty < data.height}');
 
     if (tx < 0 || tx >= data.width || ty < 0 || ty >= data.height) return;
+
+    // 記錄點擊格 → 渲染時該格顯示半透明紅。
+    _tappedCell = (tx, ty);
 
     if (HardwareKeyboard.instance.isShiftPressed) {
       // Shift+Click：僅轉向，不移動
@@ -276,11 +354,41 @@ class IsoMapComponent extends PositionComponent
     final halfH = data.halfTileHeight;
 
     for (final layer in data.layers) {
+      if (layer.type == 'collision') continue; // 碰撞為邏輯層，不繪製
       _renderLayer(canvas, layer, data, halfW, halfH);
     }
 
+    _renderTappedCell(canvas, data, halfW, halfH);
     _renderInteractions(canvas, data, halfW, halfH);
   }
+
+  /// 點擊格高亮：半透明紅色填滿菱形 + 紅描邊（tap 移動目標）。
+  void _renderTappedCell(
+      Canvas canvas, IsoMapData data, double halfW, double halfH) {
+    final cell = _tappedCell;
+    if (cell == null) return;
+    final (tx, ty) = cell;
+    if (tx < 0 || tx >= data.width || ty < 0 || ty >= data.height) return;
+    final sp = IsoCoord.tileToScreen(tx, ty, halfW, halfH);
+    final path = _diamondPath(sp.x, sp.y, halfW, halfH);
+    canvas.drawPath(path, Paint()..color = const Color(0x99E53935));
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xE0FF5252)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2,
+    );
+  }
+
+  /// 菱形頂面路徑（頂點在 (topX, topY)）。
+  Path _diamondPath(double topX, double topY, double halfW, double halfH) =>
+      Path()
+        ..moveTo(topX, topY)
+        ..lineTo(topX + halfW, topY + halfH)
+        ..lineTo(topX, topY + halfH * 2)
+        ..lineTo(topX - halfW, topY + halfH)
+        ..close();
 
   /// 互動物件：常駐呼吸標記 + hover/走近時的類型動畫指標。
   void _renderInteractions(
@@ -344,72 +452,22 @@ class IsoMapComponent extends PositionComponent
   void _drawSpriteTile(Canvas canvas, IsoTileset ts, int tileId,
       double topX, double topY, double halfW, double halfH) {
     final img = _images[ts.image]!;
-    final localId = tileId - ts.firstId;
-    final col = localId % ts.columns;
-    final row = localId ~/ ts.columns;
-    final src = Rect.fromLTWH(
-      col * ts.tileWidth.toDouble(),
-      row * ts.tileHeight.toDouble(),
-      ts.tileWidth.toDouble(),
-      ts.tileHeight.toDouble(),
-    );
+    final src = ts.srcRectForId(tileId);
     final dst = Rect.fromLTWH(topX - halfW, topY, halfW * 2, halfH * 2);
     canvas.drawImageRect(img, src, dst, Paint());
   }
 
+  /// 通用灰格：半透明灰黑色扁平菱形 + 白色細線描邊（統一底版風格）。
   void _drawFallbackTile(Canvas canvas, double topX, double topY,
       double halfW, double halfH, int tileId) {
-    final baseColor = IsoTilePalette.colorFor(tileId);
-
-    final topFace = Path()
-      ..moveTo(topX, topY)
-      ..lineTo(topX + halfW, topY + halfH)
-      ..lineTo(topX, topY + halfH * 2)
-      ..lineTo(topX - halfW, topY + halfH)
-      ..close();
-
-    // 左側面
+    final path = _diamondPath(topX, topY, halfW, halfH);
+    canvas.drawPath(path, Paint()..color = const Color(0x99303038));
     canvas.drawPath(
-      Path()
-        ..moveTo(topX - halfW, topY + halfH)
-        ..lineTo(topX, topY + halfH * 2)
-        ..lineTo(topX, topY + halfH * 2 + 4)
-        ..lineTo(topX - halfW, topY + halfH + 4)
-        ..close(),
-      Paint()..color = Color.lerp(baseColor, Colors.black, 0.25)!,
-    );
-
-    // 右側面
-    canvas.drawPath(
-      Path()
-        ..moveTo(topX + halfW, topY + halfH)
-        ..lineTo(topX, topY + halfH * 2)
-        ..lineTo(topX, topY + halfH * 2 + 4)
-        ..lineTo(topX + halfW, topY + halfH + 4)
-        ..close(),
-      Paint()..color = Color.lerp(baseColor, Colors.black, 0.40)!,
-    );
-
-    // 頂面
-    canvas.drawPath(topFace, Paint()..color = baseColor);
-
-    // 左半暗角
-    canvas.drawPath(
-      Path()
-        ..moveTo(topX, topY)
-        ..lineTo(topX - halfW, topY + halfH)
-        ..lineTo(topX, topY + halfH * 2)
-        ..close(),
-      Paint()..color = _tileShadowColor,
-    );
-
-    // 邊框
-    canvas.drawPath(
-      topFace,
+      path,
       Paint()
-        ..color = _tileStrokeColor
+        ..color = const Color(0xB0FFFFFF)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.5,
+        ..strokeWidth = 0.8,
     );
   }
 }

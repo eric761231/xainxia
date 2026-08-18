@@ -1,11 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 
+import '../network/packets/client/c_enter_portal.dart';
 import '../network/packets/client/c_face.dart';
 import '../network/packets/client/c_move.dart';
 import '../network/packets/server/s_char_face.dart';
 import '../network/packets/server/s_char_move.dart';
 import '../network/packets/server/s_enter_game.dart';
+import '../network/packets/server/s_map_info.dart';
 import '../services/game_session_service.dart';
 import 'map/iso_map_component.dart';
 import 'map/iso_map_data.dart';
@@ -16,21 +18,32 @@ class WorldSceneComponent extends PositionComponent {
     required this.enterGame,
     this.sessionService,
     this.appearanceKey = 'male',
-    this.onRequestMapChange,
+    this.spawnFacing = 2,
+    this.portalsProvider,
     this.onInteract,
+    this.onPlayerMoved,
   });
 
   final SEnterGame enterGame;
   final GameSessionService? sessionService;
 
-  /// 踏到出口 / 傳送門 → 請求切換地圖（本地）：(toMap, toX, toY)。
-  final void Function(int toMap, int toX, int toY)? onRequestMapChange;
+  /// 出生面向（0-7），由伺服器 S_MAP_CHANGE 的 facing 傳入。
+  final int spawnFacing;
 
-  /// 走近非傳送門互動物件（採集／對話／攻擊）→ 交由上層送封包／開介面。
+  /// 取得當前地圖的傳送點清單（由 MyGame 依 S_MAP_INFO 提供），用於踏格觸發偵測。
+  final List<PortalPoint> Function()? portalsProvider;
+
+  /// 走近互動物件（採集／對話／攻擊）→ 交由上層送封包／開介面。
   final void Function(MapInteractable interactable)? onInteract;
+
+  /// 玩家移動或轉向後回報 (x, y, facing)，供小地圖標記玩家位置。
+  final void Function(int x, int y, int facing)? onPlayerMoved;
 
   /// 人物外觀鍵（依所選角色 sex 推導），往下傳給 IsoMapComponent。
   final String appearanceKey;
+
+  /// 已送出 C_ENTER_PORTAL、等待 S_MAP_CHANGE 期間的防重複旗標。
+  bool _portalPending = false;
 
   IsoMapComponent? _map;
   final Map<String, ({int x, int y, int facing})> _remotePlayers = {};
@@ -73,31 +86,47 @@ class WorldSceneComponent extends PositionComponent {
       mapId: enterGame.mapId,
       spawnTileX: enterGame.x,
       spawnTileY: enterGame.y,
+      spawnFacing: spawnFacing,
       appearanceKey: appearanceKey,
       onPlayerStep: _onPlayerStep,
       onPlayerFace: _onPlayerFace,
-      onEnterExit: (exit) =>
-          onRequestMapChange?.call(exit.toMap, exit.toX, exit.toY),
       onInteract: _onInteract,
     );
     add(_map!);
   }
 
-  /// 走近互動物件：傳送門本地切換地圖，其餘交給上層（送封包／開介面）。
+  /// 走近互動物件（採集／對話／攻擊）→ 交給上層送封包／開介面。
   void _onInteract(MapInteractable it) {
-    if (it.isPortal) {
-      onRequestMapChange?.call(it.toMap ?? 0, it.toX ?? 0, it.toY ?? 0);
-    } else {
-      onInteract?.call(it);
-    }
+    onInteract?.call(it);
   }
 
   void _onPlayerStep(int x, int y, int facing) {
     sessionService?.send(CMove.build(x: x, y: y, facing: facing));
+    onPlayerMoved?.call(x, y, facing);
+    _checkPortalTrigger(x, y, facing);
+  }
+
+  /// 踏格後偵測是否進入某傳送點的觸發範圍；是則送 C_ENTER_PORTAL（伺服器權威換圖）。
+  void _checkPortalTrigger(int x, int y, int facing) {
+    if (_portalPending) return;
+    final portals = portalsProvider?.call() ?? const [];
+    for (final p in portals) {
+      if (p.inRange(x, y)) {
+        _portalPending = true;
+        sessionService?.send(
+            CEnterPortal.build(portalId: p.portalId, facing: facing));
+        debugPrint('進入傳送點 portalId=${p.portalId}「${p.name}」→ 送 C_ENTER_PORTAL');
+        // 安全逾時：若伺服器未回 S_MAP_CHANGE（會重建本場景），解除旗標避免卡死。
+        Future.delayed(const Duration(seconds: 3), () => _portalPending = false);
+        break;
+      }
+    }
   }
 
   void _onPlayerFace(int facing) {
     sessionService?.send(CFace.build(facing: facing));
+    final m = _map;
+    if (m != null) onPlayerMoved?.call(m.playerTileX, m.playerTileY, facing);
   }
 
   @override
@@ -106,9 +135,11 @@ class WorldSceneComponent extends PositionComponent {
     if (size.x <= 0 || size.y <= 0) return;
     final map = _map;
     if (map == null) return;
-    final center = map.contentCenterLocal;
-    if (center == null) return;
-    // 整張地圖固定置中於畫面，不隨角色移動（相機不跟隨）。
-    map.position = Vector2(size.x / 2, size.y / 2) - center;
+    // 相機跟隨玩家：玩家固定在畫面中央，地圖在底下移動。
+    // 未載入玩家（初始一幀）時退回以地圖內容置中，避免跳動。
+    final focus = map.playerLocalPosition ?? map.contentCenterLocal;
+    if (focus == null) return;
+    // 乘上 renderScale：focus 為未縮放 local 座標，視覺中心需按縮放放大。
+    map.position = Vector2(size.x / 2, size.y / 2) - focus * map.scale.x;
   }
 }

@@ -25,6 +25,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -33,6 +36,7 @@ dependencies:
   # Flame 是一個專為 Flutter 設計的遊戲引擎，提供了豐富的功能來幫助開發者創建 2D 遊戲。
   flame: ^1.6.0
   flutter_native_splash: ^2.4.8
+  flutter_svg: ^2.3.0
 
 # Flame Engine 引擎套件（遊戲核心功能，含渲染、輸入、物理等）
 # flame: ^1.15.0
@@ -78,6 +82,7 @@ flutter:
   # 下列設定會將 Material Icons 字型一併打包到應用程式，
   # 以便於在程式中使用 `Icons` 內建圖示。
   uses-material-design: true
+  generate: true
 
   # 若要新增資源（assets）到應用程式，請在此加入 assets 區段，例如：
   # assets:
@@ -94,7 +99,10 @@ flutter:
     - assets/data/server_connection.json
     - assets/data/app_config.json
     - assets/data/character_sprites.json
+    - assets/data/object_catalog.json
     - assets/tiles/
+    - assets/sences/
+    - assets/objects/
     - assets/maps/
 
   # 圖片資源可以包含多個對應解析度的「變體」，詳見：

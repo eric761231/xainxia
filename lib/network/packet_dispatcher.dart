@@ -17,7 +17,11 @@ import 'packets/server/s_gather_result.dart';
 import 'packets/server/s_level_up_result.dart';
 import 'packets/server/s_logout_result.dart';
 import 'packets/server/s_login_result.dart';
+import 'packets/server/s_map_change.dart';
+import 'packets/server/s_map_info.dart';
+import 'packets/server/s_object_list.dart';
 import 'packets/server/s_server_list.dart';
+import 'packets/server/s_server_shutdown.dart';
 import 'packets/server/s_system_message.dart';
 
 typedef LoginResultHandler = void Function(SLoginResult result);
@@ -37,6 +41,10 @@ typedef SystemMessageHandler = void Function(SSystemMessage message);
 typedef GatherResultHandler = void Function(SGatherResult result);
 typedef DialogHandler = void Function(SDialog dialog);
 typedef CombatResultHandler = void Function(SCombatResult result);
+typedef MapChangeHandler = void Function(SMapChange change);
+typedef MapInfoHandler = void Function(SMapInfo info);
+typedef ObjectListHandler = void Function(SObjectList list);
+typedef ServerShutdownHandler = void Function(SServerShutdown info);
 
 /// 依封包 [GamePacket.op] 分發到對應 handler。
 class PacketDispatcher {
@@ -57,6 +65,10 @@ class PacketDispatcher {
   GatherResultHandler? onGatherResult;
   DialogHandler? onDialog;
   CombatResultHandler? onCombatResult;
+  MapChangeHandler? onMapChange;
+  MapInfoHandler? onMapInfo;
+  ObjectListHandler? onObjectList;
+  ServerShutdownHandler? onServerShutdown;
 
   void dispatch(GamePacket packet) {
     switch (packet.op) {
@@ -110,6 +122,18 @@ class PacketDispatcher {
         break;
       case ServerOpcodes.sCombatResult:
         onCombatResult?.call(SCombatResult.fromData(packet.data));
+        break;
+      case ServerOpcodes.sMapChange:
+        onMapChange?.call(SMapChange.fromData(packet.data));
+        break;
+      case ServerOpcodes.sMapInfo:
+        onMapInfo?.call(SMapInfo.fromData(packet.data));
+        break;
+      case ServerOpcodes.sObjectList:
+        onObjectList?.call(SObjectList.fromData(packet.data));
+        break;
+      case ServerOpcodes.sServerShutdown:
+        onServerShutdown?.call(SServerShutdown.fromData(packet.data));
         break;
       default:
         debugPrint('未處理的 S 封包: ${packet.op}');

@@ -1,0 +1,63 @@
+{
+  "_comment": "布置物件目錄（prop）。key=物件id(1000+)。一檔一物件：省略 src→用整張圖、省略 anchor→底邊中央。",
+  "_fields": {
+    "image": "相對 assets/objects/ 的檔名（缺檔時以色塊 fallback 呈現）",
+    "src": "選填。atlas 內裁切 [x,y,w,h]（px）；省略＝整張圖",
+    "dir": "選填。圖片來源資料夾：objects(預設) / sences / tiles",
+    "anchor": "選填。腳底錨點 [ax,ay]（相對裁切圖左上，px）；省略＝依 anchorMode",
+    "anchorMode": "選填。foot(站立=底邊中央,預設) / center(平貼=圖中央) / tile(等距地形=頂點對齊格頂點)；有明確 anchor 時忽略",
+    "footprint": "佔格 [w,h]，由腳底格往螢幕上方(x,y 遞減)延伸；預設 [1,1]",
+    "blocking": "true＝footprint 佔用格不可行走",
+    "label": "編輯器 palette 顯示名（可省略）"
+  },
+  "objects": {
+    "1001": { "image": "flowers001.png", "anchorMode": "center", "blocking": false, "label": "花叢" },
+    "1002": { "image": "flower002.png", "anchorMode": "center", "blocking": false, "label": "花二" },
+    "1003": { "image": "flower003.png", "anchorMode": "center", "blocking": false, "label": "花三" },
+    "1004": { "image": "flower004.png", "anchorMode": "center", "blocking": false, "label": "花四" },
+    "1005": { "image": "flower005.png", "anchorMode": "center", "blocking": false, "label": "花五" },
+    "1010": { "image": "tree001.png", "blocking": true, "label": "樹一" },
+    "1011": { "image": "tree002.png", "blocking": true, "label": "樹二" },
+    "1020": { "image": "house025.png", "footprint": [2, 2], "blocking": true, "label": "房屋25" },
+    "1021": { "image": "house034.png", "footprint": [2, 2], "blocking": true, "label": "房屋34" },
+    "1022": { "image": "house036.png", "footprint": [2, 2], "blocking": true, "label": "房屋36" },
+    "1023": { "image": "house26.png", "footprint": [2, 2], "blocking": true, "label": "房屋26" },
+    "1012": { "image": "tree003.png", "blocking": true, "label": "樹三" },
+
+    "1100": { "image": "dirt1.png", "anchorMode": "tile", "blocking": false, "label": "泥土1" },
+    "1101": { "image": "dirt2.png", "anchorMode": "tile", "blocking": false, "label": "泥土2" },
+    "1102": { "image": "dirt3.png", "anchorMode": "tile", "blocking": false, "label": "泥土3" },
+    "1103": { "image": "dirt4.png", "anchorMode": "tile", "blocking": false, "label": "泥土4" },
+
+    "1110": { "image": "grass1.png", "anchorMode": "center", "blocking": false, "label": "草1" },
+    "1111": { "image": "grass2.png", "anchorMode": "center", "blocking": false, "label": "草2" },
+    "1112": { "image": "grass3.png", "anchorMode": "center", "blocking": false, "label": "草3" },
+    "1113": { "image": "grass4.png", "anchorMode": "center", "blocking": false, "label": "草4" },
+    "1114": { "image": "grass5.png", "anchorMode": "center", "blocking": false, "label": "草5" },
+    "1115": { "image": "grass6.png", "anchorMode": "center", "blocking": false, "label": "草6" },
+    "1116": { "image": "grass7.png", "anchorMode": "center", "blocking": false, "label": "草7" },
+    "1117": { "image": "grass8.png", "anchorMode": "center", "blocking": false, "label": "草8" },
+    "1118": { "image": "grass9.png", "anchorMode": "center", "blocking": false, "label": "草9" },
+    "1119": { "image": "grass10.png", "anchorMode": "center", "blocking": false, "label": "草10" },
+
+    "1120": { "image": "stone1.png", "anchorMode": "foot", "blocking": false, "label": "石1" },
+    "1121": { "image": "stone2.png", "anchorMode": "foot", "blocking": false, "label": "石2" },
+    "1122": { "image": "stone3.png", "anchorMode": "foot", "blocking": false, "label": "石3" },
+    "1123": { "image": "stone4.png", "anchorMode": "foot", "blocking": false, "label": "石4" },
+    "1130": { "image": "stair_stone1.png", "anchorMode": "foot", "blocking": false, "label": "石階" },
+
+    "2001": { "image": "sence001.png", "dir": "sences", "anchorMode": "center", "blocking": false, "label": "場景1" },
+    "2002": { "image": "sence002.png", "dir": "sences", "anchorMode": "center", "blocking": false, "label": "場景2" },
+    "2003": { "image": "sence003.jpg", "dir": "sences", "anchorMode": "center", "blocking": false, "label": "場景3" },
+
+    "3001": { "image": "tile003.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形3" },
+    "3002": { "image": "tile004.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形4" },
+    "3003": { "image": "tile005.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形5" },
+    "3004": { "image": "tile007.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形7" },
+    "3005": { "image": "tile008.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形8" },
+    "3006": { "image": "tile001.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形1" },
+    "3007": { "image": "tile002.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形2" },
+    "3008": { "image": "tile006.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形6" },
+    "3009": { "image": "tile009.png", "dir": "tiles", "anchorMode": "tile", "blocking": false, "label": "地形9" }
+  }
+}
