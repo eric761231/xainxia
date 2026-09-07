@@ -1,4 +1,7 @@
 import 'dart:ui' show Rect;
+import 'package:flame/components.dart' show Vector2;
+
+import 'iso_coord.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -371,7 +374,45 @@ class IsoMapData {
     this.objects = const [],
     this.objectLayers = 1,
     this.characterLayer = 1,
+    this.walkMinOverride,
+    this.walkMaxOverride,
+    this.projection = MapProjection.iso,
+    this.coordOffset = 0,
   });
+
+  /// 可走區的格座標範圍（generic 地圖在陣列外圍留了一圈不可走的邊界）。
+  /// null = 整張陣列皆可走。僅執行期使用，不進 JSON ——
+  /// 手工繪製的地圖以 collision 圖層為準。
+  final int? walkMinOverride;
+  final int? walkMaxOverride;
+
+  /// 陣列索引 0 對應的地圖格座標。
+  ///
+  /// 伺服器的地圖邊界不一定從 0/1 開始（例如 31..50），若照座標值直接開陣列，
+  /// 前面 31 排會變成純浪費的邊界格並被畫出來。故陣列只涵蓋實際範圍，
+  /// 兩者以本欄位換算：`索引 = 座標 - coordOffset`。
+  /// 手繪 JSON 地圖為 0（座標即索引）。
+  final int coordOffset;
+
+  /// 地圖座標 → 陣列索引。
+  int toIndex(int mapCoord) => mapCoord - coordOffset;
+
+  /// 陣列索引 → 地圖座標。
+  int toMapCoord(int index) => index + coordOffset;
+
+  /// 陣列涵蓋的最小／最大地圖座標（含邊界格）。
+  int get minMapCoord => coordOffset;
+  int get maxMapCoordX => coordOffset + width - 1;
+  int get maxMapCoordY => coordOffset + height - 1;
+
+  /// 可走區最小格座標（手繪地圖為 0）。
+  int get walkMinCoord => walkMinOverride ?? 0;
+
+  /// 可走區最大格座標（手繪地圖為 width-1）。
+  int get walkMaxCoord => walkMaxOverride ?? (width - 1);
+
+  /// 可走區邊長（格數）。
+  int get walkSize => walkMaxCoord - walkMinCoord + 1;
 
   final String id;
   final String name;
@@ -379,6 +420,11 @@ class IsoMapData {
   final int height;
   final int tileWidth;
   final int tileHeight;
+
+  /// 這張地圖用哪種投影。**明確宣告，不從格尺寸推**（見 [MapProjection]）。
+  /// 俯視地圖的格通常是正方，但「正方就是俯視」不成立 —— 1:1 等距也是正方。
+  final MapProjection projection;
+
   final List<IsoTileset> tilesets;
   final List<IsoTileLayer> layers;
 
@@ -404,6 +450,24 @@ class IsoMapData {
   double get halfTileWidth => tileWidth / 2;
   double get halfTileHeight => tileHeight / 2;
 
+  // ── 投影：只有這裡知道要用哪一種 ──────────────────────────
+  //
+  // 呼叫端一律走這三個方法，不要自己呼叫 IsoCoord 並傳 projection ——
+  // 全專案有 17 個呼叫點，逐一傳參數遲早會漏一個，而漏掉的那個會安靜地
+  // 用等距畫在俯視地圖上。這個專案已經在「同一個量算兩次」上踩過很多次。
+
+  /// 格 → 螢幕（格的上緣中點）。
+  Vector2 tileToScreen(int tx, int ty) => IsoCoord.tileToScreen(
+      tx, ty, halfTileWidth, halfTileHeight, projection: projection);
+
+  /// 螢幕 → 格。
+  (int, int) screenToTile(Vector2 pos) => IsoCoord.screenToTile(
+      pos, halfTileWidth, halfTileHeight, projection: projection);
+
+  /// 一格的四個角（等距是菱形、俯視是方格）。
+  List<Vector2> cellCorners(double topX, double topY) => IsoCoord.cellCorners(
+      topX, topY, halfTileWidth, halfTileHeight, projection: projection);
+
   /// 碰撞層（type=='collision'）；無則 null。
   IsoTileLayer? get collisionLayer {
     for (final l in layers) {
@@ -413,7 +477,9 @@ class IsoMapData {
   }
 
   /// 該格是否被擋（1=擋）。無碰撞層時一律可走。
-  bool isBlocked(int tx, int ty) => collisionLayer?.tileAt(tx, ty) == 1;
+  /// 該格是否被擋住。參數為<b>地圖座標</b>，內部換算成陣列索引。
+  bool isBlocked(int tx, int ty) =>
+      collisionLayer?.tileAt(toIndex(tx), toIndex(ty)) == 1;
 
   /// 出口/傳送點清單。
   final List<MapExit> exits;
@@ -468,6 +534,9 @@ class IsoMapData {
         height: json['height'] as int? ?? 0,
         tileWidth: json['tileWidth'] as int? ?? 64,
         tileHeight: json['tileHeight'] as int? ?? 32,
+        projection: (json['projection'] as String?) == 'topDown'
+            ? MapProjection.topDown
+            : MapProjection.iso,
         tilesets: (json['tilesets'] as List<dynamic>? ?? [])
             .map((t) => IsoTileset.fromJson(t as Map<String, dynamic>))
             .toList(),
@@ -485,6 +554,13 @@ class IsoMapData {
             .toList(),
         objectLayers: (json['objectLayers'] as num?)?.toInt() ?? 1,
         characterLayer: (json['characterLayer'] as num?)?.toInt() ?? 1,
+        // 座標空間。手繪地圖省略這三個欄位即可（座標＝索引、整張可走），
+        // 但**伺服器地圖一定要寫**：它的格座標是 31..50，而陣列索引是 0..21。
+        // 漏掉的話 coordOffset 會退回 0，toIndex(40) 算出 40 而不是 10 ——
+        // 畫面、碰撞、與伺服器的座標會整組錯開 30 格。
+        coordOffset: (json['coordOffset'] as num?)?.toInt() ?? 0,
+        walkMinOverride: (json['walkMin'] as num?)?.toInt(),
+        walkMaxOverride: (json['walkMax'] as num?)?.toInt(),
       );
   }
 
@@ -494,7 +570,13 @@ class IsoMapData {
         'width': width,
         'height': height,
         'tileWidth': tileWidth,
+        'projection':
+            projection == MapProjection.topDown ? 'topDown' : 'iso',
         'tileHeight': tileHeight,
+        // 座標空間：只在非預設時寫出，手繪地圖的 JSON 才不會多三個欄位
+        if (coordOffset != 0) 'coordOffset': coordOffset,
+        if (walkMinOverride != null) 'walkMin': walkMinOverride,
+        if (walkMaxOverride != null) 'walkMax': walkMaxOverride,
         if (background.isNotEmpty) 'background': background,
         if (background.isNotEmpty) 'originX': originX,
         if (background.isNotEmpty) 'originY': originY,
@@ -547,22 +629,98 @@ class IsoMapData {
       );
 
   /// 程式產生的通用地圖：灰格底版（零 PNG），對齊伺服器 `map` 表 bounds。
-  /// 可走區＝座標 [minCoord]..[maxCoord]（含）方形（預設 1..50＝剛好 50×50 格）。
+  /// 可走區＝座標 [minCoord]..[maxCoord]（含）方形（預設 31..50＝剛好 20×20 格）。
   /// 格陣列大小 = maxCoord+1（索引 0..maxCoord），使伺服器座標 k 直接對應索引 k，免偏移；
   /// 索引 < minCoord 的格為薄邊界（不可走、仍畫灰）。
   /// 遊戲端統一底版用（渲染統一灰、tap 紅格由 IsoMapComponent 處理）。
+  /// 洞府地板圖集 `assets/tiles/ground_brick.png` 的排列。
+  ///
+  /// **這兩個值必須與圖檔一致**（512×64 = 8 欄 × 2 列）。圖集是 DrawPng 的
+  /// `floor_brick_atlas` 產的，重產時若改了 `--count`／`--columns`，這裡要跟著改，
+  /// 否則 `srcRect` 會取到圖外的空白，地板出現破洞。
+  static const _groundAtlasColumns = 8;
+  static const _groundAtlasCount = 16;
+
+  /// 由格座標決定要用圖集裡的哪一格。
+  ///
+  /// 必須是**座標的函式**，不能用 `Random()` —— 每次重建地圖（進圖、換圖）
+  /// 都會重新產生一次 layer，用亂數的話同一塊地板每次進來長得都不一樣，
+  /// 而且與伺服器記錄的世界對不上。
+  ///
+  /// 整數雜湊，與 `stone_floor.dart` 同一套作法。
+  static int _groundTileId(int x, int y) {
+    var h = (x * 0x1F1F1F1F) ^ (y * 0x2545F491);
+    h &= 0x7FFFFFFF;
+    h ^= h >> 13;
+    h = (h * 0x5BD1E995) & 0x7FFFFFFF;
+    h ^= h >> 15;
+    return 1 + (h % _groundAtlasCount);
+  }
+
+  /// 換掉地面層與圖集，其餘（尺寸、碰撞層、座標空間）原封不動。
+  ///
+  /// 給 `S_MAP_TILES` 用：伺服器只送地面，碰撞規則（外圈不可走）仍由
+  /// [generic] 定義 —— 那條規則只該有一個地方寫。
+  IsoMapData withGround({
+    required List<IsoTileset> tilesets,
+    required List<List<int>> ground,
+  }) =>
+      IsoMapData(
+        id: id,
+        name: name,
+        width: width,
+        height: height,
+        tileWidth: tileWidth,
+        tileHeight: tileHeight,
+        tilesets: tilesets,
+        layers: [
+          IsoTileLayer(name: 'ground', data: ground),
+          ...layers.where((l) => l.name != 'ground'),
+        ],
+        objects: objects,
+        background: background,
+        originX: originX,
+        originY: originY,
+        renderScale: renderScale,
+        exits: exits,
+        interactables: interactables,
+        objectLayers: objectLayers,
+        characterLayer: characterLayer,
+        walkMinOverride: walkMinOverride,
+        walkMaxOverride: walkMaxOverride,
+        coordOffset: coordOffset,
+      );
+
   static IsoMapData generic({
-    int minCoord = 1,
+    int minCoord = 31,
     int maxCoord = 50,
     String name = '',
+    int mapId = -1,
   }) {
-    final size = maxCoord + 1;
+    // 陣列涵蓋可走區再外擴一圈不可走邊界，讓前端在踏出範圍前就先停住。
+    // 索引 0 對應座標 minCoord-1，故 coordOffset = minCoord - 1。
+    final offset = minCoord - 1;
+    final size = maxCoord - minCoord + 3;
     List<List<int>> gen(int Function(int x, int y) cell) => List.generate(
           size,
-          (y) => List.generate(size, (x) => cell(x, y)),
+          (iy) => List.generate(size, (ix) => cell(ix + offset, iy + offset)),
         );
     bool walkable(int x, int y) =>
         x >= minCoord && x <= maxCoord && y >= minCoord && y <= maxCoord;
+
+    final tilesets = <IsoTileset>[];
+    if (mapId == 0) {
+      tilesets.add(const IsoTileset(
+        firstId: 1,
+        // 洞府地板：ground_brick.png 是 512×64 的圖集，
+        // 8 欄 × 2 列 = 16 種 64×32 的等距石磚。
+        image: 'ground_brick.png',
+        tileWidth: 64,
+        tileHeight: 32,
+        columns: _groundAtlasColumns,
+      ));
+    }
+
     return IsoMapData(
       id: 'generic',
       name: name,
@@ -570,20 +728,36 @@ class IsoMapData {
       height: size,
       tileWidth: 64,
       tileHeight: 32,
-      tilesets: const [],
+      tilesets: tilesets,
       layers: [
-        IsoTileLayer(name: 'ground', data: gen((x, y) => 1)),
+        // 只畫可走區：外圈那圈邊界純粹是碰撞用（讓角色走到邊緣就停），
+        // 若連它也畫出來，菱形會比底圖每邊各多一排（22 格 vs 20 格）。
+        //
+        // 有圖集時逐格挑一種變化 —— 整片鋪同一格會看出明顯的規律。
+        // 沒有圖集的地圖仍給 1，走 _drawFallbackTile 的程序化石板。
+        IsoTileLayer(
+          name: 'ground',
+          data: gen((x, y) => !walkable(x, y)
+              ? 0
+              : (tilesets.isEmpty ? 1 : _groundTileId(x, y))),
+        ),
         IsoTileLayer(
           name: 'collision',
           type: 'collision',
           data: gen((x, y) => walkable(x, y) ? 0 : 1),
         ),
       ],
+      // 洞府家具由伺服器的 property / spawnlist 資料生成，統一透過
+      // S_PROPERTY_PACK 顯示。不能在這裡再放一份靜態物件，否則會重疊
+      // 繪製，且前後端碰撞會不同步。
+      walkMinOverride: minCoord,
+      walkMaxOverride: maxCoord,
+      coordOffset: offset,
     );
   }
 
-  /// 通用地圖可走區中點座標（供出生點參考）；預設 1..50 → 25。
-  static int genericCenter({int minCoord = 1, int maxCoord = 50}) =>
+  /// 通用地圖可走區中點座標（供出生點參考）；預設 31..50 → 40。
+  static int genericCenter({int minCoord = 31, int maxCoord = 50}) =>
       (minCoord + maxCoord) ~/ 2;
 
   /// 該格是否在可走區（供渲染區分可走/邊界；等同 !isBlocked）。

@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-import 'iso_coord.dart';
+import 'floating_weapon_component.dart';
 import 'iso_map_data.dart';
 import 'iso_object_component.dart';
 import 'scene_asset_loader.dart';
@@ -29,15 +29,19 @@ class IsoPlayerComponent extends PositionComponent {
     this.onStep,
     this.onFace,
     this.spriteSet,
-  })  : tileX = initialTileX.clamp(mapData.minMapCoord, mapData.maxMapCoordX),
-        tileY = initialTileY.clamp(mapData.minMapCoord, mapData.maxMapCoordY),
-        facing = initialFacing.clamp(0, 7),
-        super(anchor: Anchor.center, size: Vector2.zero());
+    this.weaponVisual = WeaponVisual.none,
+  }) : tileX = initialTileX.clamp(mapData.minMapCoord, mapData.maxMapCoordX),
+       tileY = initialTileY.clamp(mapData.minMapCoord, mapData.maxMapCoordY),
+       facing = initialFacing.clamp(0, 7),
+       super(anchor: Anchor.center, size: Vector2.zero());
 
   final IsoMapData mapData;
 
   /// 人物 8 向 sprite（null 時回退為 canvas 手繪火柴人）。
   final CharacterSpriteSet? spriteSet;
+
+  /// 前端武器視覺。裝備封包完成前，靈珠是第一個正式的預設原型。
+  final WeaponVisual weaponVisual;
 
   /// sprite 動畫組（spriteSet 存在時使用）。
   SpriteAnimationGroupComponent<int>? _group;
@@ -46,6 +50,7 @@ class IsoPlayerComponent extends PositionComponent {
   double _transientRemaining = 0;
   bool _dead = false;
   FloatingSwordComponent? _flyingSword;
+  FloatingPearlComponent? _floatingPearl;
 
   /// 每走一格回呼：(newX, newY, facing)，用於送出 C_MOVE 封包。
   final void Function(int x, int y, int facing)? onStep;
@@ -96,15 +101,28 @@ class IsoPlayerComponent extends PositionComponent {
         // 死亡的錨點必須放在格子內部，再由這裡推回來。
         position: Vector2(0, set.offsetYFor(CharacterAnimationState.idle)),
       );
-      _currentAnimKey =
-          CharacterSpriteSet.keyFor(moving: false, facing: facing);
-      add(_group!);
-      _flyingSword = FloatingSwordComponent(
-        facingProvider: () => facing,
-        halfTileWidth: mapData.halfTileWidth,
-        halfTileHeight: mapData.halfTileHeight,
+      _currentAnimKey = CharacterSpriteSet.keyFor(
+        moving: false,
+        facing: facing,
       );
-      add(_flyingSword!);
+      add(_group!);
+      switch (weaponVisual) {
+        case WeaponVisual.none:
+          break;
+        case WeaponVisual.pearl:
+          _floatingPearl = FloatingPearlComponent(
+            facingProvider: () => facing,
+            isMovingProvider: () => _isMoving,
+          );
+          add(_floatingPearl!);
+        case WeaponVisual.flyingSword:
+          _flyingSword = FloatingSwordComponent(
+            facingProvider: () => facing,
+            halfTileWidth: mapData.halfTileWidth,
+            halfTileHeight: mapData.halfTileHeight,
+          );
+          add(_flyingSword!);
+      }
     }
   }
 
@@ -149,8 +167,7 @@ class IsoPlayerComponent extends PositionComponent {
   /// 這樣不論伺服器的地圖邊界從 1 還是 31 開始，菱形都畫在同一個位置，
   /// 不必連動調整 hitbox 與底圖原點。
   Vector2 _tileCenter(int tx, int ty) {
-    final sp = IsoCoord.tileToScreen(mapData.toIndex(tx), mapData.toIndex(ty),
-        mapData.halfTileWidth, mapData.halfTileHeight);
+    final sp = mapData.tileToScreen(mapData.toIndex(tx), mapData.toIndex(ty));
     return sp + Vector2(0, mapData.halfTileHeight);
   }
 
@@ -275,9 +292,13 @@ class IsoPlayerComponent extends PositionComponent {
     var state = _dead
         ? CharacterAnimationState.death
         : (_transientState ??
-            (_isMoving ? CharacterAnimationState.walk : CharacterAnimationState.idle));
+              (_isMoving
+                  ? CharacterAnimationState.walk
+                  : CharacterAnimationState.idle));
     if (!spriteSet!.has(state)) {
-      state = _isMoving ? CharacterAnimationState.walk : CharacterAnimationState.idle;
+      state = _isMoving
+          ? CharacterAnimationState.walk
+          : CharacterAnimationState.idle;
     }
     final key = CharacterSpriteSet.keyFor(state: state, facing: facing);
     if (key != _currentAnimKey) {
@@ -299,7 +320,11 @@ class IsoPlayerComponent extends PositionComponent {
     if (_group != null) {
       final rs = mapData.halfTileWidth * 0.30;
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(0, 2), width: rs * 2.4, height: rs * 0.85),
+        Rect.fromCenter(
+          center: Offset(0, 2),
+          width: rs * 2.4,
+          height: rs * 0.85,
+        ),
         Paint()..color = const Color(0x55000000),
       );
       return;
@@ -356,14 +381,21 @@ class IsoPlayerComponent extends PositionComponent {
   }
 
   void _drawFacingArrow(Canvas canvas, double r) {
-    final angle = _facingAngle(facing, mapData.halfTileWidth, mapData.halfTileHeight);
+    final angle = _facingAngle(
+      facing,
+      mapData.halfTileWidth,
+      mapData.halfTileHeight,
+    );
     final arrowLen = r * 1.3;
     final dx = math.cos(angle) * arrowLen;
     final dy = math.sin(angle) * arrowLen;
 
     final tip = Offset(dx, dy);
     final base = Offset(-math.cos(angle) * r * 0.3, -math.sin(angle) * r * 0.3);
-    final perp = Offset(-math.sin(angle) * r * 0.35, math.cos(angle) * r * 0.35);
+    final perp = Offset(
+      -math.sin(angle) * r * 0.35,
+      math.cos(angle) * r * 0.35,
+    );
 
     final path = Path()
       ..moveTo(tip.dx, tip.dy)
@@ -371,14 +403,14 @@ class IsoPlayerComponent extends PositionComponent {
       ..lineTo(base.dx - perp.dx, base.dy - perp.dy)
       ..close();
 
+    canvas.drawPath(path, Paint()..color = const Color(0xFFFFFFCC));
     canvas.drawPath(
-        path, Paint()..color = const Color(0xFFFFFFCC));
-    canvas.drawPath(
-        path,
-        Paint()
-          ..color = const Color(0xAA000000)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.8);
+      path,
+      Paint()
+        ..color = const Color(0xAA000000)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8,
+    );
   }
 
   // ── 靜態工具 ──────────────────────────────────────────────
@@ -398,8 +430,14 @@ class IsoPlayerComponent extends PositionComponent {
   /// facing → 畫面角度（弧度，0=右，順時針增加）。
   static double _facingAngle(int f, double halfW, double halfH) {
     const deltas = [
-      (0, -1), (1, -1), (1, 0), (1, 1),
-      (0, 1), (-1, 1), (-1, 0), (-1, -1),
+      (0, -1),
+      (1, -1),
+      (1, 0),
+      (1, 1),
+      (0, 1),
+      (-1, 1),
+      (-1, 0),
+      (-1, -1),
     ];
     final (ddx, ddy) = deltas[f.clamp(0, 7)];
     final sx = (ddx - ddy) * halfW;
@@ -422,9 +460,19 @@ class FloatingSwordComponent extends PositionComponent {
   double _attack = 0;
   double _drop = -1;
 
-  void attack() { _attack = 0.72; }
-  void drop() { _drop = 0; _attack = 0; }
-  void reset() { _attack = 0; _drop = -1; }
+  void attack() {
+    _attack = 0.72;
+  }
+
+  void drop() {
+    _drop = 0;
+    _attack = 0;
+  }
+
+  void reset() {
+    _attack = 0;
+    _drop = -1;
+  }
 
   @override
   void update(double dt) {
@@ -440,9 +488,15 @@ class FloatingSwordComponent extends PositionComponent {
       position = Vector2(sx * .46, sy * .46 + 8 * _drop);
     } else if (_attack > 0) {
       final p = math.sin((1 - _attack / .72) * math.pi);
-      position = Vector2(sx * (.25 + .55 * p), sy * (.25 + .55 * p) - 16 * (1 - p));
+      position = Vector2(
+        sx * (.25 + .55 * p),
+        sy * (.25 + .55 * p) - 16 * (1 - p),
+      );
     } else {
-      position = Vector2(18, -40 + math.sin(DateTime.now().millisecondsSinceEpoch / 300) * 2);
+      position = Vector2(
+        18,
+        -40 + math.sin(DateTime.now().millisecondsSinceEpoch / 300) * 2,
+      );
     }
   }
 
@@ -451,8 +505,18 @@ class FloatingSwordComponent extends PositionComponent {
     final paint = Paint()..color = const Color(0xFFE7F3FF);
     canvas.save();
     canvas.rotate(_drop >= 0 ? .55 : -.45);
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(-2, -14, 4, 22), const Radius.circular(2)), paint);
-    canvas.drawCircle(const Offset(0, 9), 3, Paint()..color = const Color(0xFF5FC7E8));
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(-2, -14, 4, 22),
+        const Radius.circular(2),
+      ),
+      paint,
+    );
+    canvas.drawCircle(
+      const Offset(0, 9),
+      3,
+      Paint()..color = const Color(0xFF5FC7E8),
+    );
     canvas.restore();
   }
 }
