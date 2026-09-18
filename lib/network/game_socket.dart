@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
 import 'codec/packet_codec.dart';
 import 'transport/game_packet.dart';
+import 'transport/socket_transport.dart';
+
 // 遊戲 socket
 class GameSocket {
   GameSocket(this._codec);
   final PacketCodec _codec;
-  Socket? _socket; // 連接
+  SocketTransport? _socket; // 連接
   StreamSubscription<List<int>>? _subscription; // 訂閱
   final StreamController<GamePacket> _incomingController =
       StreamController<GamePacket>.broadcast(); // 接收封包
@@ -21,6 +22,9 @@ class GameSocket {
   /// 客戶端主動 [disconnect] 會先取消訂閱，故不會觸發此回呼。只觸發一次。
   void Function()? onConnectionLost;
   bool _lostNotified = false;
+
+  /// 除錯記錄單一封包最多印幾個字。
+  static const int _logLimit = 2000;
 
   void _notifyLost() {
     if (_lostNotified) return;
@@ -38,8 +42,8 @@ class GameSocket {
     _lostNotified = false; // 新連線重置斷線旗標
     _codec.reset();
     // 連接
-    _socket = await Socket.connect(host, port, timeout: timeout);
-    _subscription = _socket!.listen(
+    _socket = await SocketTransport.connect(host, port, timeout: timeout);
+    _subscription = _socket!.incoming.listen(
       _onData, // 數據
       onError: _onError, // 錯誤
       onDone: _onDone, // 完成
@@ -85,7 +89,12 @@ class GameSocket {
       try {
         final json = jsonDecode(line) as Map<String, dynamic>;
         final packet = GamePacket.fromJson(json);
-        debugPrint('S包 ← $line');
+        // 大封包（上千筆場景物件、整張地圖的圖磚）整行印出來會拖慢主執行緒
+        debugPrint(
+          line.length > _logLimit
+              ? 'S包 ← ${line.substring(0, _logLimit)}…（共 ${line.length} 字）'
+              : 'S包 ← $line',
+        );
         _incomingController.add(packet);
       } catch (e) {
         debugPrint('封包解析失敗: $line ($e)');

@@ -1,0 +1,25 @@
+{
+  "_comment": "Mixamo FBX → L1 圖集的工作清單，由 tools/sprites/mixamo_to_l1.py 讀取。src 是 FBX 資料夾（相對 repo 根目錄），放 idle/walk/attack/hurt/death.fbx；out 是輸出 PNG（JSON 同名）。pxPerMeter 115 讓 1.8m 的人在畫面上約 180px 高（直立高度投影係數 cos30° ≈ 0.866）。工作可覆寫 defaults 的任何欄位，actions 逐動作合併。說明見 assets/characters/README.md。",
+  "blender": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe",
+  "defaults": {
+    "pxPerMeter": 115,
+    "canvas": 512,
+    "pitch": 60,
+    "targetZ": 0.9,
+    "actions": {
+      "walk": { "frames": 8, "loop": true, "lockRoot": true },
+      "idle": { "frames": 8, "loop": true },
+      "attack": { "frames": 8 },
+      "hurt": { "frames": 4 },
+      "death": { "frames": 10 }
+    }
+  },
+  "jobs": [
+    { "key": "brady", "name": "Brady", "src": "../art_source/mixamo/brady", "out": "assets/characters/brady.png" },
+    { "key": "kachujin", "name": "Kachujin G Rosales", "src": "../art_source/mixamo/kachujin", "out": "assets/characters/kachujin.png" },
+    { "key": "warrok", "name": "Warrok W Kurniawan", "src": "../art_source/mixamo/warrok", "out": "assets/monsters/warrok.png", "canvas": 768, "targetZ": 1.2 },
+    { "key": "goblin", "name": "Goblin D Shareyko", "src": "../art_source/mixamo/goblin", "out": "assets/monsters/goblin.png" },
+    { "key": "demon", "name": "Demon T Wiezzorek", "src": "../art_source/mixamo/demon", "out": "assets/monsters/demon.png" },
+    { "key": "skeletonzombie", "name": "Skeletonzombie T Avelange", "src": "../art_source/mixamo/skeletonzombie", "out": "assets/monsters/skeletonzombie.png" }
+  ]
+}

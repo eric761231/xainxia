@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  素材 id → 路徑對照表。
+
+  畫面的 .xaml 只寫 asset="loginFlowBg"，不寫路徑。素材換檔名、換目錄是常態，
+  而路徑散在十幾個 Dart 檔裡時，漏改的那一個會在 release 才變成一張白圖。
+
+  找不到 id 時使用端會退回自己的 Dart 預設素材，不會崩潰。
+-->
+<UiAssets>
+  <!-- Loading、登入、伺服器選單、選角、創角共用背景（無 UI、無文字）。 -->
+  <Asset id="loginFlowBg" path="assets/ui/login_flow/login_flow_bg.png" />
+
+  <!-- Loading 填充區內水平循環的靈氣紋理。track、fill、圓角、裁切與柔光
+       都由 Flutter 畫，這張只提供紋理。 -->
+  <Asset id="loadingEnergy" path="assets/ui/login_flow/loading_energy_tile.png" />
+
+  <!-- 訊息對話框的狀態圖示。 -->
+  <Asset id="loginFailedIcon" path="assets/ui/login_flow/icon_login_failed.png" />
+  <Asset id="connectionLostIcon" path="assets/ui/login_flow/icon_connection_lost.png" />
+
+  <!-- 舊素材，全部畫面驗收完成前保留作 fallback（見接手計畫 §2、§8-7）。 -->
+  <Asset id="legacyLoadingBg" path="assets/images/loading.png" />
+  <Asset id="legacyLaunchBg" path="assets/images/launch_bg.png" />
+  <Asset id="legacyDialogBg" path="assets/ui/common/dialog_message_bg.png" />
+</UiAssets>

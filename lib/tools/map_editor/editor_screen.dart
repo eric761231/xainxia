@@ -481,8 +481,8 @@ class _EditorScreenState extends State<EditorScreen> {
     return _objectGraphics[sel.id]?.width ?? 0;
   }
 
-  /// 調整選取物件寬度格數（±delta，最小 1）。tilesW==0 時先以原圖換算的整數格起算。
-  void _resizeSelectedObject(int delta) {
+  /// 調整選取物件寬度格數（每次半格，最小 0.5 格）。
+  void _resizeSelectedObject(double delta) {
     final sel = _selectedObject;
     if (sel == null) return;
     final i = _objects
@@ -491,8 +491,10 @@ class _EditorScreenState extends State<EditorScreen> {
     final w0 = _selectedNaturalWidth();
     final base = sel.tilesW > 0
         ? sel.tilesW
-        : (w0 > 0 ? (w0 / 64).round().clamp(1, 999) : 1);
-    final ne = sel.copyWith(tilesW: (base + delta).clamp(1, 999));
+        : (w0 > 0
+            ? ((w0 / _tileWidth * 2).round() / 2).clamp(0.5, 999.0)
+            : 1.0);
+    final ne = sel.copyWith(tilesW: (base + delta).clamp(0.5, 999.0));
     setState(() {
       _objects[i] = ne;
       _selectedObject = ne;
@@ -629,7 +631,7 @@ class _EditorScreenState extends State<EditorScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: Text('載入中…'))
           : Row(
               children: [
                 Expanded(
@@ -1272,7 +1274,9 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
         const Divider(height: 16),
         Text(
-          sel.tilesW > 0 ? '尺寸 寬 ${sel.tilesW} 格' : '尺寸 原尺寸',
+          sel.tilesW > 0
+              ? '尺寸 寬 ${sel.tilesW.toStringAsFixed(1)} 格'
+              : '尺寸 原尺寸',
           style: const TextStyle(color: Colors.white70, fontSize: 12),
         ),
         Row(
@@ -1281,14 +1285,14 @@ class _EditorScreenState extends State<EditorScreen> {
             IconButton(
               icon: const Icon(Icons.remove_circle_outline),
               iconSize: 22,
-              tooltip: '寬 -1 格',
-              onPressed: () => _resizeSelectedObject(-1),
+              tooltip: '寬 -0.5 格',
+              onPressed: () => _resizeSelectedObject(-0.5),
             ),
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
               iconSize: 22,
-              tooltip: '寬 +1 格',
-              onPressed: () => _resizeSelectedObject(1),
+              tooltip: '寬 +0.5 格',
+              onPressed: () => _resizeSelectedObject(0.5),
             ),
           ],
         ),

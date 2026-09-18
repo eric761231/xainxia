@@ -1,0 +1,14 @@
+{
+  "tileWidth": 48,
+  "tileHeight": 24,
+  "columns": 8,
+  "count": 28,
+  "atlas": "black_forest_ground_48x24_balanced_atlas.png",
+  "tilesetEntry": {
+    "firstId": 1,
+    "image": "black_forest_ground_48x24_balanced_atlas.png",
+    "tileWidth": 48,
+    "tileHeight": 24,
+    "columns": 8
+  }
+}

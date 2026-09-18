@@ -1,169 +1,48 @@
 import 'package:flutter/material.dart';
-
 import '../../../models/char_create_template.dart';
-import '../../layout/char_create/char_create_ui_spec.dart';
-import 'char_create_cloud_label.dart';
-import 'char_create_ink_label.dart';
-import 'char_create_pressable.dart';
-import 'char_create_text_styles.dart';
+import '../../theme/game_design.dart';
+import '../shared/character_stage.dart';
 
-/// 左側靈根選擇（規格見 char_create_ui_spec.dart）。
 class CharCreateSpiritRootPanel extends StatelessWidget {
-  const CharCreateSpiritRootPanel({
-    super.key,
-    required this.selectedIndex,
-    required this.enabled,
-    required this.onSelected,
-  });
-
+  const CharCreateSpiritRootPanel({super.key, required this.selectedIndex,
+    required this.enabled, required this.onSelected});
   final int selectedIndex;
   final bool enabled;
   final ValueChanged<int> onSelected;
-
-  static const int _itemCount = 8;
-
   @override
   Widget build(BuildContext context) {
-    final hPad = CharCreateUiSpec.spiritRootPanelPaddingH;
-    final itemSpacing = CharCreateUiSpec.spiritRootItemSpacing;
-    final itemHeight = CharCreateUiSpec.spiritRootCloudLabelHeight;
-
-    return SizedBox(
-      width: CharCreateUiSpec.leftPanelWidthResolved,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          hPad,
-          CharCreateUiSpec.spiritRootPanelPaddingTop,
-          hPad,
-          CharCreateUiSpec.s(12),
-        ),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: FractionallySizedBox(
-                widthFactor: CharCreateUiSpec.spiritRootTitleBarWidthFraction,
-                child: CharCreateCloudLabel(
-                  text: '選擇靈根',
-                  height: CharCreateUiSpec.spiritRootTitleBarHeight,
-                  fontSize: CharCreateUiSpec.spiritRootTitleFontSize,
-                  showBackground: false,
-                ),
-              ),
-            ),
-            SizedBox(height: CharCreateUiSpec.spiritRootTitleGap),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var index = 0; index < _itemCount; index++) ...[
-                      if (index > 0) SizedBox(height: itemSpacing),
-                      SizedBox(
-                        height: itemHeight,
-                        child: ClipRect(
-                          child: _SpiritRootItem(
-                            root: CharCreateTemplate.spiritRootDetails[index],
-                            isSelected: selectedIndex == index,
-                            enabled: enabled,
-                            onTap: () => onSelected(index),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    final selected = CharCreateTemplate.spiritRootDetails[selectedIndex];
+    return Column(children: [
+      const StageHeading('選擇靈根'),
+      for (var row = 0; row < 4; row++)
+        Row(children: [for (var col = 0; col < 2; col++)
+          Expanded(child: _item(row * 2 + col)),
+        ]),
+      const SizedBox(height: 16),
+      Text(selected.name, style: GameDesign.text(size: 22, color: GameDesign.gold)),
+      const SizedBox(height: 8),
+      Text(selected.description, textAlign: TextAlign.center, style: GameDesign.text()),
+    ]);
   }
-}
-
-class _SpiritRootItem extends StatelessWidget {
-  const _SpiritRootItem({
-    required this.root,
-    required this.isSelected,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final SpiritRootDetail root;
-  final bool isSelected;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final elemColor = root.color;
-    final nameColor = isSelected
-        ? elemColor
-        : Color(CharCreateUiSpec.spiritRootUnselectedNameColor);
-    final descColor = isSelected
-        ? Colors.white70
-        : Color(CharCreateUiSpec.spiritRootUnselectedDescColor);
-
-    return CharCreatePressable(
-      enabled: enabled,
-      onTap: onTap,
-      child: CharCreateInkLabel(
-        height: CharCreateUiSpec.spiritRootCloudLabelHeight,
-        fit: CharCreateUiSpec.spiritRootItemImageFit,
-        imageOffsetH: CharCreateUiSpec.spiritRootItemImageOffsetH,
-        imageOffsetV: CharCreateUiSpec.spiritRootItemImageOffsetV,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: CharCreateUiSpec.spiritRootItemPaddingH,
-            vertical: CharCreateUiSpec.spiritRootItemPaddingV,
-          ),
-          child: Row(
-            children: [
-              Image.asset(
-                root.iconAsset,
-                width: CharCreateUiSpec.spiritRootIconSize,
-                height: CharCreateUiSpec.spiritRootIconSize,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.brightness_low,
-                  color: elemColor,
-                  size: CharCreateUiSpec.spiritRootIconSize,
-                ),
-              ),
-              SizedBox(width: CharCreateUiSpec.s(6)),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      root.name,
-                      style: CharCreateTextStyles.shadowLabel(
-                        fontSize: CharCreateUiSpec.spiritRootNameFontSize,
-                        color: nameColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      root.description,
-                      style: CharCreateTextStyles.shadowLabel(
-                        fontSize: CharCreateUiSpec.spiritRootDescFontSize,
-                        color: descColor,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  Widget _item(int index) {
+    final root = CharCreateTemplate.spiritRootDetails[index];
+    final active = index == selectedIndex;
+    return Semantics(selected: active, child: TextButton(
+      key: ValueKey('root-$index'),
+      onPressed: enabled ? () => onSelected(index) : null,
+      style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 6)),
+      child: Column(children: [
+        AnimatedContainer(duration: const Duration(milliseconds: 160),
+          width: 50, height: 50, padding: const EdgeInsets.all(9),
+          decoration: BoxDecoration(shape: BoxShape.circle,
+            color: active ? const Color(0x44306664) : const Color(0x18203942),
+            border: Border.all(color: active ? GameDesign.gold : GameDesign.jade.withValues(alpha: .5), width: active ? 2 : 1),
+            boxShadow: active ? [BoxShadow(color: GameDesign.gold.withValues(alpha: .25), blurRadius: 14)] : null),
+          child: Image.asset(root.iconAsset, fit: BoxFit.contain)),
+        const SizedBox(height: 4),
+        Text(root.name.substring(0, 1), style: GameDesign.text(size: 20,
+          color: active ? GameDesign.gold : Colors.white)),
+      ]),
+    ));
   }
 }

@@ -616,8 +616,10 @@ class _MapPainter extends CustomPainter {
     final footY = sp.y + halfH;
     final w = g.width, h = g.height;
     final (ax, ay) = def.resolveAnchor(w, h, mapHalfTileHeight: halfH);
+    final s = def.scale;
     // 30% 半透明 ghost（點陣/SVG 皆由 graphic.paint 處理）。
-    g.paint(canvas, Rect.fromLTWH(footX - ax, footY - ay, w, h), opacity: 0.3);
+    g.paint(canvas, Rect.fromLTWH(footX - ax * s, footY - ay * s, w * s, h * s),
+        opacity: 0.3);
   }
 
   /// 布置物件：依腳底 (x+y) 由後往前排序後畫，重疊時前方蓋後方（近似遊戲內深度）。
@@ -647,7 +649,8 @@ class _MapPainter extends CustomPainter {
       if (def != null && g != null) {
         final w0 = g.width, h0 = g.height;
         final (ax0, ay0) = def.resolveAnchor(w0, h0, mapHalfTileHeight: halfH);
-        final s = o.tilesW > 0 && w0 > 0 ? o.tilesW * tileWidth / w0 : 1.0;
+        final s = (o.tilesW > 0 && w0 > 0 ? o.tilesW * tileWidth / w0 : 1.0) *
+            def.scale;
         final w = w0 * s, h = h0 * s, ax = ax0 * s, ay = ay0 * s;
         g.paint(canvas,
             Rect.fromLTWH(footX - ax + o.offsetX, footY - ay + o.offsetY, w, h));

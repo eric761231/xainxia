@@ -118,7 +118,7 @@ class IsoTileLayer {
 ///
 /// [zBias]：同腳底 y 的物件微調前後（正=更靠前/更晚畫）；預設 0。
 /// [offsetX]/[offsetY]：逐物件像素微調（在錨點對齊格中心後再位移），用來精準對位。
-/// [tilesW]：尺寸覆寫，目標寬＝tilesW×64px 等比縮放；0＝原尺寸。
+/// [tilesW]：尺寸覆寫，目標寬＝tilesW×地圖格寬等比縮放；0＝原尺寸。
 @immutable
 class MapObject {
   const MapObject({
@@ -144,8 +144,8 @@ class MapObject {
   final double offsetX;
   final double offsetY;
 
-  /// 尺寸覆寫：目標寬度＝tilesW 格 × 64px，等比縮放（高依長寬比）。0＝原尺寸不縮放。
-  final int tilesW;
+  /// 尺寸覆寫：目標寬度＝tilesW × 地圖格寬，支援半格等小數值。0＝原尺寸不縮放。
+  final double tilesW;
 
   MapObject copyWith({
     int? id,
@@ -154,7 +154,7 @@ class MapObject {
     int? zBias,
     double? offsetX,
     double? offsetY,
-    int? tilesW,
+    double? tilesW,
     int? layer,
   }) =>
       MapObject(
@@ -175,7 +175,7 @@ class MapObject {
         zBias: (j['zBias'] as num?)?.toInt() ?? 0,
         offsetX: (j['offsetX'] as num?)?.toDouble() ?? 0,
         offsetY: (j['offsetY'] as num?)?.toDouble() ?? 0,
-        tilesW: (j['tilesW'] as num?)?.toInt() ?? 0,
+        tilesW: (j['tilesW'] as num?)?.toDouble() ?? 0,
         layer: (j['layer'] as num?)?.toInt() ?? 1,
       );
 
@@ -696,6 +696,11 @@ class IsoMapData {
     int maxCoord = 50,
     String name = '',
     int mapId = -1,
+    // 格子尺寸也要能指定。伺服器的 maps/<id>.json 有 tileWidth/tileHeight，
+    // 這裡若寫死 64×32 而圖磚是 48×24，畫的間距就比圖大三分之一 ——
+    // 每一格之間會漏出底色，整片地板變成散開的碎片。
+    int tileWidth = 64,
+    int tileHeight = 32,
   }) {
     // 陣列涵蓋可走區再外擴一圈不可走邊界，讓前端在踏出範圍前就先停住。
     // 索引 0 對應座標 minCoord-1，故 coordOffset = minCoord - 1。
@@ -710,13 +715,14 @@ class IsoMapData {
 
     final tilesets = <IsoTileset>[];
     if (mapId == 0) {
-      tilesets.add(const IsoTileset(
+      // const 拿掉：格子尺寸現在是參數，不是編譯期常數。
+      tilesets.add(IsoTileset(
         firstId: 1,
-        // 洞府地板：ground_brick.png 是 512×64 的圖集，
-        // 8 欄 × 2 列 = 16 種 64×32 的等距石磚。
+        // 洞府地板的後備圖集（8 欄 × 2 列）。實際鋪什麼由伺服器的
+        // S_MAP_TILES 決定，這裡只是封包還沒到那幾幀的底版。
         image: 'ground_brick.png',
-        tileWidth: 64,
-        tileHeight: 32,
+        tileWidth: tileWidth,
+        tileHeight: tileHeight,
         columns: _groundAtlasColumns,
       ));
     }
@@ -726,8 +732,8 @@ class IsoMapData {
       name: name,
       width: size,
       height: size,
-      tileWidth: 64,
-      tileHeight: 32,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight,
       tilesets: tilesets,
       layers: [
         // 只畫可走區：外圈那圈邊界純粹是碰撞用（讓角色走到邊緣就停），

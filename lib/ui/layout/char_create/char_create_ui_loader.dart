@@ -4,8 +4,8 @@ import 'package:xml/xml.dart';
 import '../xml_attr.dart';
 
 import 'char_create_ui_config.dart';
-import 'char_create_ui_source_stub.dart'
-    if (dart.library.io) 'char_create_ui_source_io.dart';
+import '../ui_asset_source_stub.dart'
+    if (dart.library.io) '../ui_asset_source_io.dart';
 
 /// 從 [CharCreateUiLoader.assetPath] 載入創角 UI 配置。
 /// 對應 [assets/ui/layouts/char_create_layout.xml]；

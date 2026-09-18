@@ -1,0 +1,1112 @@
+[
+  {
+    "path": "assets/characters/3221.png",
+    "width": 802,
+    "height": 6603,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/characters/female_base_aligned.png",
+    "width": 792,
+    "height": 1064,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/characters/female_death.png",
+    "width": 768,
+    "height": 1024,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/characters/male_base_aligned.png",
+    "width": 1062,
+    "height": 1000,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/images/launch_bg.png",
+    "width": 1408,
+    "height": 768,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/images/loading.png",
+    "width": 1408,
+    "height": 768,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/maps/0.png",
+    "width": 1376,
+    "height": 1190,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/monsters/black_forest/mountain_wolf.png",
+    "width": 1024,
+    "height": 539,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/bramble_thorn.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/fallen_dead_log.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/fallen_dead_log_mirror.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_fern.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_flower_blue_dim.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_flower_violet.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_flower_white.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_grass_dark.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_grass_dry.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/flora_mushroom_brown.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/rock_moss_slate.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/shrub_dark.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/stump_moss.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/tree_ancient_oak.png",
+    "width": 195,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/tree_dead_forked.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/tree_dead_forked_mirror.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/tree_moss_elm.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/black_forest/tree_twisted_pine.png",
+    "width": 192,
+    "height": 208,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/cave_spirit_cabinet.png",
+    "width": 175,
+    "height": 155,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/cn_bookshelf_cut.png",
+    "width": 190,
+    "height": 245,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/cultivation_array.png",
+    "width": 450,
+    "height": 270,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/jasmine_jar.png",
+    "width": 105,
+    "height": 225,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/maple.png",
+    "width": 200,
+    "height": 190,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/orchid.png",
+    "width": 90,
+    "height": 150,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/objects/pine_bonsai.png",
+    "width": 110,
+    "height": 190,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_07.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_08.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_09.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_10.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_11.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_12.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_13.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_14.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_15.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_16.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_17.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_18.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_19.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_20.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_21.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_22.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_23.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_24.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_25.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_26.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_27.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_28.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_29.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_30.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/black_forest_ground_31.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/dirt_path_center.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_blue.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_fern.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_lichen.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_moss.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_thorn.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/black_forest/grass_withered.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_01.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_02.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_03.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_04.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_05.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_06.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_07.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_08.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_09.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_10.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_11.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_12.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_13.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_14.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_15.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/cave/cave_16.png",
+    "width": 112,
+    "height": 56,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_dark_1.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_dark_2.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_dark_3.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_dark_4.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_dark_5.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_1.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_2.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_3.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_4.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_5.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_6.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_light_7.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_mid_1.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_mid_2.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_mid_3.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground/brick_mid_4.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_brick.png",
+    "width": 384,
+    "height": 48,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_01.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_02.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_03.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_04.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_05.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_06.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_07.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_08.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_09.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_10.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_11.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_12.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_13.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_14.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_15.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_16.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_17.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_18.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_19.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_20.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_21.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_22.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_23.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_24.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_25.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_26.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_27.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_28.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_29.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_30.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_31.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/tiles/ground_ref/stone_32.png",
+    "width": 48,
+    "height": 24,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/add_btn.png",
+    "width": 40,
+    "height": 40,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/agility_icon.png",
+    "width": 100,
+    "height": 100,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_earth.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_fire.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_illusion.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_metal.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_thunder.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_water.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_wind.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/attr_wood.png",
+    "width": 57,
+    "height": 57,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/back_icon.png",
+    "width": 60,
+    "height": 60,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/back_icon_hover.png",
+    "width": 60,
+    "height": 60,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/back_icon_pressed.png",
+    "width": 60,
+    "height": 60,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/btn01.png",
+    "width": 640,
+    "height": 180,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/btn01_selected.png",
+    "width": 640,
+    "height": 180,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_bg.png",
+    "width": 1920,
+    "height": 1080,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_bg_68751985.png",
+    "width": 1920,
+    "height": 1080,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_female.png",
+    "width": 1024,
+    "height": 1536,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_female_60e9aaaa.png",
+    "width": 1024,
+    "height": 1536,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_female_9387b9c6.png",
+    "width": 768,
+    "height": 1024,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_female_c96d2a75.png",
+    "width": 768,
+    "height": 1024,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_male.png",
+    "width": 1024,
+    "height": 1536,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_male_67e084f8.png",
+    "width": 768,
+    "height": 1024,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_male_8917db27.png",
+    "width": 1024,
+    "height": 1536,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/char_male_dea83ef9.png",
+    "width": 768,
+    "height": 1024,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/cloud_label01.png",
+    "width": 600,
+    "height": 240,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/cloud_label02.png",
+    "width": 600,
+    "height": 240,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/cloud_label03.png",
+    "width": 547,
+    "height": 278,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/cloud_label04.png",
+    "width": 1448,
+    "height": 736,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/cloud_label05.png",
+    "width": 1448,
+    "height": 736,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/constitution_icon.png",
+    "width": 100,
+    "height": 100,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/ink_btn01.png",
+    "width": 600,
+    "height": 240,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/ink_btn02.png",
+    "width": 600,
+    "height": 240,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/ink_btn03.png",
+    "width": 670,
+    "height": 190,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/ink_btn04.png",
+    "width": 1200,
+    "height": 170,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/ink_label.png",
+    "width": 600,
+    "height": 240,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/input_contact.png",
+    "width": 372,
+    "height": 62,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/intel_icon.png",
+    "width": 100,
+    "height": 100,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/option.png",
+    "width": 403,
+    "height": 83,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/panel_left.png",
+    "width": 1632,
+    "height": 2176,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/reduce_btn.png",
+    "width": 40,
+    "height": 40,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/spirit_icon.png",
+    "width": 100,
+    "height": 100,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/start_btn.png",
+    "width": 240,
+    "height": 79,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/start_btn_hover.png",
+    "width": 240,
+    "height": 80,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/start_btn_pressed.png",
+    "width": 240,
+    "height": 80,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/stats_points_label.png",
+    "width": 271,
+    "height": 89,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/status_label.png",
+    "width": 271,
+    "height": 89,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/char_create/tile_line.png",
+    "width": 403,
+    "height": 83,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/common/dialog_message_bg.png",
+    "width": 150,
+    "height": 90,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/login_flow/icon_connection_lost.png",
+    "width": 256,
+    "height": 256,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/login_flow/icon_login_failed.png",
+    "width": 256,
+    "height": 256,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/login_flow/loading_energy_tile.png",
+    "width": 1024,
+    "height": 128,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/ui/login_flow/login_flow_bg.png",
+    "width": 1672,
+    "height": 941,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/weapons/pearl_01.png",
+    "width": 128,
+    "height": 128,
+    "status": "Flutter bundle decode passed"
+  },
+  {
+    "path": "assets/weapons/pearl_01_flow.png",
+    "width": 768,
+    "height": 128,
+    "status": "Flutter bundle decode passed"
+  }
+]

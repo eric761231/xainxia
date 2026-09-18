@@ -2,7 +2,8 @@ import '../../opcodes/client_opcodes.dart';
 
 /// 地圖物件清單請求封包。
 ///
-/// 伺服器依角色當前所在地圖回 [SObjectList]。
+/// 伺服器依角色當前所在地圖分三包回傳：
+/// S_NPC_PACK、S_MONSTER_PACK、S_PROPERTY_PACK。
 /// 進圖後或斷線重連需要重建地圖物件時送出。
 class CObjectList {
   CObjectList._();

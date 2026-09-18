@@ -3,6 +3,47 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+/// 接地陰影的物件級覆寫。
+///
+/// 座標以格數表示；洞府與 [stone_floor.dart] 統一採上方光，故接地陰影預設置中。
+/// 陰影幾何永遠由 footprint 組成，不會依 PNG 的透明邊界外擴。
+@immutable
+class ObjectShadowSpec {
+  const ObjectShadowSpec({
+    this.enabled = true,
+    this.opacity = 0.20,
+    this.blur = 4.0,
+    this.offsetTilesX = 0,
+    this.offsetTilesY = 0,
+  });
+
+  final bool enabled;
+  final double opacity;
+  final double blur;
+  final double offsetTilesX;
+  final double offsetTilesY;
+
+  factory ObjectShadowSpec.fromJson(Object? raw) {
+    if (raw is! Map<String, dynamic>) return const ObjectShadowSpec();
+    final offset = raw['offsetTiles'] as List<dynamic>?;
+    return ObjectShadowSpec(
+      enabled: raw['enabled'] as bool? ?? true,
+      opacity: ((raw['opacity'] as num?)?.toDouble() ?? 0.20)
+          .clamp(0.0, 1.0)
+          .toDouble(),
+      blur: ((raw['blur'] as num?)?.toDouble() ?? 4.0)
+          .clamp(0.0, 32.0)
+          .toDouble(),
+      offsetTilesX: (offset != null && offset.isNotEmpty)
+          ? (offset[0] as num).toDouble()
+          : 0,
+      offsetTilesY: (offset != null && offset.length > 1)
+          ? (offset[1] as num).toDouble()
+          : 0,
+    );
+  }
+}
+
 /// 單一布置物件（prop）的美術與擺放定義（對應 object_catalog.json 內一個鍵）。
 ///
 /// 兩種用法：
@@ -37,6 +78,9 @@ class ObjectDef {
     required this.footprintW,
     required this.footprintH,
     required this.blocking,
+    this.shadow = const ObjectShadowSpec(),
+    this.tilesW = 0,
+    this.scale = 1.0,
     this.label = '',
   });
 
@@ -74,14 +118,34 @@ class ObjectDef {
   /// 是否阻擋行走（true → 載入時把 footprint 格設為不可走）。
   final bool blocking;
 
+  /// 接地陰影規格；缺省時使用與地板一致的上方光置中接地陰影。
+  final ObjectShadowSpec shadow;
+
+  /// 預設視覺寬度（格數）：目標寬 = tilesW × 格寬，支援小數；0 = 原尺寸。
+  ///
+  /// <b>與 [footprintW] 是兩回事</b>：這是畫多大，footprint 是佔掉地面幾格。
+  /// 美術素材常遠大於一格（例如 499px 的桌子 ≈ 7.8 格寬），
+  /// 伺服器送來的場景物件沒有逐物件的尺寸覆寫，故以物件類型為單位在此設定。
+  final double tilesW;
+
+  /// 等比縮放倍率，套在 [tilesW] 之後；1 = 不縮放。錨點隨圖一起縮放，
+  /// 所以腳底位置不變。只改「畫多大」，不影響 footprint 與碰撞。
+  final double scale;
+
+  /// 平貼地面的物件（法陣、地紋、等距地形塊）：一律畫在角色與家具之下。
+  bool get isFlat => anchorMode != 'foot';
+
   /// 顯示名（編輯器 palette 用，可空）。
   final String label;
 
   /// 依實際裁切尺寸 (w,h) 解析腳底錨點：明確 anchor 優先，否則依 anchorMode。
   /// center → (w/2, h/2)（平貼）；tile → (w/2, mapHalfTileHeight)（等距地形，頂點對齊）；
   /// foot → (w/2, h)（站立）。
-  (double, double) resolveAnchor(double w, double h,
-      {double mapHalfTileHeight = 0}) {
+  (double, double) resolveAnchor(
+    double w,
+    double h, {
+    double mapHalfTileHeight = 0,
+  }) {
     final ax = anchorX ?? w / 2;
     final double ay;
     if (anchorY != null) {
@@ -94,6 +158,20 @@ class ObjectDef {
       };
     }
     return (ax, ay);
+  }
+
+  /// 圖片資料夾（assets/ 底下）。允許子資料夾（例如 `objects/black_forest`），
+  /// 但根目錄只能是 objects / sences / tiles，且不接受 `..`；其餘一律退回 objects。
+  ///
+  /// 以前只認完整比對 `sences`/`tiles`，`objects/black_forest` 會被當成 `objects`
+  /// → 到 assets/objects/ 找黑森林的圖 → 全部載不到、畫成綠色色塊。
+  static String _parseDir(String? raw) {
+    if (raw == null || raw.isEmpty || raw.contains('..') || raw.startsWith('/')) {
+      return 'objects';
+    }
+    final dir = raw.endsWith('/') ? raw.substring(0, raw.length - 1) : raw;
+    const roots = {'objects', 'sences', 'tiles'};
+    return roots.contains(dir.split('/').first) ? dir : 'objects';
   }
 
   factory ObjectDef.fromJson(int id, Map<String, dynamic> j) {
@@ -109,11 +187,7 @@ class ObjectDef {
     return ObjectDef(
       id: id,
       image: j['image'] as String? ?? '',
-      dir: switch (j['dir'] as String?) {
-        'sences' => 'sences',
-        'tiles' => 'tiles',
-        _ => 'objects',
-      },
+      dir: _parseDir(j['dir'] as String?),
       srcX: s(0) ?? 0,
       srcY: s(1) ?? 0,
       srcW: s(2), // null → 整張圖寬
@@ -128,6 +202,12 @@ class ObjectDef {
       footprintW: fp.isNotEmpty ? fp[0] : 1,
       footprintH: fp.length > 1 ? fp[1] : 1,
       blocking: j['blocking'] as bool? ?? false,
+      shadow: ObjectShadowSpec.fromJson(j['shadow']),
+      tilesW: (j['tilesW'] as num?)?.toDouble() ?? 0,
+      scale: switch ((j['scale'] as num?)?.toDouble()) {
+        final double v when v > 0 => v,
+        _ => 1.0,
+      },
       label: j['label'] as String? ?? '',
     );
   }

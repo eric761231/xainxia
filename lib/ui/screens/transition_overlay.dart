@@ -1,37 +1,30 @@
 import 'package:flutter/material.dart';
 
 import '../../game/my_game.dart';
-import '../theme/game_ui_styles.dart';
+import '../layout/xaml/specs/loading_ui_spec.dart';
 import '../widgets/shared/progress_overlay_scaffold.dart';
 
-/// 過場 overlay：背景 + 自訂訊息 + 進度條。
+/// 過場 overlay：與載入畫面同一套版面，只是訊息由 Dart 即時覆寫。
+///
+/// 兩者共用 `loading.xaml` 是刻意的 —— 它們在玩家眼中是同一個畫面，分成兩份設定
+/// 只會讓其中一份慢慢長歪。
 class TransitionOverlay extends StatelessWidget {
   const TransitionOverlay(this.game, {super.key});
 
   final MyGame game;
 
-  static const _backgroundAsset = 'assets/images/loading.png';
-
   @override
   Widget build(BuildContext context) {
-    return ProgressOverlayScaffold(
-      background: Image.asset(
-        _backgroundAsset,
-        fit: BoxFit.cover,
-        gaplessPlayback: true,
-        errorBuilder: (context, error, stackTrace) =>
-            const ColoredBox(color: Color(0xFF140E0C)),
+    return ValueListenableBuilder<int>(
+      valueListenable: LoadingUiSpec.holder.revision,
+      builder: (context, _, child) => ValueListenableBuilder<int?>(
+        valueListenable: game.transitionPortraitSex,
+        builder: (context, sex, child) => ProgressOverlayScaffold(
+          portraitSex: sex,
+          progress: game.progressNotifier,
+          messageOverride: game.transitionMessageNotifier,
+        ),
       ),
-      message: ValueListenableBuilder<String>(
-        valueListenable: game.transitionMessageNotifier,
-        builder: (context, message, child) {
-          return Text(
-            message,
-            style: GameUiStyles.shadowTextStyle(fontSize: 24),
-          );
-        },
-      ),
-      progress: game.progressNotifier,
     );
   }
 }

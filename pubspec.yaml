@@ -73,6 +73,11 @@ dev_dependencies:
   # 這組 lint 規則會在專案根目錄的 `analysis_options.yaml` 中啟用。要停用或啟用特定規則，請編輯該檔案。
   flutter_lints: ^6.0.0
 
+  # 測試用：讀 PNG 逐像素檢查（test/game/ground_atlas_test.dart 驗地板圖集的排列）。
+  # 它本來就以 transitive 相依存在，但那是別的套件帶進來的 ——
+  # 對方哪天不再依賴它，測試就會以「找不到套件」的形式莫名其妙壞掉。用到就明寫。
+  image: ^4.5.4
+
 # 有關 pubspec 文件中 Dart 通用設定的說明，請參閱：
 # https://dart.dev/tools/pub/pubspec
 
@@ -93,16 +98,29 @@ flutter:
     - assets/font/
     - assets/ui/common/
     - assets/ui/layouts/
+    - assets/ui/login_flow/
+    - assets/ui/xaml/
     - assets/ui/char_create/
     - assets/ui/natal_weapons/
     - assets/characters/
+    - assets/weapons/
+    - assets/monsters/
+    - assets/monsters/black_forest/
     - assets/data/server_connection.json
     - assets/data/app_config.json
     - assets/data/character_sprites.json
     - assets/data/object_catalog.json
+    - assets/data/map_backgrounds.json
     - assets/tiles/
+    # 子資料夾要另外列 —— Flutter 的 assets 不會遞迴，
+    # 少了這行圖磚會全部載不到，畫面退回程序化石板
+    - assets/tiles/ground/
+    - assets/tiles/ground_ref/
+    - assets/tiles/cave/
+    - assets/tiles/black_forest/
     - assets/sences/
     - assets/objects/
+    - assets/objects/black_forest/
     - assets/maps/
 
   # 圖片資源可以包含多個對應解析度的「變體」，詳見：

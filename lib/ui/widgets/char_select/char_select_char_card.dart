@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:xianxia_game/l10n/app_localizations.dart';
 
 import '../../../models/game_character.dart';
-import '../../../models/char_create_template.dart';
 import '../../theme/game_ui_fonts.dart';
 import '../../layout/char_create/char_create_ui_assets.dart';
 import '../../layout/char_select/char_select_ui_spec.dart';
@@ -63,10 +62,6 @@ class _CharSelectCharCardState extends State<CharSelectCharCard> {
     }
 
     final radius = BorderRadius.circular(CharSelectUiSpec.cardRadius);
-
-    final attr = widget.character.attribute
-        .clamp(0, CharCreateTemplate.attributeNames.length - 1);
-    final attrName = CharCreateTemplate.attributeNames[attr];
 
     Widget card = Container(
       height: CharSelectUiSpec.cardHeight,

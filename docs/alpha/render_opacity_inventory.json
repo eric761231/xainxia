@@ -1,0 +1,1538 @@
+[
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 45,
+    "code": "Paint()..color = color.withValues(alpha: 0.30 + 0.25 * pulse),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 50,
+    "code": "Paint()..color = color.withValues(alpha: 0.85),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 61,
+    "code": "double opacity = 1.0,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 69,
+    "code": "..color = color.withValues(alpha: 0.14 * opacity)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 74,
+    "code": "_portal(canvas, center, color, phase, scale, opacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 77,
+    "code": "_gather(canvas, center, color, phase, scale, opacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 80,
+    "code": "_talk(canvas, center, color, phase, scale, opacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 83,
+    "code": "_attack(canvas, center, color, phase, scale, opacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 95,
+    "code": "..color = color.withValues(alpha: 0.9 * o);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 114,
+    "code": "..color = color.withValues(alpha: aAlpha);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 135,
+    "code": "..color = color.withValues(alpha: 0.9 * o);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 138,
+    "code": "c, 2.4 * s, Paint()..color = color.withValues(alpha: 0.9 * o));",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 157,
+    "code": "rect, Paint()..color = color.withValues(alpha: 0.22 * o));",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 163,
+    "code": "..color = color.withValues(alpha: 0.9 * o),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 171,
+    "code": "Paint()..color = color.withValues(alpha: 0.9 * o),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 183,
+    "code": ".withValues(alpha: (on ? 1.0 : 0.55) * o),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 205,
+    "code": "..color = color.withValues(alpha: 0.85 * o * fade),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/interaction_indicator.dart",
+    "line": 217,
+    "code": "..color = color.withValues(alpha: 0.95 * o),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/game/map/iso_map_component.dart",
+    "line": 455,
+    "code": "opacity: 0.5,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_map_component.dart",
+    "line": 467,
+    "code": "void setObjectOpacity(int objId, double opacity) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_map_component.dart",
+    "line": 468,
+    "code": "_propertyComponents[objId]?.opacity = opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 45,
+    "code": "static const double corpseOpacity = 0.5;",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 148,
+    "code": "double opacity = 1.0;",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 172,
+    "code": "opacity = 1 - (1 - corpseOpacity) * (_fade / fadeSeconds);",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 175,
+    "code": "opacity = corpseOpacity;",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 186,
+    "code": "if (opacity >= 1) {",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_monster_component.dart",
+    "line": 191,
+    "code": "canvas.saveLayer(null, Paint()..color = Color.fromRGBO(0, 0, 0, opacity));",
+    "role": "corpse fade (intentional)"
+  },
+  {
+    "path": "lib/game/map/iso_object_catalog.dart",
+    "line": 14,
+    "code": "this.opacity = 0.20,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_catalog.dart",
+    "line": 21,
+    "code": "final double opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_catalog.dart",
+    "line": 31,
+    "code": "opacity: ((raw['opacity'] as num?)?.toDouble() ?? 0.20)",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 32,
+    "code": "double opacity = 1.0,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 33,
+    "code": "}) : _opacity = opacity.clamp(0.0, 1.0),",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 59,
+    "code": "double _opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 60,
+    "code": "double get opacity => _opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 61,
+    "code": "set opacity(double value) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 62,
+    "code": "_opacity = value.clamp(0.0, 1.0);",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 65,
+    "code": "_shadowComponent?.opacity = _opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 83,
+    "code": "if (def.shadow.enabled && def.shadow.opacity > 0) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 88,
+    "code": "opacity: opacity,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 123,
+    "code": "opacity: opacity,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 157,
+    "code": "required this.opacity,",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 168,
+    "code": "double opacity;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 173,
+    "code": "if (!shadow.enabled || shadow.opacity <= 0 || opacity <= 0) return;",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_component.dart",
+    "line": 203,
+    "code": "(shadow.opacity * opacity).clamp(0.0, 1.0).toDouble(),",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 18,
+    "code": "void paint(Canvas canvas, Rect dst, {double opacity = 1.0});",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 82,
+    "code": "void paint(Canvas canvas, Rect dst, {double opacity = 1.0}) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 85,
+    "code": "if (opacity < 1.0) paint.color = Color.fromRGBO(255, 255, 255, opacity);",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 103,
+    "code": "void paint(Canvas canvas, Rect dst, {double opacity = 1.0}) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 105,
+    "code": "if (opacity < 1.0) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/map/iso_object_graphic.dart",
+    "line": 106,
+    "code": "canvas.saveLayer(dst, Paint()..color = Color.fromRGBO(255, 255, 255, opacity));",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/my_game.dart",
+    "line": 185,
+    "code": "worldScene?.setObjectOpacity(objId, 1.0);",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/my_game.dart",
+    "line": 385,
+    "code": "worldScene?.setObjectOpacity(objId, 0.4);",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/world_scene.dart",
+    "line": 211,
+    "code": "void setObjectOpacity(int objId, double opacity) {",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/game/world_scene.dart",
+    "line": 212,
+    "code": "_map?.setObjectOpacity(objId, opacity);",
+    "role": "world placement/shadow (reviewed)"
+  },
+  {
+    "path": "lib/tools/map_editor/map_canvas.dart",
+    "line": 622,
+    "code": "opacity: 0.3);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 62,
+    "code": "double startBtnDisabledOpacity = 0.50;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 75,
+    "code": "double backDisabledOpacity = 0.40;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 103,
+    "code": "double spiritRootUnselectedBgOpacity = 0.20;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 104,
+    "code": "double spiritRootSelectedBgOpacity = 0.18;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 105,
+    "code": "double spiritRootUnselectedBorderOpacity = 0.24;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 107,
+    "code": "double spiritRootUnselectedHighlightOpacity = 0.06;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 108,
+    "code": "double spiritRootSelectedBorderOpacity = 1.0;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 109,
+    "code": "double spiritRootSelectedGlowOpacity = 0.35;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 122,
+    "code": "double nameHintOpacity = 0.54;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 130,
+    "code": "double genderSectionBgOpacity = 0.30;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 140,
+    "code": "double genderUnselectedOverlayOpacity = 0.45;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 141,
+    "code": "double genderUnselectedTextOpacity = 0.70;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 176,
+    "code": "double statsSectionBgOpacity = 0.35;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_config.dart",
+    "line": 198,
+    "code": "double statAdjustBtnDisabledOpacity = 0.40;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 121,
+    "code": "c.startBtnDisabledOpacity = XmlAttr.d(el, 'disabledOpacity', c.startBtnDisabledOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 136,
+    "code": "c.backDisabledOpacity = XmlAttr.d(el, 'disabledOpacity', c.backDisabledOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 173,
+    "code": "c.spiritRootUnselectedBgOpacity = XmlAttr.d(el, 'unselectedBgOpacity', c.spiritRootUnselectedBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 174,
+    "code": "c.spiritRootSelectedBgOpacity = XmlAttr.d(el, 'selectedBgOpacity', c.spiritRootSelectedBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 175,
+    "code": "c.spiritRootUnselectedBorderOpacity = XmlAttr.d(el, 'unselectedBorderOpacity', c.spiritRootUnselectedBorderOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 177,
+    "code": "c.spiritRootUnselectedHighlightOpacity = XmlAttr.d(el, 'unselectedHighlightOpacity', c.spiritRootUnselectedHighlightOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 178,
+    "code": "c.spiritRootSelectedBorderOpacity = XmlAttr.d(el, 'selectedBorderOpacity', c.spiritRootSelectedBorderOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 179,
+    "code": "c.spiritRootSelectedGlowOpacity = XmlAttr.d(el, 'selectedGlowOpacity', c.spiritRootSelectedGlowOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 197,
+    "code": "c.nameHintOpacity = XmlAttr.d(el, 'hintOpacity', c.nameHintOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 207,
+    "code": "c.genderSectionBgOpacity = XmlAttr.d(el, 'sectionBgOpacity', c.genderSectionBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 217,
+    "code": "c.genderUnselectedOverlayOpacity = XmlAttr.d(el, 'unselectedOverlayOpacity', c.genderUnselectedOverlayOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 218,
+    "code": "c.genderUnselectedTextOpacity = XmlAttr.d(el, 'unselectedTextOpacity', c.genderUnselectedTextOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 265,
+    "code": "c.statsSectionBgOpacity = XmlAttr.d(el, 'sectionBgOpacity', c.statsSectionBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_loader.dart",
+    "line": 289,
+    "code": "c.statAdjustBtnDisabledOpacity = XmlAttr.d(el, 'adjustBtnDisabledOpacity', c.statAdjustBtnDisabledOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 105,
+    "code": "static double get spiritRootUnselectedBgOpacity => _c.spiritRootUnselectedBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 106,
+    "code": "static double get spiritRootSelectedBgOpacity => _c.spiritRootSelectedBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 107,
+    "code": "static double get spiritRootUnselectedBorderOpacity => _c.spiritRootUnselectedBorderOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 109,
+    "code": "static double get spiritRootUnselectedHighlightOpacity => _c.spiritRootUnselectedHighlightOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 110,
+    "code": "static double get spiritRootSelectedBorderOpacity => _c.spiritRootSelectedBorderOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 111,
+    "code": "static double get spiritRootSelectedGlowOpacity => _c.spiritRootSelectedGlowOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 153,
+    "code": "static double get nameHintOpacity => _c.nameHintOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 160,
+    "code": "static double get genderSectionBgOpacity => _c.genderSectionBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 171,
+    "code": "static double get genderUnselectedOverlayOpacity => _c.genderUnselectedOverlayOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 172,
+    "code": "static double get genderUnselectedTextOpacity => _c.genderUnselectedTextOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 210,
+    "code": "static double get statsSectionBgOpacity => _c.statsSectionBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 233,
+    "code": "static double get statAdjustBtnDisabledOpacity => _c.statAdjustBtnDisabledOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 245,
+    "code": "static double get startBtnDisabledOpacity => _c.startBtnDisabledOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_create/char_create_ui_spec.dart",
+    "line": 260,
+    "code": "static double get backDisabledOpacity => _c.backDisabledOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 48,
+    "code": "double rightPanelSectionBgOpacity = 0.35;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 71,
+    "code": "double cardUnselectedBgOpacity = 0.18;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 72,
+    "code": "double cardSelectedBgOpacity = 0.25;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 73,
+    "code": "double cardUnselectedBorderOpacity = 0.22;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 75,
+    "code": "double cardSelectedBorderOpacity = 1.0;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_config.dart",
+    "line": 77,
+    "code": "double cardSelectedGlowOpacity = 0.35;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 94,
+    "code": "c.rightPanelSectionBgOpacity = XmlAttr.d(el, 'sectionBgOpacity', c.rightPanelSectionBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 121,
+    "code": "c.cardUnselectedBgOpacity = XmlAttr.d(el, 'unselectedBgOpacity', c.cardUnselectedBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 122,
+    "code": "c.cardSelectedBgOpacity = XmlAttr.d(el, 'selectedBgOpacity', c.cardSelectedBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 123,
+    "code": "c.cardUnselectedBorderOpacity = XmlAttr.d(el, 'unselectedBorderOpacity', c.cardUnselectedBorderOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 125,
+    "code": "c.cardSelectedBorderOpacity = XmlAttr.d(el, 'selectedBorderOpacity', c.cardSelectedBorderOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_loader.dart",
+    "line": 127,
+    "code": "c.cardSelectedGlowOpacity = XmlAttr.d(el, 'selectedGlowOpacity', c.cardSelectedGlowOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 83,
+    "code": "static double get rightPanelSectionBgOpacity => _c.rightPanelSectionBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 113,
+    "code": "static double get cardUnselectedBgOpacity => _c.cardUnselectedBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 114,
+    "code": "static double get cardSelectedBgOpacity => _c.cardSelectedBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 115,
+    "code": "static double get cardUnselectedBorderOpacity => _c.cardUnselectedBorderOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 117,
+    "code": "static double get cardSelectedBorderOpacity => _c.cardSelectedBorderOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/char_select/char_select_ui_spec.dart",
+    "line": 119,
+    "code": "static double get cardSelectedGlowOpacity => _c.cardSelectedGlowOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/account_ui_spec.dart",
+    "line": 19,
+    "code": "centerOpacity: 0,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/loading_ui_spec.dart",
+    "line": 33,
+    "code": "this.glowOpacity = 0.55,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/loading_ui_spec.dart",
+    "line": 61,
+    "code": "final double glowOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/loading_ui_spec.dart",
+    "line": 124,
+    "code": "glowOpacity:",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/loading_ui_spec.dart",
+    "line": 125,
+    "code": "bar?.d('glowOpacity', d.glowOpacity, min: 0, max: 1) ?? d.glowOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 28,
+    "code": "required this.selectedGlowOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 29,
+    "code": "required this.disabledOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 49,
+    "code": "final double selectedGlowOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 52,
+    "code": "final double disabledOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 75,
+    "code": "selectedGlowOpacity: node",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 76,
+    "code": ".d('selectedGlowOpacity', fallback.selectedGlowOpacity, min: 0, max: 1),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 77,
+    "code": "disabledOpacity:",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 78,
+    "code": "node.d('disabledOpacity', fallback.disabledOpacity, min: 0.1, max: 1),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 90,
+    "code": "centerOpacity: 0,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 123,
+    "code": "selectedGlowOpacity: 0,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/specs/server_select_ui_spec.dart",
+    "line": 124,
+    "code": "disabledOpacity: 0.45,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/ui_xaml_parts.dart",
+    "line": 147,
+    "code": "required this.centerOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/ui_xaml_parts.dart",
+    "line": 154,
+    "code": "final double centerOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/ui_xaml_parts.dart",
+    "line": 167,
+    "code": "centerOpacity:",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/layout/xaml/ui_xaml_parts.dart",
+    "line": 168,
+    "code": "node.d('centerOpacity', fallback.centerOpacity, min: 0, max: 1),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/character_create.dart",
+    "line": 239,
+    "code": "child: ColoredBox(color: Colors.black.withValues(alpha: 0.35)),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 197,
+    "code": "ColoredBox(color: Colors.black.withValues(alpha: 0.35)),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 521,
+    "code": "bgColor: Colors.white.withValues(alpha: 0.12),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 536,
+    "code": ").withValues(alpha: 0.20),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 539,
+    "code": ").withValues(alpha: 0.60),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 555,
+    "code": ").withValues(alpha: 0.15),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 558,
+    "code": ").withValues(alpha: 0.50),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 612,
+    "code": "final opacity = widget.enabled ? 1.0 : 0.45;",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 632,
+    "code": "child: Opacity(",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 633,
+    "code": "opacity: opacity,",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/character_select.dart",
+    "line": 647,
+    "code": "color: Colors.white.withValues(alpha: 0.20),",
+    "role": "background overlay / buttons (portrait stays outside overlay)"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 113,
+    "code": "color: _gold.withValues(alpha: 0.12),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 178,
+    "code": "color: active ? on.withValues(alpha: 0.2) : _gold.withValues(alpha: 0.12),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 181,
+    "code": "color: active ? on : _gold.withValues(alpha: 0.4)),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 207,
+    "code": "? _gold.withValues(alpha: 0.2)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 208,
+    "code": ": Colors.white.withValues(alpha: 0.04),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 213,
+    "code": ": _gold.withValues(alpha: 0.25),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 277,
+    "code": "Border.all(color: _gold.withValues(alpha: 0.4)),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/decor_panel.dart",
+    "line": 291,
+    "code": "color: _gold.withValues(alpha: 0.22),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 439,
+    "code": "colors: [color.withValues(alpha: 0.75), color],",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 481,
+    "code": "color: _gold.withValues(alpha: 0.5),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1088,
+    "code": "..color = _gold.withValues(alpha: 0.35),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1309,
+    "code": "color: Colors.black.withValues(alpha: 0.4),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1614,
+    "code": "color: _gold.withValues(alpha: 0.35),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1619,
+    "code": "color: Colors.black.withValues(alpha: 0.6),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1636,
+    "code": "color: Colors.black.withValues(alpha: 0.55),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1723,
+    "code": "color: Colors.white.withValues(alpha: 0.85),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1728,
+    "code": "color: _Minimap._portalBlue.withValues(alpha: 0.9),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/game_hud_overlay.dart",
+    "line": 1812,
+    "code": "color: active ? _gold.withValues(alpha: 0.18) : Colors.transparent,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 124,
+    "code": "color: _gold.withValues(alpha: 0.12),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 156,
+    "code": "? _gold.withValues(alpha: 0.18)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 224,
+    "code": ": _gold.withValues(alpha: 0.14),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 229,
+    "code": ": _gold.withValues(alpha: 0.45)),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 342,
+    "code": "borderSide: BorderSide(color: _gold.withValues(alpha: 0.3)),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 399,
+    "code": "color: Colors.black.withValues(alpha: 0.4),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/gm_panel.dart",
+    "line": 401,
+    "code": "border: Border.all(color: _gold.withValues(alpha: 0.3)),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/serverlist.dart",
+    "line": 157,
+    "code": "return Opacity(",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/screens/serverlist.dart",
+    "line": 158,
+    "code": "opacity: status.selectable ? 1.0 : spec.disabledOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/theme/game_ui_styles.dart",
+    "line": 40,
+    "code": "color: Colors.black.withValues(alpha: 0.85),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/theme/game_ui_styles.dart",
+    "line": 46,
+    "code": "color: Colors.black.withValues(alpha: 0.85),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/theme/game_ui_styles.dart",
+    "line": 62,
+    "code": "backgroundColor: Colors.white.withValues(alpha: alpha),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_back_button.dart",
+    "line": 25,
+    "code": "child: Opacity(",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_back_button.dart",
+    "line": 26,
+    "code": "opacity: enabled ? 1.0 : CharCreateUiSpec.backDisabledOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_name_bar.dart",
+    "line": 77,
+    "code": "alpha: CharCreateUiSpec.nameHintOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_start_button.dart",
+    "line": 25,
+    "code": "child: Opacity(",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_start_button.dart",
+    "line": 26,
+    "code": "opacity: enabled ? 1.0 : CharCreateUiSpec.startBtnDisabledOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_stat_row.dart",
+    "line": 125,
+    "code": "child: Opacity(",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_stat_row.dart",
+    "line": 126,
+    "code": "opacity: enabled ? 1.0 : CharCreateUiSpec.statAdjustBtnDisabledOpacity,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_create/char_create_text_styles.dart",
+    "line": 214,
+    "code": "color: color.withValues(alpha: 0.85),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 47,
+    "code": "final bgOpacity = selected",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 48,
+    "code": "? CharSelectUiSpec.cardSelectedBgOpacity",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 49,
+    "code": ": CharSelectUiSpec.cardUnselectedBgOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 51,
+    "code": "? attrColor.withValues(alpha: CharSelectUiSpec.cardSelectedBorderOpacity)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 52,
+    "code": ": Colors.white.withValues(alpha: CharSelectUiSpec.cardUnselectedBorderOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 74,
+    "code": "? attrColor.withValues(alpha: bgOpacity)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 75,
+    "code": ": Colors.black.withValues(alpha: bgOpacity),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_char_card.dart",
+    "line": 152,
+    "code": "alpha: CharSelectUiSpec.cardSelectedGlowOpacity),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_info_panel.dart",
+    "line": 22,
+    "code": "Colors.black.withValues(alpha: CharSelectUiSpec.rightPanelSectionBgOpacity);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_info_panel.dart",
+    "line": 159,
+    "code": "backgroundColor: Colors.white.withValues(alpha: 0.12),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/char_select/char_select_info_panel.dart",
+    "line": 219,
+    "code": "color: Colors.white.withValues(alpha: 0.12),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/context_menu.dart",
+    "line": 138,
+    "code": "widget.item.danger ? PanelTheme.danger : Colors.white.withValues(alpha: 0.85);",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/energy_loading_bar.dart",
+    "line": 108,
+    "code": "boxShadow: spec.glowOpacity <= 0 || spec.glowBlur <= 0",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/energy_loading_bar.dart",
+    "line": 112,
+    "code": "color: spec.glowColor.withValues(alpha: spec.glowOpacity),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/game_image_button.dart",
+    "line": 49,
+    "code": "color: Colors.white.withValues(alpha: 0.15),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/game_message_dialog.dart",
+    "line": 111,
+    "code": "color: Colors.black.withValues(alpha: 0.75),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/ink_fade_rect.dart",
+    "line": 26,
+    "code": "this.centerOpacity = 0.72,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/ink_fade_rect.dart",
+    "line": 39,
+    "code": "final double centerOpacity;",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/ink_fade_rect.dart",
+    "line": 68,
+    "code": "alpha: centerOpacity.clamp(0.0, 1.0),",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/ink_fade_rect.dart",
+    "line": 89,
+    "code": "return ShaderMask(",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/ink_fade_rect.dart",
+    "line": 90,
+    "code": "blendMode: BlendMode.dstIn,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "lib/ui/widgets/shared/tabbed_panel.dart",
+    "line": 147,
+    "code": "? PanelTheme.danger.withValues(alpha: 0.16)",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 9,
+    "code": "- 本檔：位置、尺寸、opacity、色票、互動疊色 → CharCreateUiSpec",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 64,
+    "code": "disabledOpacity=\"0.50\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 74,
+    "code": "disabledOpacity=\"0.40\" safeExtra=\"4\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 101,
+    "code": "unselectedBgOpacity         底色黑度（gradient 下層）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 102,
+    "code": "unselectedHighlightOpacity  底色高光（gradient 上層）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 103,
+    "code": "unselectedBorderOpacity     邊框透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 106,
+    "code": "selectedBgOpacity     選中底色（依靈根色 gradient）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 107,
+    "code": "selectedBorderOpacity 選中邊框透明度（通常 1.0）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 109,
+    "code": "selectedGlowOpacity   外圈光暈透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 130,
+    "code": "unselectedBgOpacity=\"0.20\" selectedBgOpacity=\"0.18\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 131,
+    "code": "unselectedBorderOpacity=\"0.24\" unselectedBorderWidth=\"1\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 132,
+    "code": "unselectedHighlightOpacity=\"0.06\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 134,
+    "code": "selectedBorderOpacity=\"1.0\" selectedGlowOpacity=\"0.35\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 145,
+    "code": "hintOpacity   提示文字透明度（0=全透明，1=不透明）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 149,
+    "code": "<nameField fontSize=\"26\" hintFontSize=\"25\" hintOpacity=\"0.54\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 157,
+    "code": "sectionBgOpacity                     區塊半透明黑底",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 164,
+    "code": "unselectedOverlayOpacity             （deprecated）已改 btn01/btn01_selected 切圖",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 165,
+    "code": "unselectedTextOpacity                （deprecated）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 169,
+    "code": "sectionBgOpacity=\"0.30\" iconSize=\"32\" titleFontSize=\"14\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 173,
+    "code": "unselectedOverlayOpacity=\"0.45\" unselectedTextOpacity=\"0.70\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 179,
+    "code": "sectionPadding / sectionRadius / sectionBgOpacity  區塊內距、圓角、底色",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 204,
+    "code": "adjustBtnDisabledOpacity  點數用完或達上限時 +/- 透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 212,
+    "code": "sectionBgOpacity=\"0.35\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_create_layout.xml",
+    "line": 234,
+    "code": "adjustBtnDisabledOpacity=\"0.40\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 9,
+    "code": "- 本檔：位置、尺寸、opacity、色票、互動疊色 → CharSelectUiSpec",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 63,
+    "code": "sectionBgOpacity 區塊黑底透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 68,
+    "code": "sectionBgOpacity=\"0.35\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 100,
+    "code": "unselectedBgOpacity   未選中底色透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 101,
+    "code": "selectedBgOpacity     選中底色透明度（依靈根色）",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 102,
+    "code": "unselectedBorderOpacity 未選中邊框透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 104,
+    "code": "selectedBorderOpacity   選中邊框透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 106,
+    "code": "selectedGlowOpacity     選中外圈光暈透明度",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 114,
+    "code": "unselectedBgOpacity=\"0.18\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 115,
+    "code": "selectedBgOpacity=\"0.25\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 116,
+    "code": "unselectedBorderOpacity=\"0.22\" unselectedBorderWidth=\"1.0\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 117,
+    "code": "selectedBorderOpacity=\"1.0\" selectedBorderWidth=\"1.5\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/layouts/char_select_layout.xml",
+    "line": 118,
+    "code": "selectedGlowOpacity=\"0.35\" selectedGlowBlur=\"8\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/account.xaml",
+    "line": 8,
+    "code": "color=\"{ink}\" centerOpacity=\"0\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/loading.xaml",
+    "line": 25,
+    "code": "glowColor=\"{cyan}\" glowBlur=\"14\" glowOpacity=\"0.55\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/server_select.xaml",
+    "line": 6,
+    "code": "color=\"{ink}\" centerOpacity=\"0\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/server_select.xaml",
+    "line": 21,
+    "code": "selectedGlowColor=\"{cyan}\" selectedGlowBlur=\"10\" selectedGlowOpacity=\"0\"",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/server_select.xaml",
+    "line": 22,
+    "code": "disabledOpacity=\"0.45\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/theme.xaml",
+    "line": 45,
+    "code": "<Opacity id=\"fadeCenterOpacity\" value=\"0.72\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/ui/xaml/theme.xaml",
+    "line": 58,
+    "code": "<Opacity id=\"shadowOpacity\" value=\"0.45\" />",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 57,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 79,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 101,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 123,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 144,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  },
+  {
+    "path": "assets/data/object_catalog.json",
+    "line": 166,
+    "code": "\"opacity\": 0.3,",
+    "role": "UI style/state or decorative effect; no global removal"
+  }
+]

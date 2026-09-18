@@ -1,38 +1,54 @@
 import 'package:flutter/material.dart';
 
-/// 載入進度條（含滑動指示器）。
+/// 載入進度條。
+///
+/// 刻意不放圓形滑塊或轉圈動畫 —— 進度由填充寬度與百分比文字表達即可。
+/// 軌道為純灰白，填充保留藍色漸層以維持辨識度。
 class LoadingBar extends StatelessWidget {
   final double progress;
   final double width;
 
   const LoadingBar({required this.progress, this.width = 600, super.key});
 
+  /// 軌道底色（純灰白）。
+  static const _trackColor = Color(0xFFE8E8E8);
+  static const _trackBorder = Color(0xFFBFBFBF);
+
+  /// 填充漸層（藍）。
+  static const _fillStart = Color(0xFF4FC3F7);
+  static const _fillEnd = Color(0xFF0288D1);
+
+  /// 百分比文字：灰白軌道上必須用深色，白字會看不見。
+  static const _labelColor = Color(0xFF333333);
+
+  static const _barHeight = 20.0;
+  static const _boxHeight = 32.0;
+
   @override
   Widget build(BuildContext context) {
     final clamped = progress.clamp(0.0, 1.0);
-    const thumbSize = 40.0;
-    const barHeight = 20.0;
-    final top = (56 - barHeight) / 2;
-    final left = ((width - thumbSize) * clamped).clamp(0.0, width - thumbSize);
+    const top = (_boxHeight - _barHeight) / 2;
 
     return SizedBox(
       width: width,
-      height: 56,
+      height: _boxHeight,
       child: Stack(
         children: [
+          // 軌道
           Positioned(
             top: top,
             left: 0,
             right: 0,
             child: Container(
-              height: barHeight,
+              height: _barHeight,
               decoration: BoxDecoration(
-                color: const Color(0xFF4E2E1E),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2E150D), width: 3),
+                color: _trackColor,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: _trackBorder, width: 2),
               ),
             ),
           ),
+          // 已完成部分
           Positioned(
             top: top,
             left: 0,
@@ -41,59 +57,29 @@ class LoadingBar extends StatelessWidget {
               alignment: Alignment.centerLeft,
               widthFactor: clamped,
               child: Container(
-                height: barHeight,
+                height: _barHeight,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF4FC3F7), Color(0xFF0288D1)],
+                    colors: [_fillStart, _fillEnd],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
           ),
+          // 百分比
           Align(
             alignment: Alignment.center,
             child: Text(
-              '${(clamped * 100).toInt()}%'.padLeft(3),
+              '${(clamped * 100).toInt()}%',
               style: const TextStyle(
-                color: Colors.white,
+                color: _labelColor,
                 fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
             ),
           ),
-          Positioned(
-            left: left,
-            top: (56 - thumbSize) / 2,
-            child: _LoadingThumb(progress: progress),
-          ),
         ],
-      ),
-    );
-  }
-}
-
-class _LoadingThumb extends StatelessWidget {
-  const _LoadingThumb({required this.progress});
-
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFF2E150D), width: 2),
-        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
-      ),
-      child: Center(
-        child: Icon(
-          progress < 0.98 ? Icons.person : Icons.check,
-          color: progress < 0.98 ? Colors.redAccent : Colors.green,
-          size: 18,
-        ),
       ),
     );
   }

@@ -41,7 +41,8 @@ void main() {
     final a = IsoMapData.fromJson(jsonDecode(src) as Map<String, dynamic>);
     // 序列化再解析
     final b = IsoMapData.fromJson(
-        jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>);
+      jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>,
+    );
 
     expect(b.id, a.id);
     expect(b.name, a.name);
@@ -64,11 +65,18 @@ void main() {
     // srcRect：第 0 格含 margin；第 9 格（第2列第1欄）含 margin + spacing。
     final ts = b.tilesets.first;
     expect(ts.srcRect(0), const Rect.fromLTWH(4, 70, 64, 32));
-    expect(ts.srcRect(9), const Rect.fromLTWH(4 + 1 * (64 + 2),
-        70 + 1 * (32 + 2), 64, 32));
+    expect(
+      ts.srcRect(9),
+      const Rect.fromLTWH(4 + 1 * (64 + 2), 70 + 1 * (32 + 2), 64, 32),
+    );
     // 預設值省略時不輸出（保持舊地圖 JSON 不變）。
-    const plain =
-        IsoTileset(firstId: 1, image: 'g.png', tileWidth: 64, tileHeight: 32, columns: 4);
+    const plain = IsoTileset(
+      firstId: 1,
+      image: 'g.png',
+      tileWidth: 64,
+      tileHeight: 32,
+      columns: 4,
+    );
     expect(plain.toJson().containsKey('marginX'), isFalse);
     expect(plain.toJson().containsKey('marginY'), isFalse);
     expect(plain.toJson().containsKey('spacing'), isFalse);
@@ -158,7 +166,8 @@ void main() {
 
     // 序列化再解析後一致。
     final b = IsoMapData.fromJson(
-        jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>);
+      jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>,
+    );
     expect(b.layers.length, 1);
     expect(b.objects.length, 2);
     expect(b.objects[1].id, 1002);
@@ -184,6 +193,30 @@ void main() {
     expect(tree.blocking, isTrue);
     expect(tree.footprintW, 1);
     expect(tree.label, '樹');
+  });
+
+  test('ObjectShadowSpec：預設上方光的置中陰影、可解析且會限制數值範圍', () {
+    final defaultShadow = ObjectDef.fromJson(4001, {
+      'image': 'shelf.png',
+    }).shadow;
+    expect(defaultShadow.enabled, isTrue);
+    expect(defaultShadow.offsetTilesX, 0.0);
+    expect(defaultShadow.offsetTilesY, 0.0);
+
+    final custom = ObjectDef.fromJson(4002, {
+      'image': 'desk.png',
+      'shadow': {
+        'enabled': false,
+        'opacity': 2.0,
+        'blur': -1.0,
+        'offsetTiles': [0, 0],
+      },
+    }).shadow;
+    expect(custom.enabled, isFalse);
+    expect(custom.opacity, 1.0);
+    expect(custom.blur, 0.0);
+    expect(custom.offsetTilesX, 0.0);
+    expect(custom.offsetTilesY, 0.0);
   });
 
   test('ObjectDef.fromJson：一檔一物件（省略 src/anchor → null，渲染端依圖尺寸解析）', () {
@@ -227,13 +260,18 @@ void main() {
     expect(foot.resolveAnchor(100, 200), (50.0, 200.0));
 
     // center：圖中央 (w/2, h/2)。
-    final center =
-        ObjectDef.fromJson(1001, {'image': 'flowers001.png', 'anchorMode': 'center'});
+    final center = ObjectDef.fromJson(1001, {
+      'image': 'flowers001.png',
+      'anchorMode': 'center',
+    });
     expect(center.anchorMode, 'center');
     expect(center.resolveAnchor(100, 200), (50.0, 100.0));
 
     // tile：等距地形，anchorY = mapHalfTileHeight（頂點對齊格頂點）。
-    final tile = ObjectDef.fromJson(3001, {'image': 't.png', 'anchorMode': 'tile'});
+    final tile = ObjectDef.fromJson(3001, {
+      'image': 't.png',
+      'anchorMode': 'tile',
+    });
     expect(tile.anchorMode, 'tile');
     expect(tile.resolveAnchor(576, 288, mapHalfTileHeight: 16), (288.0, 16.0));
 
@@ -248,7 +286,13 @@ void main() {
   });
 
   test('MapObject offsetX/Y round-trip（省略時不輸出）', () {
-    final a = MapObject.fromJson({'id': 1010, 'x': 3, 'y': 4, 'offsetX': -6, 'offsetY': 8});
+    final a = MapObject.fromJson({
+      'id': 1010,
+      'x': 3,
+      'y': 4,
+      'offsetX': -6,
+      'offsetY': 8,
+    });
     expect(a.offsetX, -6);
     expect(a.offsetY, 8);
     final j = a.toJson();
@@ -265,17 +309,42 @@ void main() {
   test('ObjectDef.dir 解析：objects(預設)/sences/tiles/非法→objects', () {
     expect(ObjectDef.fromJson(1, {'image': 'a.png'}).dir, 'objects');
     expect(
-        ObjectDef.fromJson(2, {'image': 'a.png', 'dir': 'sences'}).dir, 'sences');
+      ObjectDef.fromJson(2, {'image': 'a.png', 'dir': 'sences'}).dir,
+      'sences',
+    );
     expect(
-        ObjectDef.fromJson(3, {'image': 'a.png', 'dir': 'tiles'}).dir, 'tiles');
-    expect(ObjectDef.fromJson(4, {'image': 'a.png', 'dir': '???'}).dir,
-        'objects');
+      ObjectDef.fromJson(3, {'image': 'a.png', 'dir': 'tiles'}).dir,
+      'tiles',
+    );
+    expect(
+      ObjectDef.fromJson(4, {'image': 'a.png', 'dir': '???'}).dir,
+      'objects',
+    );
+    // 子資料夾：黑森林的圖放在 assets/objects/black_forest/，被當成 objects 就全部載不到
+    expect(
+      ObjectDef.fromJson(5, {'image': 'a.png', 'dir': 'objects/black_forest'}).dir,
+      'objects/black_forest',
+    );
+    expect(
+      ObjectDef.fromJson(6, {'image': 'a.png', 'dir': 'tiles/cave/'}).dir,
+      'tiles/cave',
+    );
+    // 跳出 assets 或不在允許根目錄底下的，一律退回 objects
+    for (final bad in ['../secret', 'objects/../../x', '/abs', 'fonts/x']) {
+      expect(ObjectDef.fromJson(7, {'image': 'a.png', 'dir': bad}).dir, 'objects',
+          reason: bad);
+    }
   });
 
-  test('MapObject tilesW round-trip（0 省略）', () {
+  test('MapObject tilesW 支援小數 round-trip（0 省略）', () {
     final a = MapObject.fromJson({'id': 3001, 'x': 2, 'y': 2, 'tilesW': 4});
-    expect(a.tilesW, 4);
-    expect(a.toJson()['tilesW'], 4);
+    expect(a.tilesW, 4.0);
+    expect(a.toJson()['tilesW'], 4.0);
+
+    final fractional =
+        MapObject.fromJson({'id': 3002, 'x': 3, 'y': 3, 'tilesW': 1.5});
+    expect(fractional.tilesW, 1.5);
+    expect(fractional.toJson()['tilesW'], 1.5);
 
     final b = MapObject.fromJson({'id': 1, 'x': 0, 'y': 0});
     expect(b.tilesW, 0);
@@ -312,7 +381,8 @@ void main() {
     expect(a.objects.where((o) => o.x == 1 && o.y == 1).length, 2); // 同格疊兩層
 
     final b = IsoMapData.fromJson(
-        jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>);
+      jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>,
+    );
     expect(b.objectLayers, 3);
     expect(b.characterLayer, 2);
     expect(b.objects.firstWhere((o) => o.id == 3001).layer, 1);
@@ -320,8 +390,11 @@ void main() {
 
     // 預設值不輸出。
     final plain = IsoMapData.fromJson(
-        jsonDecode('{"id":"0","name":"x","width":1,"height":1,"tilesets":[],"layers":[]}')
-            as Map<String, dynamic>);
+      jsonDecode(
+            '{"id":"0","name":"x","width":1,"height":1,"tilesets":[],"layers":[]}',
+          )
+          as Map<String, dynamic>,
+    );
     expect(plain.objectLayers, 1);
     expect(plain.characterLayer, 1);
     expect(plain.toJson().containsKey('objectLayers'), isFalse);

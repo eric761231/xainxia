@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<UiView id="account" designWidth="1920" designHeight="1080">
+  <Background asset="loginFlowBg" fallbackAsset="legacyLoadingBg" fit="cover" />
+
+  <InkFadeRect id="loginArea"
+               centerX="960" centerY="470" width="620" height="620"
+               color="{ink}" centerOpacity="0"
+               fadeX="{fadeX}" fadeY="{fadeY}" radius="0" />
+
+  <Text id="title" text="" centerX="960" centerY="230"
+        size="{fontTitle}" color="#FFFFFF" />
+
+  <TextField id="account" centerX="960" centerY="420"
+             width="{fieldWidth}" height="{fieldHeight}"
+             hint="" textSize="{fontBody}"
+             textColor="#FFFFFF" hintColor="#FFFFFF"
+             lineColor="{cyanDim}" focusLineColor="{cyan}" lineWidth="2" />
+
+  <TextField id="password" centerX="960" centerY="482"
+             width="{fieldWidth}" height="{fieldHeight}"
+             hint="" textSize="{fontBody}"
+             textColor="#FFFFFF" hintColor="#FFFFFF"
+             lineColor="{cyanDim}" focusLineColor="{cyan}" lineWidth="2" />
+
+  <Button id="submit" text="登入" centerX="960" centerY="548"
+          width="{fieldWidth}" height="56"
+          textSize="{fontHeading}" textColor="#FFFFFF" />
+
+  
+  <Button id="serverSelect" text="選擇伺服器" centerX="960" centerY="596"
+          width="{fieldWidth}" height="44"
+          textSize="{fontLabel}" textColor="#FFFFFF" />
+
+  <Button id="session" centerX="960" centerY="638"
+          width="{fieldWidth}" height="40"
+          textSize="{fontCaption}" textColor="#FFFFFF" />
+</UiView>
+

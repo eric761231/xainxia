@@ -1,0 +1,17 @@
+[
+  {
+    "source": "assets/ui/char_create/char_bg.png",
+    "published": "assets/ui/char_create/char_bg_68751985.png",
+    "sha256": "68751985731fbaf5f16a1810afb51df2ead3a38902ba9dd6b06fc04c566d70ec"
+  },
+  {
+    "source": "assets/ui/char_create/char_male.png",
+    "published": "assets/ui/char_create/char_male_8917db27.png",
+    "sha256": "8917db275362979a6f925bbed33b3d9526a2cf2c0625b33e61cad98c8f104042"
+  },
+  {
+    "source": "assets/ui/char_create/char_female.png",
+    "published": "assets/ui/char_create/char_female_60e9aaaa.png",
+    "sha256": "60e9aaaaba8ec44ad3f66a27f78b2b2c1c1db86b8fc0ca408f13882334b993c4"
+  }
+]

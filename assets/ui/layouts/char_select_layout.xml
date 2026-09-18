@@ -41,13 +41,13 @@
 
     <!--
       中央欄：角色立繪
-      portraitWidthFraction  立繪寬 = 中欄寬 × 此值
+      portraitWidthFraction  保留相容設定；直式立繪現以內容高 82% + contain 顯示
       portraitBottomOffset   立繪距底部偏移（px）
       nameFontSize           浮動角色名字級
       levelFontSize          修為等級字級
       namePaddingH           名稱文字左右內距
     -->
-    <centerPanel portraitWidthFraction="0.85"
+    <centerPanel portraitWidthFraction="1.00"
                  portraitBottomOffset="80"
                  nameFontSize="38" levelFontSize="22"
                  namePaddingH="12" />

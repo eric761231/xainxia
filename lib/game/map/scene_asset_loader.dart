@@ -122,7 +122,13 @@ class CharacterSpriteSet {
     required this.stateOffsets,
     required this.footOffsetY,
     required this.renderScale,
+    this.l1Path,
   });
+
+  /// 若設定了 `"l1"`，人物改用 DrawPng 的緊密打包圖集（逐幀 offset），
+  /// 上面那些等格欄位就不適用 —— 那套圖集每一幀有自己的尺寸與位移。
+  /// 手繪素材維持原本的等格路徑，兩者並存。
+  final String? l1Path;
 
   /// key = [keyFor]：state * 8 + facing(0..7)。
   final Map<int, SpriteAnimation> animations;
@@ -144,7 +150,10 @@ class CharacterSpriteSet {
     bool moving = false,
     required int facing,
   }) =>
-      (state ?? (moving ? CharacterAnimationState.walk : CharacterAnimationState.idle))
+      (state ??
+                  (moving
+                      ? CharacterAnimationState.walk
+                      : CharacterAnimationState.idle))
               .index *
           8 +
       facing.clamp(0, 7);
@@ -165,6 +174,7 @@ class SceneAssetLoader {
   static final Images _mapBgs = Images(prefix: 'assets/maps/');
   static final Images _objects = Images(prefix: 'assets/objects/');
   static final Images _chars = Images(prefix: 'assets/characters/');
+  static final Images _weapons = Images(prefix: 'assets/weapons/');
   static final Images _monsters = Images(prefix: 'assets/monsters/');
 
   static const _spriteDescriptorPath = 'assets/data/character_sprites.json';
@@ -174,6 +184,7 @@ class SceneAssetLoader {
   static final Map<String, ui.Image?> _mapBgCache = {};
   static final Map<String, ui.Image?> _objectCache = {};
   static final Map<String, CharacterSpriteSet?> _charCache = {};
+  static final Map<String, ui.Image?> _weaponCache = {};
   static final Map<String, ui.Image?> _monsterCache = {};
   static Map<String, dynamic>? _descriptor;
   static bool _descriptorLoaded = false;
@@ -252,6 +263,41 @@ class SceneAssetLoader {
     }
   }
 
+  /// 怪物圖集的規格（與 PNG 同名的 `.json`，由 DrawPng 的
+  /// `l1_sprite_to_sheet.py` 產生）。失敗回 null。
+  ///
+  /// 格子大小與錨點**一定要讀檔**，不能寫死在元件裡：著地點不是圖形的中心
+  /// 也不是底邊（實測那隻狼左 27／右 40／上 50／下 16 px，左右不對稱，
+  /// 而且腳與尾有一截在著地點下方）。寫死的話換一隻怪就會錯位，
+  /// 而且不會有任何錯誤訊息 —— 只是圖歪掉。
+  static Future<MonsterSheetSpec?> loadMonsterSpec(String image) async {
+    if (image.isEmpty) return null;
+    if (_monsterSpecCache.containsKey(image)) return _monsterSpecCache[image];
+    final path = 'assets/monsters/${image.replaceAll('.png', '.json')}';
+    try {
+      final raw = await rootBundle.loadString(path);
+      return _monsterSpecCache[image] =
+          MonsterSheetSpec.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (e) {
+      debugPrint('SceneAssetLoader: 怪物圖規格載入失敗 $path（$e）');
+      return _monsterSpecCache[image] = null;
+    }
+  }
+
+  static final Map<String, MonsterSheetSpec?> _monsterSpecCache = {};
+
+  /// 載入可裝備的獨立武器圖（前綴 `assets/weapons/`）；失敗回 null。
+  static Future<ui.Image?> loadWeaponImage(String image) async {
+    if (image.isEmpty) return null;
+    if (_weaponCache.containsKey(image)) return _weaponCache[image];
+    try {
+      return _weaponCache[image] = await _weapons.load(image);
+    } catch (e) {
+      debugPrint('SceneAssetLoader: 武器圖載入失敗 $image（$e）');
+      return _weaponCache[image] = null;
+    }
+  }
+
   /// 載入人物 8 向 idle/walk sprite；缺 descriptor/圖檔時回 null。
   static Future<CharacterSpriteSet?> loadCharacterSprites(String key) async {
     if (_charCache.containsKey(key)) return _charCache[key];
@@ -260,6 +306,20 @@ class SceneAssetLoader {
     final rawSpec = _resolveSheetSpec(descriptor, key);
     if (rawSpec == null) {
       return _charCache[key] = null;
+    }
+
+    final l1 = rawSpec['l1'] as String?;
+    if (l1 != null && l1.isNotEmpty) {
+      return _charCache[key] = CharacterSpriteSet(
+        animations: const {},
+        frameSize: Vector2.zero(),
+        stateFrameSizes: const {},
+        stateOffsets: const {},
+        // L1 圖集的每幀底邊就是著地點；這裡只是整體往下（正值）微調的像素數
+        footOffsetY: (rawSpec['footOffsetY'] as num?)?.toDouble() ?? 0,
+        renderScale: (rawSpec['renderScale'] as num?)?.toDouble() ?? 1.0,
+        l1Path: l1,
+      );
     }
 
     final data = CharacterSpriteData.fromJson(rawSpec);
@@ -282,8 +342,10 @@ class SceneAssetLoader {
           (spec.frameHeight ?? data.frameHeight).toDouble(),
         );
         for (var dir = 0; dir < 8; dir++) {
-          animations[CharacterSpriteSet.keyFor(state: state, facing: dir)] =
-              SpriteAnimation.fromFrameData(
+          animations[CharacterSpriteSet.keyFor(
+            state: state,
+            facing: dir,
+          )] = SpriteAnimation.fromFrameData(
             img,
             SpriteAnimationData.sequenced(
               textureSize: stateFrameSize,
@@ -293,7 +355,8 @@ class SceneAssetLoader {
               ),
               amount: spec.frameCount,
               stepTime: spec.stepTime,
-              loop: state == CharacterAnimationState.idle ||
+              loop:
+                  state == CharacterAnimationState.idle ||
                   state == CharacterAnimationState.walk,
             ),
           );
@@ -349,4 +412,32 @@ class SceneAssetLoader {
     _descriptorLoaded = true;
     return _descriptor;
   }
+}
+
+/// 怪物圖集的規格。一列一個 facing（0=NE 1=E 2=SE 3=S 4=SW 5=W 6=NW 7=N），
+/// 一列裡由左到右是動畫的每一幀。
+class MonsterSheetSpec {
+  const MonsterSheetSpec({
+    required this.frameWidth,
+    required this.frameHeight,
+    required this.frameCount,
+    required this.anchorX,
+    required this.anchorY,
+  });
+
+  final int frameWidth;
+  final int frameHeight;
+  final int frameCount;
+
+  /// 著地點在格內的比例位置（0~1）。給 Flame 的 Anchor 用。
+  final double anchorX;
+  final double anchorY;
+
+  factory MonsterSheetSpec.fromJson(Map<String, dynamic> j) => MonsterSheetSpec(
+        frameWidth: (j['frameWidth'] as num?)?.toInt() ?? 64,
+        frameHeight: (j['frameHeight'] as num?)?.toInt() ?? 96,
+        frameCount: (j['frameCount'] as num?)?.toInt() ?? 1,
+        anchorX: (j['anchorX'] as num?)?.toDouble() ?? 0.5,
+        anchorY: (j['anchorY'] as num?)?.toDouble() ?? 1.0,
+      );
 }

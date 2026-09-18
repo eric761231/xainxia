@@ -19,11 +19,11 @@
     <!--
       stackWidthFactor / stackHeightFactor  外層容器占屏比例
       bottomOffset                          立繪距容器底偏移（px）
-      imageWidthFraction                      立繪寬 = 容器寬 × 此值（主控尺寸，fitWidth）
+      imageWidthFraction                      保留相容設定；直式立繪現以高度 72% + contain 顯示
       widthMinFraction / widthMaxFraction     imageWidthFraction 允許範圍（可選 clamp）
     -->
-    <portrait stackWidthFactor="0.85" stackHeightFactor="1.15"
-              bottomOffset="180" imageWidthFraction="1.80"
+    <portrait stackWidthFactor="0.85" stackHeightFactor="1.00"
+              bottomOffset="180" imageWidthFraction="1.00"
               widthMinFraction="0.50" widthMaxFraction="2.0" />
 
     <!--

@@ -15,12 +15,17 @@ import 'ui/screens/character_create.dart';
 import 'ui/screens/character_select.dart';
 import 'ui/screens/serverlist.dart';
 import 'ui/screens/game_hud_overlay.dart';
+import 'ui/layout/xaml/ui_xaml_bootstrap.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 早載入 App 設定（含 log 開關），全程可同步讀取 AppConfigLoader.current。
   await AppConfigLoader.load();
+
+  // UI 版面設定（assets/ui/xaml/）。在 runApp 之前載完，第一幀就是正確版面，
+  // 不會先閃一下 Dart 預設值；debug 版同時啟動存檔即時預覽。
+  await UiXamlBootstrap.ensureLoaded();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,

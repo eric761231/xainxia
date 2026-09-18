@@ -1,0 +1,10 @@
+Tool: built-in image_gen (not CLI).
+Input: docs/alpha/before/char_female.png
+Prompt:
+Edit target: the attached existing xianxia female full-body game portrait PNG. Repair damaged background extraction ONLY. Preserve her exact identity, face, pose, detailed silver-white and turquoise costume, jewelry, orb, proportions, framing and full body silhouette as closely as possible. Her dark hair on top of her head currently contains unnatural transparent holes; reconstruct the missing dark hair coherently with the intact hair. Repair any accidental see-through damage in solid skin and solid clothing, keeping these fully opaque. Keep plausible fine hair edges and intentional translucent outer gauze natural. Output a clean RGBA PNG on a genuinely transparent background (alpha zero outside her silhouette), not a black background or painted checkerboard. No scene, no platform, no shadow backdrop, no text. Keep original 768x1024 3:4 composition and character position, no cropping or enlargement. This is restoration of an existing game asset, not a redesign.
+
+Actual candidate was RGB with a baked checkerboard and slightly altered face.
+It was rejected as a complete replacement. Only dark hair RGB in manually
+reviewed missing-hair regions was composited into the ORIGINAL asset using
+tools/assets/repair_portrait_alpha.dart. Original face, body, clothing, and
+all pixels outside the repair mask are byte-for-byte equivalent after decoding.

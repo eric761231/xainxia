@@ -29,8 +29,9 @@ class IsoObjectComponent extends PositionComponent {
     this.offsetY = 0,
     this.tilesW = 0,
     this.layer = 1,
-    this.opacity = 1.0,
-  }) : super(anchor: Anchor.topLeft, size: Vector2.zero());
+    double opacity = 1.0,
+  }) : _opacity = opacity.clamp(0.0, 1.0),
+       super(anchor: Anchor.topLeft, size: Vector2.zero());
 
   final ObjectDef def;
   final int tileX;
@@ -42,8 +43,8 @@ class IsoObjectComponent extends PositionComponent {
   final double offsetX;
   final double offsetY;
 
-  /// 尺寸覆寫：目標寬＝tilesW×64px 等比縮放；0＝原尺寸。
-  final int tilesW;
+  /// 尺寸覆寫：目標寬＝tilesW×地圖格寬等比縮放；0＝原尺寸。
+  final double tilesW;
 
   /// 所在圖層（1＝最底層）；影響繪製優先權。
   final int layer;
@@ -55,7 +56,14 @@ class IsoObjectComponent extends PositionComponent {
   ///
   /// 可變是因為搬動時同一個元件要在「正常」與「半透明」之間切換，
   /// 重建元件會連帶重跑 onLoad 與圖片載入，沒有必要。
-  double opacity;
+  double _opacity;
+  double get opacity => _opacity;
+  set opacity(double value) {
+    _opacity = value.clamp(0.0, 1.0);
+    // The shadow is a sibling rather than a child: keep movement previews and
+    // cancellation in sync without applying alpha twice to the object itself.
+    _shadowComponent?.opacity = _opacity;
+  }
 
   IsoFootprintShadowComponent? _shadowComponent;
 
@@ -64,8 +72,12 @@ class IsoObjectComponent extends PositionComponent {
     // 腳底＝所在格中心（= tile 頂點 + 半格高），與 player `_tileCenter` 一致。
     final top = mapData.tileToScreen(tileX, tileY);
     position = top + Vector2(0, mapData.halfTileHeight);
-    // 依圖層分層 + 腳底深度。玩家會每幀以自身 y（含 characterLayer）更新 priority 與之交錯。
-    priority = layer * kLayerStride + position.y.round() + zBias;
+    // 平貼地面的物件（法陣、地紋）一律壓在角色與家具之下，也低於接地陰影。
+    // 它們的錨點是圖中央而非腳底，照腳底 y 排序的話，人走到圖的上半部就會被蓋住。
+    // 其餘依圖層分層 + 腳底深度。玩家會每幀以自身 y（含 characterLayer）更新 priority 與之交錯。
+    priority = def.isFlat
+        ? layer * kLayerStride - 2
+        : layer * kLayerStride + position.y.round() + zBias;
     // 陰影是獨立 sibling：在地面之上，但刻意低於全部玩家／物件本體。
     // 因而不論玩家位在家具前或後，接地陰影都不會蓋住玩家。
     if (def.shadow.enabled && def.shadow.opacity > 0) {
@@ -99,8 +111,10 @@ class IsoObjectComponent extends PositionComponent {
         h0,
         mapHalfTileHeight: mapData.halfTileHeight,
       );
-      // 尺寸覆寫：目標寬 = tilesW×格寬，等比縮放（錨點同步縮放）。
-      final s = tilesW > 0 && w0 > 0 ? tilesW * mapData.tileWidth / w0 : 1.0;
+      // 尺寸：tilesW 決定目標寬（格數），再乘上 catalog 的 scale；錨點同步縮放。
+      final s =
+          (tilesW > 0 && w0 > 0 ? tilesW * mapData.tileWidth / w0 : 1.0) *
+          def.scale;
       final w = w0 * s, h = h0 * s, ax = ax0 * s, ay = ay0 * s;
       // 錨點(ax,ay) 對齊 position(0,0) 後再加逐物件微調 (offsetX,offsetY)。
       g.paint(
@@ -151,7 +165,7 @@ class IsoFootprintShadowComponent extends PositionComponent {
 
   final ObjectDef def;
   final IsoMapData mapData;
-  final double opacity;
+  double opacity;
 
   @override
   void render(Canvas canvas) {

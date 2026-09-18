@@ -1,0 +1,226 @@
+[
+  {
+    "kind": "catalog",
+    "id": "1200",
+    "path": "assets/objects/table001.png",
+    "exists": false,
+    "note": "missing file; existing fallback path; not an alpha defect"
+  },
+  {
+    "kind": "catalog",
+    "id": "1201",
+    "path": "assets/objects/table002.png",
+    "exists": false,
+    "note": "missing file; existing fallback path; not an alpha defect"
+  },
+  {
+    "kind": "catalog",
+    "id": "4101",
+    "path": "assets/objects/cn_bookshelf_cut.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4102",
+    "path": "assets/objects/orchid.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4103",
+    "path": "assets/objects/pine_bonsai.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4104",
+    "path": "assets/objects/maple.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4105",
+    "path": "assets/objects/cave_spirit_cabinet.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4106",
+    "path": "assets/objects/jasmine_jar.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "4107",
+    "path": "assets/objects/cultivation_array.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5001",
+    "path": "assets/objects/black_forest/tree_ancient_oak.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5002",
+    "path": "assets/objects/black_forest/tree_twisted_pine.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5003",
+    "path": "assets/objects/black_forest/tree_moss_elm.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5004",
+    "path": "assets/objects/black_forest/tree_dead_forked.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5005",
+    "path": "assets/objects/black_forest/stump_moss.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5006",
+    "path": "assets/objects/black_forest/fallen_dead_log.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5007",
+    "path": "assets/objects/black_forest/shrub_dark.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5008",
+    "path": "assets/objects/black_forest/bramble_thorn.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5009",
+    "path": "assets/objects/black_forest/flora_fern.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5010",
+    "path": "assets/objects/black_forest/flora_grass_dark.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5011",
+    "path": "assets/objects/black_forest/flora_flower_white.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5012",
+    "path": "assets/objects/black_forest/flora_flower_violet.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5013",
+    "path": "assets/objects/black_forest/flora_flower_blue_dim.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5014",
+    "path": "assets/objects/black_forest/flora_mushroom_brown.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5015",
+    "path": "assets/objects/black_forest/flora_grass_dry.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5016",
+    "path": "assets/objects/black_forest/rock_moss_slate.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5017",
+    "path": "assets/objects/black_forest/fallen_dead_log_mirror.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "catalog",
+    "id": "5018",
+    "path": "assets/objects/black_forest/tree_dead_forked_mirror.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "monster name mapping",
+    "id": "山野狼",
+    "path": "assets/monsters/black_forest/mountain_wolf.png",
+    "exists": true,
+    "note": ""
+  },
+  {
+    "kind": "monster name mapping",
+    "id": "食人魔",
+    "path": "assets/monsters/warrok.png",
+    "exists": false,
+    "note": "declared future art; component intentionally falls back"
+  },
+  {
+    "kind": "monster name mapping",
+    "id": "哥布林",
+    "path": "assets/monsters/goblin.png",
+    "exists": false,
+    "note": "declared future art; component intentionally falls back"
+  },
+  {
+    "kind": "monster name mapping",
+    "id": "惡魔",
+    "path": "assets/monsters/demon.png",
+    "exists": false,
+    "note": "declared future art; component intentionally falls back"
+  },
+  {
+    "kind": "monster name mapping",
+    "id": "骷髏殭屍",
+    "path": "assets/monsters/skeletonzombie.png",
+    "exists": false,
+    "note": "declared future art; component intentionally falls back"
+  }
+]

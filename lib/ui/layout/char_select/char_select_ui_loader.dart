@@ -4,8 +4,8 @@ import 'package:xml/xml.dart';
 import '../xml_attr.dart';
 
 import 'char_select_ui_config.dart';
-import '../char_create/char_create_ui_source_stub.dart'
-    if (dart.library.io) '../char_create/char_create_ui_source_io.dart';
+import '../ui_asset_source_stub.dart'
+    if (dart.library.io) '../ui_asset_source_io.dart';
 
 /// 從 [CharSelectUiLoader.assetPath] 載入角色選擇 UI 配置。
 abstract final class CharSelectUiLoader {

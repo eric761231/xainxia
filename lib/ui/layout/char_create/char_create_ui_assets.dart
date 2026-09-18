@@ -9,8 +9,11 @@ abstract final class CharCreateUiAssets {
   /// 布局 XML（由 [CharCreateUiLoader] 讀取，非 PNG）。
   static const String layoutXml = CharCreateUiLoader.assetPath;
 
+  // Published artwork uses content-versioned paths so an older browser image
+  // cache cannot replace the current portraits/background. Keep the unversioned
+  // art sources; publish a new content hash here whenever those sources change.
   // ── L1 全螢幕背景 ─────────────────────────────
-  static const String bg = 'assets/ui/char_create/char_bg.png';
+  static const String bg = 'assets/ui/char_create/char_bg_68751985.png';
 
   // ── L3 左欄靈根 icon ──────────────────────────
   static const String attrMetal = 'assets/ui/char_create/attr_metal.png';
@@ -23,8 +26,9 @@ abstract final class CharCreateUiAssets {
   static const String attrIllusion = 'assets/ui/char_create/attr_illusion.png';
 
   // ── L2 中央立繪 ───────────────────────────────
-  static const String charMale = 'assets/ui/char_create/char_male.png';
-  static const String charFemale = 'assets/ui/char_create/char_female.png';
+  static const String charMale = 'assets/ui/char_create/char_male_8917db27.png';
+  static const String charFemale =
+      'assets/ui/char_create/char_female_60e9aaaa.png';
 
   // ── L4 底中名稱 ───────────────────────────────
   static const String inputContact = 'assets/ui/char_create/input_contact.png';
@@ -105,11 +109,7 @@ abstract final class CharCreateUiAssets {
     intelIcon,
   }.toList();
 
-  static const Set<String> decodeOnPreload = {
-    bg,
-    charMale,
-    charFemale,
-  };
+  static const Set<String> decodeOnPreload = {bg, charMale, charFemale};
 
   /// 依 attribute index 回傳對應靈根 icon 路徑（0=金…7=幻）。
   static String attrIcon(int attribute) {

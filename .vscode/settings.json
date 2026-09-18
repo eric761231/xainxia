@@ -1,4 +1,7 @@
 {
-    "cmake.sourceDirectory": "C:/c/code_workspace/XinProject/xianxia_game/linux",
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false,
+    "cmake.automaticReconfigure": false,
+    "cmake.ignoreCMakeListsMissing": true,
     "java.compile.nullAnalysis.mode": "automatic"
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  全畫面共用的樣式 token。
+
+  畫面的 .xaml 以 {tokenName} 參照這裡，例如 width="{fieldWidth}"。
+  規格要求「帳號與密碼欄位等寬」這類條件，靠的就是兩邊參照同一個 token —— 各自
+  寫一次數字遲早只會改到一邊。
+
+  值都是字串：顏色寫 hex（6 碼不透明、8 碼含 alpha），其餘寫數字。要用哪一種由
+  使用端決定，所以新增一類 token 不需要改解析器。
+
+  改壞不會讓畫面消失：解析不到的 token 只會讓那個屬性退回它自己的 Dart 預設值。
+-->
+<Theme>
+  <!-- 色票。ink 是登入區漸變的墨色，ivory 是正文，cyan/gold 是強調。 -->
+  <Color id="ink" value="#0E0F12" />
+  <Color id="inkSoft" value="#16181C" />
+  <Color id="ivory" value="#FFFFFF" />
+  <Color id="ivoryDim" value="#A8A093" />
+  <Color id="cyan" value="#89D5CC" />
+  <Color id="cyanDim" value="#3E7D80" />
+  <Color id="gold" value="#E8CE8B" />
+  <Color id="goldBright" value="#E8CE8B" />
+  <Color id="danger" value="#E08A8A" />
+
+  <!-- 字級（設計稿 px，實際顯示由 UiScale 等比縮放）。 -->
+  <Size id="fontTitle" value="34" />
+  <Size id="fontHeading" value="24" />
+  <Size id="fontBody" value="18" />
+  <Size id="fontLabel" value="16" />
+  <Size id="fontCaption" value="14" />
+
+  <!-- 間距。 -->
+  <Size id="spacingXs" value="4" />
+  <Size id="spacingSm" value="8" />
+  <Size id="spacingMd" value="16" />
+  <Size id="spacingLg" value="24" />
+  <Size id="spacingXl" value="40" />
+
+  <!-- 輸入欄位。帳號與密碼共用這兩個值，兩欄因此必然等寬、左右端點對齊。 -->
+  <Size id="fieldWidth" value="390" />
+  <Size id="fieldHeight" value="54" />
+
+  <!-- 墨色漸變長方形（InkFadeRect）。直角、無邊框、由中央往四邊淡出。 -->
+  <Opacity id="fadeCenterOpacity" value="0.72" />
+  <Size id="fadeX" value="120" />
+  <Size id="fadeY" value="100" />
+
+  <!-- Loading bar。設計高度 32，允許 30–36（見接手計畫 §7）。 -->
+  <Size id="loadingBarHeight" value="32" />
+  <Size id="loadingBarRadius" value="6" />
+
+  <!-- 訊息對話框的狀態圖示顯示邊長，建議 48–64。 -->
+  <Size id="dialogIconSize" value="56" />
+
+  <!-- 陰影。 -->
+  <Size id="shadowBlur" value="12" />
+  <Opacity id="shadowOpacity" value="0.45" />
+</Theme>

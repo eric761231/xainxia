@@ -2,26 +2,15 @@
   "defaultKey": "male",
   "sheets": {
     "male": {
-      "image": "male_base.png",
-      "frameWidth": 64,
-      "frameHeight": 96,
-      "footOffsetY": 6,
-      "renderScale": 1.0,
-      "states": {
-        "idle": { "startColumn": 0, "frameCount": 4, "stepTime": 0.2 },
-        "walk": { "startColumn": 4, "frameCount": 6, "stepTime": 0.1 }
-      }
+      "l1": "assets/characters/3221.png",
+      "renderScale": 2.5,
+      "footOffsetY": 14
     },
     "female": {
-      "image": "female_base.png",
-      "frameWidth": 64,
-      "frameHeight": 96,
-      "footOffsetY": 6,
-      "renderScale": 1.0,
-      "states": {
-        "idle": { "startColumn": 0, "frameCount": 4, "stepTime": 0.2 },
-        "walk": { "startColumn": 4, "frameCount": 6, "stepTime": 0.1 }
-      }
+      "l1": "assets/characters/3221.png",
+      "renderScale": 2.5,
+      "footOffsetY": 14
     }
-  }
+  },
+  "_comment": "人物 sprite 使用 3221.png + 3221.json（L1 圖集，102 個動畫，含 walk/attack/death 八向）。female_base_aligned.png 是另一個角色的走路表，只有 walk，不能拿來替代。renderScale 2.5：59px x 2.5 ≈ 148px。非整數倍時 IsoPlayerComponent 會自動改用平滑取樣（整數倍才用 FilterQuality.none）。footOffsetY：整體往下微調的顯示像素（正值往下），讓腳踩在地板上而不是浮在格子中心上方。洞府的格子是 112x56，一步約等於一個身寬。"
 }

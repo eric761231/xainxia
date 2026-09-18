@@ -10,6 +10,7 @@ import '../../network/packets/server/s_map_tiles.dart';
 import '../../network/packets/server/s_property_pack.dart';
 import '../../network/packets/server/s_pc_pack.dart';
 import '../../network/packets/server/s_monster_pack.dart';
+import '../../network/packets/server/s_npc_pack.dart';
 import 'iso_map_data.dart';
 import 'map_background_config.dart';
 import 'stone_floor.dart';
@@ -37,6 +38,7 @@ class IsoMapComponent extends PositionComponent
     required this.spawnTileY,
     this.spawnFacing = 2,
     this.appearanceKey = 'male',
+    this.charName = '',
     this.onPlayerStep,
     this.onPlayerFace,
     this.onInteract,
@@ -55,6 +57,9 @@ class IsoMapComponent extends PositionComponent
 
   /// 人物外觀鍵（對應 character_sprites.json 的 sheet key）。
   final String appearanceKey;
+
+  /// 本機角色名稱，顯示於角色頭上。
+  final String charName;
 
   /// 每走一格回呼：(x, y, facing)，由 WorldSceneComponent 注入以送出 C_MOVE。
   final void Function(int x, int y, int facing)? onPlayerStep;
@@ -83,9 +88,27 @@ class IsoMapComponent extends PositionComponent
   ui.Image? _bgImage;
 
   /// 由伺服器 gfxid 載入的底圖左上角（local 座標）；null = 沿用 data.originX/Y。
-  double? _bgOriginX;
-  double? _bgOriginY;
+  /// 底圖的逐圖對齊校正（`map_backgrounds.json`）。
+  MapBackgroundOffset _bgTweak = MapBackgroundOffset.none;
+
+  /// 底圖左上角在 local 座標的位置。
+  ///
+  /// 每次取用時重算，不在載入時存成欄位。格網會在 `S_MAP_TILES` 到達時被
+  /// [_rebuildGrid] 整份換掉（邊界或格尺寸變了），而存起來的原點不會跟著更新 ——
+  /// 症狀是牆與地板整個分離，偏移量剛好是新舊可走區中心的差，而且不會有任何
+  /// 錯誤訊息。算一次是兩個乘法，沒有必要為此冒這個險。
+  (double, double)? get _backgroundOrigin {
+    final data = _data;
+    final bg = _bgImage;
+    if (data == null || bg == null) return null;
+    final origin = backgroundOrigin(data, bg.width, bg.height);
+    return (origin.$1 + _bgTweak.offsetX, origin.$2 + _bgTweak.offsetY);
+  }
   IsoPlayerComponent? _player;
+  int _localHp = 0;
+  int _localHpMax = 0;
+  int _localMp = 0;
+  int _localMpMax = 0;
 
   /// 其他玩家，以角色名為鍵。
   ///
@@ -309,12 +332,35 @@ class IsoMapComponent extends PositionComponent
 
   /// 套用伺服器送來的圖磚（S_MAP_TILES）。
   ///
-  /// 只換地面的**外觀**，不動地圖尺寸與碰撞 —— 那兩者由 `generic()` 與
-  /// 伺服器的 `map_collision` 決定，各自只有一個來源。
+  /// 碰撞由 `generic()` 與伺服器的 `map_collision` 決定。
   Future<void> applyMapTiles(SMapTiles tiles) async {
     if (!tiles.isValid) return;
-    final data = _data;
+    var data = _data;
     if (data == null) return;
+
+    final tileWidth = tiles.tileWidth;
+    final tileHeight = tiles.tileHeight;
+
+    // 伺服器的地圖邊界與目前的格網不同 → 整份重建。
+    //
+    // 少了這一段，前端就永遠是 onLoad 時那份 31..50 的 20×20 底版：
+    // 資料庫把地圖改大之後，超出 50 的圖磚會寫到陣列外、碰撞陣列不會跟著長，
+    // 而玩家的 clamp 會把人**鎖在舊邊界內走不出去** —— 而且完全沒有錯誤訊息，
+    // 只是走到某一格就停住。地圖大小的唯一來源是伺服器的 map 表。
+    if (tiles.walkMin != data.walkMinCoord ||
+        tiles.walkMax != data.walkMaxCoord ||
+        tileWidth != data.tileWidth ||
+        tileHeight != data.tileHeight) {
+      AppLog.d('MAP',
+          '地圖規格改變：${data.walkMinCoord}..${data.walkMaxCoord}'
+          ' @${data.tileWidth}x${data.tileHeight}'
+          ' → ${tiles.walkMin}..${tiles.walkMax}'
+          ' @${tileWidth}x$tileHeight，重建格網');
+      await _rebuildGrid(tiles.walkMin, tiles.walkMax,
+          tileWidth, tileHeight);
+      data = _data;
+      if (data == null) return;
+    }
 
     // 先把用得到的圖磚檔載進來（同一編號只載一次）
     final images = <int, ui.Image>{};
@@ -483,11 +529,10 @@ class IsoMapComponent extends PositionComponent
     final diamondW = size * data.tileWidth;
     final diamondH = size * data.tileHeight;
 
-    final origin = backgroundOrigin(data, bg.width, bg.height);
-    // 美術本身含牆面／高度時，圖中的地面菱形不在畫布中心，需逐圖校正
-    final tweak = await MapBackgroundConfig.forMap(mapId);
-    _bgOriginX = origin.$1 + tweak.offsetX;
-    _bgOriginY = origin.$2 + tweak.offsetY;
+    // 美術本身含牆面／高度時，圖中的地面菱形不在畫布中心，需逐圖校正。
+    // 只存校正量；原點本身由 [_backgroundOrigin] 依當下的格網即時算。
+    _bgTweak = await MapBackgroundConfig.forMap(mapId);
+    final origin = _backgroundOrigin!;
 
     AppLog.d(
         'ISO-BG',
@@ -496,12 +541,50 @@ class IsoMapComponent extends PositionComponent
         '（$size 格，tile ${data.tileWidth}x${data.tileHeight}）'
         ' → 菱形 ${diamondW}x$diamondH'
         ' | 建議底圖尺寸 ${diamondW}x$diamondW（上下各留白 ${diamondW ~/ 4}）'
-        '${tweak.offsetX == 0 && tweak.offsetY == 0 ? '' : ' | 校正位移 (${tweak.offsetX}, ${tweak.offsetY})'}');
+        '${_bgTweak.offsetX == 0 && _bgTweak.offsetY == 0 ? '' : ' | 校正位移 (${_bgTweak.offsetX}, ${_bgTweak.offsetY})'}'
+        ' | 原點 (${origin.$1.toStringAsFixed(0)}, ${origin.$2.toStringAsFixed(0)})');
   }
 
   /// 伺服器移動修正：把角色硬拉回指定格（不觸發 onStep）。
   void snapPlayerTo(int tx, int ty, {int? facing}) =>
       _player?.snapTo(tx, ty, facing: facing);
+
+  /// 更新本機角色頭頂的 HP／MP；地圖載入中時先快取，建好角色再套用。
+  void setLocalPlayerVitals({
+    required int hp,
+    required int hpMax,
+    required int mp,
+    required int mpMax,
+  }) {
+    _localHp = hp;
+    if (hpMax > 0) _localHpMax = hpMax;
+    _localMp = mp;
+    if (mpMax > 0) _localMpMax = mpMax;
+    _player?.applyVitals(
+      hp: _localHp,
+      hpMax: _localHpMax,
+      mp: _localMp,
+      mpMax: _localMpMax,
+    );
+  }
+
+  void setRemotePlayerHp(int objId, int hp, int hpMax) {
+    for (final player in _remotePlayers.values) {
+      if (player.objId == objId) {
+        player.applyCharacterHp(hp, hpMax);
+        return;
+      }
+    }
+  }
+
+  void setRemotePlayerMp(int objId, int mp, int mpMax) {
+    for (final player in _remotePlayers.values) {
+      if (player.objId == objId) {
+        player.applyCharacterMp(mp, mpMax);
+        return;
+      }
+    }
+  }
 
   @override
   Future<void> onLoad() async {
@@ -514,7 +597,14 @@ class IsoMapComponent extends PositionComponent
     //
     // 前端**不再自己持有地圖資料**：先前 assets/maps/0.json 同時存了地圖邊界，
     // 與伺服器 map 表的 min_x/max_x 重複，改一邊另一邊不會跟著動。
-    _data = IsoMapData.generic(mapId: mapId);
+    _data = IsoMapData.generic(
+      mapId: mapId,
+      // 洞府的格子比其他地圖大：家具是原生尺寸、角色放大 2.5 倍，格子太小會讓
+      // 一步只移動半個身寬，走起來像在原地碎步。112x56 讓一步約等於一個身寬，
+      // 同時 10 格 x 112 = 1120px 正好是牆面美術的地板寬度。
+      tileWidth: mapId == 0 ? 112 : 64,
+      tileHeight: mapId == 0 ? 56 : 32,
+    );
     final data = _data!;
 
     // 整張地圖視覺等比縮放（Flame 於 render 前套用變換）。
@@ -545,6 +635,12 @@ class IsoMapComponent extends PositionComponent
       }
     }
 
+    // 上面的 await 期間 S_MAP_TILES 可能已經到了（見下方玩家建立前的說明）
+    if (!identical(_data, data)) {
+      await _applyPendingLists();
+      return;
+    }
+
     // 格子高亮層：放置預覽／搬動／GM 碰撞編輯共用，壓在所有物件之下。
     _overlay = TileOverlayLayer(mapData: data);
     add(_overlay!);
@@ -557,6 +653,14 @@ class IsoMapComponent extends PositionComponent
     final spriteSet =
         await SceneAssetLoader.loadCharacterSprites(appearanceKey);
 
+    // 上面幾個 await 期間，S_MAP_TILES 可能已經到了：_rebuildGrid 會換掉 _data
+    // 並建好玩家。這時再建一個就會有兩個自己 —— 先建的留在出生點變成殘影，
+    // 手上操作的卻是綁著舊格網的這個（沒有家具碰撞、邊界也是舊的）。
+    if (!identical(_data, data) || _player != null) {
+      await _applyPendingLists();
+      return;
+    }
+
     _player = IsoPlayerComponent(
       initialTileX: spawnTileX.clamp(data.minMapCoord, data.maxMapCoordX),
       initialTileY: spawnTileY.clamp(data.minMapCoord, data.maxMapCoordY),
@@ -567,10 +671,18 @@ class IsoMapComponent extends PositionComponent
       onStep: (x, y, facing) => onPlayerStep?.call(x, y, facing),
       onFace: onPlayerFace,
       spriteSet: spriteSet,
+      displayName: charName,
+      vitalHp: _localHp,
+      vitalHpMax: _localHpMax,
+      vitalMp: _localMp,
+      vitalMpMax: _localMpMax,
     );
     add(_player!);
+    await _applyPendingLists();
+  }
 
-    // 地圖載好之前收到的名單，現在才補上
+  /// 地圖載好之前收到的名單，現在才補上。
+  Future<void> _applyPendingLists() async {
     final pending = _pendingRemotePlayers;
     if (pending != null) {
       _pendingRemotePlayers = null;
@@ -580,6 +692,11 @@ class IsoMapComponent extends PositionComponent
     if (pendingMonsters != null) {
       _pendingMonsters = null;
       applyMonsters(pendingMonsters);
+    }
+    final pendingNpcs = _pendingNpcs;
+    if (pendingNpcs != null) {
+      _pendingNpcs = null;
+      applyNpcs(pendingNpcs);
     }
   }
 
@@ -661,6 +778,92 @@ class IsoMapComponent extends PositionComponent
   /// 地圖還沒載完就收到的怪物名單。
   List<MonsterObject>? _pendingMonsters;
 
+  /// 依伺服器給的可走區邊界重建格網。
+  ///
+  /// 會連帶重建所有吃 mapData 的子元件（高亮層、家具、玩家）——
+  /// 它們持有的是舊那份 [IsoMapData] 的參考，留著就會用舊的邊界算座標。
+  /// 玩家的格座標刻意保留，重建後回到同一格。
+  Future<void> _rebuildGrid(
+      int walkMin, int walkMax, int tileWidth, int tileHeight) async {
+    final prev = _player;
+    final keepX = prev?.tileX;
+    final keepY = prev?.tileY;
+    final keepFacing = prev?.facing ?? spawnFacing;
+
+    _data = IsoMapData.generic(
+      minCoord: walkMin,
+      maxCoord: walkMax,
+      mapId: mapId,
+      tileWidth: tileWidth,
+      tileHeight: tileHeight,
+    );
+    final data = _data!;
+    _baseCollision = null;
+    _serverTiles.clear();
+    _invalidateGround();
+
+    scale = Vector2.all(data.renderScale);
+    size = Vector2(
+      (data.width + data.height - 2) * data.halfTileWidth + data.tileWidth,
+      (data.width + data.height - 2) * data.halfTileHeight + data.tileHeight,
+    );
+
+    _overlay?.removeFromParent();
+    _overlay = TileOverlayLayer(mapData: data);
+    add(_overlay!);
+
+    for (final c in _propertyComponents.values) {
+      c.removeFromParent();
+    }
+    _propertyComponents.clear();
+    final props = List.of(_propertyData.values);
+    _propertyData.clear();
+
+    for (final m in _monsters.values) {
+      m.removeFromParent();
+    }
+    _monsters.clear();
+    for (final c in _corpses) {
+      c.removeFromParent();
+    }
+    _corpses.clear();
+
+    for (final n in _npcs.values) {
+      n.removeFromParent();
+    }
+    _npcs.clear();
+
+    for (final p in _remotePlayers.values) {
+      p.removeFromParent();
+    }
+    _remotePlayers.clear();
+
+    await _loadObjects(data);
+
+    prev?.removeFromParent();
+    final spriteSet = await SceneAssetLoader.loadCharacterSprites(appearanceKey);
+    _player = IsoPlayerComponent(
+      initialTileX: (keepX ?? spawnTileX).clamp(walkMin, walkMax),
+      initialTileY: (keepY ?? spawnTileY).clamp(walkMin, walkMax),
+      initialFacing: keepFacing,
+      mapData: data,
+      onStep: (x, y, facing) => onPlayerStep?.call(x, y, facing),
+      onFace: onPlayerFace,
+      spriteSet: spriteSet,
+      displayName: charName,
+      vitalHp: _localHp,
+      vitalHpMax: _localHpMax,
+      vitalMp: _localMp,
+      vitalMpMax: _localMpMax,
+    );
+    add(_player!);
+
+    // 家具是伺服器推送的，重建後要重放一次，否則整圖的擺設會消失
+    if (props.isNotEmpty) {
+      await applyServerProperties(props);
+    }
+  }
+
   /// 套用怪物名單（S_MONSTER_PACK）。逐筆 upsert，不移除不在清單裡的。
   void applyMonsters(List<MonsterObject> monsters) {
     final data = _data;
@@ -710,17 +913,125 @@ class IsoMapComponent extends PositionComponent
   }
 
   /// 怪物死亡或離場（S_OBJECT_REMOVE）。
+  ///
+  /// 血量已經歸零的是死亡：留下屍體（半透明停留幾秒）再移除；
+  /// 其餘（波次清場、GM 移除）直接消失。
   void removeMonster(int objId) {
-    _monsters.remove(objId)?.removeFromParent();
+    final m = _monsters.remove(objId);
+    if (m == null) return;
+    if (m.currentHp > 0) {
+      m.removeFromParent();
+      return;
+    }
+    _corpses.add(m);
+    m.beginCorpse(() {
+      _corpses.remove(m);
+      m.removeFromParent();
+    });
   }
 
-  /// 清空所有怪物（換圖時）。
+  /// 還在播屍體的怪。已不在 [_monsters] 裡，不再接受移動與血量更新。
+  final Set<IsoMonsterComponent> _corpses = {};
+
+  /// 怪物的攻擊演出：先面向目標再揮。目標只可能是玩家（其他玩家或自己）。
+  void playMonsterAttack(int objId, int targetObjId) {
+    final m = _monsters[objId];
+    if (m == null) return;
+    final cell = _playerCellByObjId(targetObjId);
+    if (cell != null) m.faceToward(cell.$1, cell.$2);
+    m.playAttack();
+  }
+
+  /// 怪物被打中的演出。
+  void playMonsterHurt(int objId) => _monsters[objId]?.playHurt();
+
+  (int, int)? _playerCellByObjId(int objId) {
+    for (final p in _remotePlayers.values) {
+      if (p.objId == objId) return (p.tileX, p.tileY);
+    }
+    return playerCell; // 不是其他玩家就是自己
+  }
+
+  /// 清空所有怪物（換圖時），連同還在播的屍體。
   void clearMonsters() {
     for (final m in _monsters.values) {
       m.removeFromParent();
     }
     _monsters.clear();
+    for (final c in _corpses) {
+      c.removeFromParent();
+    }
+    _corpses.clear();
     _pendingMonsters = null;
+  }
+
+  // ── NPC（可對話、商店）────────────────────────────────────────────
+
+  /// 場上的 NPC，以 objId 為鍵。
+  ///
+  /// 沿用怪物元件來畫（沒有美術時是佔位圖形），但不畫血條。採集物與裝飾
+  /// （gather／scenery）不在這裡 —— 它們不會動，也不需要一個角色元件。
+  /// 以前 NPC 完全沒有畫出來，伺服器的 NPC 行為（遊走、轉身、說話）在畫面上看不到。
+  final Map<int, IsoMonsterComponent> _npcs = {};
+
+  /// 地圖還沒載完就收到的 NPC 名單。
+  List<NpcObject>? _pendingNpcs;
+
+  static bool _rendersNpc(NpcObject n) =>
+      n.type == NpcObjectType.npc || n.type == NpcObjectType.shop;
+
+  /// 套用 NPC 名單（S_NPC_PACK）。逐筆 upsert，與怪物同樣的約定。
+  void applyNpcs(List<NpcObject> npcs) {
+    final data = _data;
+    if (data == null) {
+      _pendingNpcs = [...?_pendingNpcs, ...npcs];
+      return;
+    }
+    for (final n in npcs) {
+      if (!_rendersNpc(n)) continue;
+      final existing = _npcs[n.objId];
+      if (existing != null) {
+        existing.applyServerPosition(n.x, n.y, facing: n.heading);
+        continue;
+      }
+      final comp = createMonster(
+        objId: n.objId,
+        name: n.name,
+        x: n.x,
+        y: n.y,
+        facing: n.heading,
+        maxHp: 0,
+        currentHp: 1,
+        mapData: data,
+        showHpBar: false,
+      );
+      _npcs[n.objId] = comp;
+      add(comp);
+    }
+  }
+
+  /// NPC 走了一步或原地轉身（S_NPC_MOVE；座標不變就只轉向）。
+  void moveNpc(int objId, int x, int y, int heading) {
+    _npcs[objId]?.applyServerPosition(x, y, facing: heading);
+  }
+
+  /// NPC 離場（S_OBJECT_REMOVE）。NPC 不會死，直接移除。
+  void removeNpc(int objId) {
+    _npcs.remove(objId)?.removeFromParent();
+  }
+
+  /// 換圖時清掉場上的 NPC。
+  void clearNpcs() {
+    for (final n in _npcs.values) {
+      n.removeFromParent();
+    }
+    _npcs.clear();
+    _pendingNpcs = null;
+  }
+
+  /// 頭上對話泡泡（S_BUBBLE_DIALOG）。NPC 優先，其次怪物。
+  void showBubble(int objId, String text) {
+    (_npcs[objId] ?? _monsters[objId])?.say(text);
   }
 
   /// 該格上的其他玩家角色名；沒有回 null。供右鍵選單用。
@@ -818,7 +1129,17 @@ class IsoMapComponent extends PositionComponent
         'tile=($tx,$ty) player=(${player.tileX},${player.tileY}) '
         'inRange=${_inMap(data, tx, ty)}');
 
-    if (!_inMap(data, tx, ty)) return;
+    if (!_inMap(data, tx, ty)) {
+      // 點到地圖外（牆面、留白）：往地圖邊緣最靠近點擊處的格子走，而不是沒反應。
+      // Shift 轉向與布置工具只對地圖內的格子有意義，這裡不處理。
+      if (!HardwareKeyboard.instance.isShiftPressed) {
+        player.moveTo(
+          tx.clamp(data.walkMinCoord, data.walkMaxCoord),
+          ty.clamp(data.walkMinCoord, data.walkMaxCoord),
+        );
+      }
+      return;
+    }
 
     // 布置模式優先：吃掉點擊，不讓角色跑過去
     if (onTileTap != null && onTileTap!(tx, ty)) return;
@@ -866,6 +1187,22 @@ class IsoMapComponent extends PositionComponent
   void _handleSecondaryTap(Vector2 localPos, Vector2 canvasPos) {
     final data = _data;
     if (data == null) return;
+
+    final player = _player;
+    if (player != null && player.hitTestVisualPoint(localPos)) {
+      onTileSecondaryTap?.call(player.tileX, player.tileY, canvasPos);
+      return;
+    }
+
+    final remotes = _remotePlayers.values.toList()
+      ..sort((a, b) => b.priority.compareTo(a.priority));
+    for (final remote in remotes) {
+      if (remote.hitTestVisualPoint(localPos)) {
+        onTileSecondaryTap?.call(remote.tileX, remote.tileY, canvasPos);
+        return;
+      }
+    }
+
     final (ix, iy) = data.screenToTile(localPos);
     final tx = data.toMapCoord(ix);
     final ty = data.toMapCoord(iy);
@@ -1022,9 +1359,12 @@ class IsoMapComponent extends PositionComponent
     // 背景圖（房間手繪圖）先鋪，tile 層再疊上。
     final bg = _bgImage;
     if (bg != null) {
+      final origin = _backgroundOrigin;
       canvas.drawImage(
           bg,
-          Offset(_bgOriginX ?? data.originX, _bgOriginY ?? data.originY),
+          origin == null
+              ? Offset(data.originX, data.originY)
+              : Offset(origin.$1, origin.$2),
           Paint());
     }
 

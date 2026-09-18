@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Loading / 過場畫面。
+
+  這裡只描述「放哪、多大、什麼顏色、用哪張素材」。進度數值、載入流程與過場訊息
+  都還在 Dart。
+
+  進度條是無邊框的：track、fill、圓角、裁切與柔光全部由 Flutter 畫，
+  loadingEnergy 只提供填充區內水平循環的紋理。百分比文字也由 Flutter 畫在 bar
+  正中央，不可以烘進 PNG（烘進去就改不了字級、也沒辦法跟著進度走）。
+-->
+<UiView id="loading" designWidth="1920" designHeight="1080">
+  <Background asset="loginFlowBg" fallbackAsset="legacyLoadingBg" fit="cover" />
+
+  <!-- 進度條上方的訊息。Loading 畫面固定「載入中」，過場畫面由 Dart 覆寫。 -->
+  <Text id="message" text="載入中"
+        centerX="960" centerY="898"
+        size="{fontHeading}" color="{ivory}" />
+
+  <!-- height 允許 30–36，超出會被夾回去（見接手計畫 §7）。 -->
+  <ProgressBar id="progress"
+               centerX="960" centerY="960" width="880"
+               height="{loadingBarHeight}" radius="{loadingBarRadius}"
+               trackColor="#59000000" fillColor="{cyan}"
+               glowColor="{cyan}" glowBlur="14" glowOpacity="0.55"
+               textureAsset="loadingEnergy" textureHeight="32" texturePixelsPerSecond="52"
+               showLabel="true" labelColor="{ivory}" labelSize="{fontCaption}" />
+</UiView>

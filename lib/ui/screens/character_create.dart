@@ -1,20 +1,14 @@
-﻿import 'package:flutter/foundation.dart';
+import '../theme/game_design.dart';
+import '../widgets/shared/character_stage.dart';
 import 'package:flutter/material.dart';
 
 import '../../game/my_game.dart';
 import '../../models/char_create_template.dart';
 import '../widgets/shared/game_message_dialog.dart';
-import '../layout/char_create/char_create_ui_assets.dart';
 import '../layout/char_create/char_create_ui_preloader.dart';
 import '../layout/char_create/char_create_ui_spec.dart';
 import '../layout/char_create/char_create_ui_dev_watcher.dart';
-import '../widgets/char_create/char_create_back_button.dart';
-import '../widgets/char_create/char_create_center_panel.dart';
-import '../widgets/char_create/char_create_name_bar.dart';
-import '../widgets/char_create/char_create_right_panel.dart';
 import '../widgets/char_create/char_create_spirit_root_panel.dart';
-import '../widgets/char_create/char_create_start_button.dart';
-import '../widgets/char_create/char_create_text_styles.dart';
 
 /*
  * 創角全屏 Overlay
@@ -79,7 +73,10 @@ class _CharacterCreateOverlayState extends State<CharacterCreateOverlay> {
     };
     var current = current0;
     if (delta > 0) {
-      if (_remainingPoints <= 0 || current >= base + CharCreateTemplate.bonusPool) return;
+      if (_remainingPoints <= 0 ||
+          current >= base + CharCreateTemplate.bonusPool) {
+        return;
+      }
       current++;
       _remainingPoints--;
     } else {
@@ -101,11 +98,8 @@ class _CharacterCreateOverlayState extends State<CharacterCreateOverlay> {
     });
   }
 
-  Future<void> _fail(String message) => GameMessageDialog.show(
-        context,
-        title: '創角失敗',
-        message: message,
-      );
+  Future<void> _fail(String message) =>
+      GameMessageDialog.show(context, title: '創角失敗', message: message);
 
   Future<void> _submit() async {
     if (_submitting) return;
@@ -159,179 +153,60 @@ class _CharacterCreateOverlayState extends State<CharacterCreateOverlay> {
 
   Widget _buildBody(BuildContext context) {
     final enabled = !_submitting;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final padding = MediaQuery.paddingOf(context);
-          final availableW =
-              constraints.maxWidth - padding.left - padding.right;
-          final availableH =
-              constraints.maxHeight - padding.top - padding.bottom;
-          CharCreateUiSpec.updateScaleFrom(Size(availableW, availableH));
-
-          final leftWidth = CharCreateUiSpec.leftPanelWidthResolved;
-          final rightWidth =
-              CharCreateUiSpec.resolveRightPanelWidth(availableW);
-
-          Widget buildLeftPanel() {
-            return Padding(
-              padding: EdgeInsets.only(
-                top: CharCreateUiSpec.leftPanelTopOffset,
-              ),
-              child: FractionallySizedBox(
-                heightFactor: CharCreateUiSpec.leftPanelHeightFraction,
-                child: SizedBox(
-                  width: leftWidth,
-                  child: CharCreateSpiritRootPanel(
-                    selectedIndex: _attribute,
-                    enabled: enabled,
-                    onSelected: (i) => setState(() => _attribute = i),
-                  ),
-                ),
-              ),
-            );
-          }
-
-          Widget buildRightPanel() {
-            return Padding(
-              padding: EdgeInsets.only(
-                top: CharCreateUiSpec.rightPanelTopOffset,
-              ),
-              child: FractionallySizedBox(
-                heightFactor: CharCreateUiSpec.rightPanelHeightFraction,
-                child: CharCreateRightPanel(
-                  width: rightWidth,
-                  sex: _sex,
-                  enabled: enabled,
-                  remainingPoints: _remainingPoints,
-                  statsIntel: _statsIntel,
-                  statsSpirit: _statsSpirit,
-                  statsAgility: _statsAgility,
-                  statsConstitution: _statsConstitution,
-                  onSexChanged: (v) => setState(() => _sex = v),
-                  onAdjustStat: _adjustStat,
-                  onResetStats: _resetStats,
-                ),
-              ),
-            );
-          }
-
-          return Stack(
-            children: [
-              /* L1 全屏背景 */
-              Positioned.fill(
-                child: Image.asset(
-                  CharCreateUiAssets.bg,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.bottomCenter,
-                  errorBuilder: (context, error, stackTrace) => Image.asset(
-                    'assets/images/loading.png',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const ColoredBox(color: Color(0xFF140E0C)),
-                  ),
-                ),
-              ),
-              /* L2 中央立繪 */
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: FractionallySizedBox(
-                      widthFactor: CharCreateUiSpec.portraitStackWidthFactor,
-                      heightFactor: CharCreateUiSpec.portraitStackHeightFactor,
-                      child: CharCreateCenterPanel(sex: _sex),
-                    ),
-                  ),
-                ),
-              ),
-              /* L3～L6：單一 SafeArea，scale 與桌面/手機一致 */
-              SafeArea(
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned.fill(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: CharCreateUiSpec.screenPaddingH,
-                          vertical: CharCreateUiSpec.screenPaddingV,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              flex: CharCreateUiSpec.screenLeftFlex,
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: buildLeftPanel(),
-                              ),
-                            ),
-                            Expanded(
-                              flex: CharCreateUiSpec.screenCenterFlex,
-                              child: const SizedBox.shrink(),
-                            ),
-                            Expanded(
-                              flex: CharCreateUiSpec.screenRightFlex,
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: buildRightPanel(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: CharCreateUiSpec.nameBarBottom,
-                      child: Center(
-                        child: Transform.translate(
-                          offset: Offset(CharCreateUiSpec.nameBarOffsetH, 0),
-                          child: CharCreateNameBar(
-                            controller: _nameCtrl,
-                            enabled: enabled,
-                          ),
-                        ),
-                      ),
-                    ),
-                    CharCreateStartButton(submitting: _submitting, onTap: _submit),
-                    CharCreateBackButton(enabled: enabled, onTap: _cancel),
-                    if (kDebugMode)
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: IgnorePointer(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              child: Text(
-                                'XML Live · scale ${CharCreateUiSpec.scale.toStringAsFixed(2)}',
-                                style: CharCreateTextStyles.shadowLabel(
-                                  fontSize: 10,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+    return Scaffold(body: CharacterStage(
+      sex: _sex, onBack: enabled ? _cancel : null,
+      left: CharCreateSpiritRootPanel(selectedIndex: _attribute, enabled: enabled,
+        onSelected: (i) => setState(() => _attribute = i)),
+      right: Column(children: [
+        const StageHeading('屬性分配'),
+        _stat('神識', 'spirit', _statsSpirit, CharCreateTemplate.baseSpirit),
+        _stat('體魄', 'constitution', _statsConstitution, CharCreateTemplate.baseConstitution),
+        _stat('敏捷', 'agility', _statsAgility, CharCreateTemplate.baseAgility),
+        _stat('悟性', 'intel', _statsIntel, CharCreateTemplate.baseIntel),
+        const SizedBox(height: 20),
+        Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12, children: [
+            Text('剩餘點數  $_remainingPoints', style: GameDesign.text(size: 20, color: GameDesign.gold)),
+            GameAction('重置', onPressed: enabled ? _resetStats : null),
+          ]),
+      ]),
+      footer: LayoutBuilder(builder: (context, constraints) {
+        final controls = <Widget>[
+          Row(mainAxisSize: MainAxisSize.min, children: [for (var sex = 0; sex < 2; sex++)
+            Semantics(selected: _sex == sex, child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: GameAction(sex == 0 ? '男' : '女', primary: _sex == sex,
+                onPressed: enabled ? () => setState(() => _sex = sex) : null))),
+          ]),
+          SizedBox(width: constraints.maxWidth < 400 ? constraints.maxWidth : 340,
+            child: TextField(controller: _nameCtrl, enabled: enabled,
+              style: GameDesign.text(size: 18), maxLength: 12,
+              decoration: InputDecoration(labelText: '修士名號', hintText: '請輸入名號',
+                counterText: '', labelStyle: GameDesign.text(), hintStyle: GameDesign.text(),
+                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: GameDesign.jade)),
+                focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: GameDesign.gold, width: 2))),
+              onSubmitted: (_) => _submit())),
+          GameAction(_submitting ? '建立中…' : '進入遊戲', primary: true,
+            onPressed: enabled ? _submit : null),
+        ];
+        return Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 32, runSpacing: 16, children: controls);
+      }),
+    ));
   }
+
+  Widget _stat(String label, String key, int value, int base) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(children: [
+      Expanded(child: Text(label, style: GameDesign.text(size: 22))),
+      IconButton(key: ValueKey('minus-$key'), tooltip: '減少$label',
+        onPressed: !_submitting && value > base ? () => _adjustStat(key, -1) : null,
+        icon: Text('−', style: GameDesign.text(size: 24, color: value > base ? GameDesign.gold : Colors.white54)), color: GameDesign.gold,
+        disabledColor: Colors.white38),
+      SizedBox(width: 38, child: Text('$value', textAlign: TextAlign.center, style: GameDesign.text(size: 22))),
+      IconButton(key: ValueKey('plus-$key'), tooltip: '增加$label',
+        onPressed: !_submitting && _remainingPoints > 0 ? () => _adjustStat(key, 1) : null,
+        icon: Text('＋', style: GameDesign.text(size: 24, color: _remainingPoints > 0 ? GameDesign.gold : Colors.white54)), color: GameDesign.gold, disabledColor: Colors.white38),
+    ]),
+  );
 }

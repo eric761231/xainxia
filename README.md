@@ -51,6 +51,39 @@ cp assets/data/server_connection.example.json assets/data/server_connection.json
 # then edit "host" fields (YOUR_SERVER_HOST) to point at your server
 ```
 
+### 網頁連線（WebSocket）
+
+Java 伺服器同一個埠支援原生 TCP 與 WebSocket `/ws`。網頁版自動使用
+`ws://<host>:<port>/ws`；Windows／Android 等原生版本使用 TCP。
+`assets/data/server_connection.json` 的 `gate` 和各 `servers` 的主機、埠仍然共用。
+
+1. 在設定指向的主機重新編譯並啟動新版 XinServer（預設埠 `8080`）。
+2. 在本專案執行：
+
+   ```powershell
+   flutter run -d chrome --web-port 3000
+   ```
+
+3. 開啟 `http://localhost:3000` 遊玩。直接開啟伺服器 `8080` 只會顯示服務說明，
+   該埠不提供 Flutter 網頁素材。同機開發可將 JSON 主機設為 `127.0.0.1`；
+   遠端主機必須部署新版後端並允許用戶端連入設定的埠。
+
+若網頁使用 HTTPS，客戶端會自動使用 `wss`；設定的伺服器位址必須提供 TLS
+反向代理並將 `/ws` 的 WebSocket Upgrade 轉送至 Java 伺服器。
+
+傳輸回歸測試：
+
+```powershell
+flutter test test/network/plain_text_codec_test.dart test/network/socket_transport_io_test.dart
+```
+
+瀏覽器整合測試需先執行 Java 專案 `src/test/java` 中的 `WebSocketEchoServer`
+（僅監聽 `127.0.0.1:18081`，不使用資料庫），然後執行：
+
+```powershell
+flutter test --platform chrome --dart-define=WEBSOCKET_INTEGRATION=true test/network/socket_transport_web_test.dart
+```
+
 A few resources to get you started if this is your first Flutter project:
 
 - [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
