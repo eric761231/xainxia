@@ -22,7 +22,7 @@ import com.xin.util.SQLUtil;
  * <p>
  * 每筆傳送點定義了地圖上的一個藍色光點位置（{@code loc_x}/{@code loc_y}）
  * 及其對應的目標地圖與座標。
- * 資料來源見 {@code sql/map_data.sql}。
+ * 資料來源見 {@code sql/schema_all.sql}。
  */
 public class MapPortalTable {
 

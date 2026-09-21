@@ -8,6 +8,8 @@ public class MapTemplate {
 
     public int     _mapId;       // 地圖編號
     public String  _name;        // 地圖顯示名稱
+    public int     _gfxid;       // 呈現圖片編號（場景背景圖，0=無）
+    public int     _layoutMode;  // 場景物件佈局模式，見 com.xin.server.types.MapLayoutMode
     public int     _minX;        // X 座標最小值（邊界）
     public int     _maxX;        // X 座標最大值（邊界）
     public int     _minY;        // Y 座標最小值（邊界）

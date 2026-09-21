@@ -36,7 +36,7 @@ public final class ServerConfig {
     private ServerConfig() {
     	
     	SERVER_NO = Integer.parseInt(table.getConfigData("server_no", "500"));
-    	AUTO_CREATE_ACCOUNTS = Boolean.getBoolean(table.getConfigData("auto_create_accounts", "true"));
+    	AUTO_CREATE_ACCOUNTS = Boolean.parseBoolean(table.getConfigData("auto_create_accounts", "true"));
     	MAX_ONLINE_USERS = Integer.parseInt(table.getConfigData("max_online_users", "500"));
         // 伺�??��?�?
         SERVER_NAME = table.getConfigData("server_name", "?��?神�?");

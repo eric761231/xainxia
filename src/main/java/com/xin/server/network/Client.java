@@ -111,12 +111,26 @@ public class Client {
      * 清除帳號／角色綁定，狀態回到 CONNECTED（不關 TCP）。
      */
     public void clearSession() {
+        int leftMapId = -1;
         if (activeChar != null) {
+            // 登出、斷線、重複登入被踢都會走到這裡：先把還沒寫回的座標與血量存下來。
+            // 移動與挨打只標記變動、由定期存檔寫回，少了這一步就會丟掉最後幾十秒。
+            com.xin.server.model.CharacterSaveTask.flush(activeChar);
+            leftMapId = activeChar.getMapId();
+            // 先離隊再移出世界：隊伍是純執行期狀態，不處理的話隊友的
+            // 隊伍欄會一直留著一個已經下線的人，而且踢也踢不掉。
+            com.xin.server.model.PartyManager.leave(activeChar);
             World.get().removeObject(activeChar);
         }
         account = null;
         activeChar = null;
         state = LoginState.CONNECTED;
+
+        // 清完才重送名單 —— 這時 activeChar 已是 null，重算出來的名單
+        // 自然就不含這個人。順序反過來的話他還會留在名單裡。
+        if (leftMapId >= 0) {
+            PacketSender.broadcastPcPack(leftMapId);
+        }
     }
     /**
      * 主動關閉連線（踢人、驗證失敗等）。

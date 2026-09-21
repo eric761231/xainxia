@@ -22,3 +22,6 @@ dependency-reduced-pom.xml
 # ── 記錄檔 ──
 *.log
 /logs/
+
+# ── 本機編譯用 classpath（含本機路徑）──
+cp.txt

@@ -300,6 +300,40 @@ public class PcInstance extends Character {
     }
 
     /** 升級時重算屬性，保留並按比例增加 HP/MP */
+    /**
+     * 下一次可以攻擊的時間（毫秒）。沒有這個限制的話，腳本可以用送封包的速度無限連打。
+     * 只有這個角色自己的封包執行緒會讀寫。
+     */
+    private long _nextAttackAt;
+
+    public long getNextAttackAt() {
+        return _nextAttackAt;
+    }
+
+    public void setNextAttackAt(long nextAttackAt) {
+        _nextAttackAt = nextAttackAt;
+    }
+
+    /**
+     * 是否有尚未寫回 DB 的變動（移動、扣血等高頻狀態）。
+     * 由 {@link com.xin.server.model.CharacterSaveTask} 定期寫回並清除。
+     * volatile：封包執行緒、NPC 執行緒與存檔執行緒都會讀寫它。
+     */
+    private volatile boolean _dirty;
+
+    /** 標記有變動，等定期存檔寫回。 */
+    public void markDirty() {
+        _dirty = true;
+    }
+
+    public boolean isDirty() {
+        return _dirty;
+    }
+
+    public void clearDirty() {
+        _dirty = false;
+    }
+
     public void refreshCombatStats() {
         CombatStatCalculator.apply(this, false);
     }
@@ -351,4 +385,85 @@ public class PcInstance extends Character {
 
     public int getCraftProficiencyRate() { return _craftProficiencyRate; }
     public void setCraftProficiencyRate(int craftProficiencyRate) { _craftProficiencyRate = craftProficiencyRate; }
+
+    // ──────────────────────────────────────────────────────────────
+    // 洞府裝飾（玩家自己擺的家具）
+    //
+    // 刻意掛在角色身上而非 World：每人只看得到自己的裝飾，
+    // 碰撞也必須是每人一份 —— 否則 A 放的桌子會擋住站在同一張地圖的 B。
+    // ──────────────────────────────────────────────────────────────
+
+    /** 單一角色的裝飾件數上限。 */
+    public static final int MAX_DECORATIONS = 50;
+
+    private final java.util.List<DecorationInstance> _decorations =
+            new java.util.ArrayList<>();
+
+    public java.util.List<DecorationInstance> getDecorations() {
+        return _decorations;
+    }
+
+    /** 換圖／進圖時重載該地圖的裝飾。 */
+    public void setDecorations(java.util.List<DecorationInstance> list) {
+        _decorations.clear();
+        if (list != null) {
+            _decorations.addAll(list);
+        }
+    }
+
+    public void addDecoration(DecorationInstance d) {
+        _decorations.add(d);
+    }
+
+    /** 依執行期物件編號取得裝飾；查無回傳 {@code null}。 */
+    public DecorationInstance findDecoration(long objId) {
+        for (DecorationInstance d : _decorations) {
+            if (d._objId == objId) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public boolean removeDecoration(DecorationInstance d) {
+        return _decorations.remove(d);
+    }
+
+    /**
+     * 該格是否被<b>自己的</b>裝飾擋住。
+     * <p>
+     * 只計入 {@code blocking} 的家具；純裝飾（地毯、掛畫）不擋路。
+     * 移動驗證除了共用的 {@code MapGrid} 之外還要再問這一條。
+     */
+    public boolean isBlockedByOwnDecoration(int x, int y) {
+        for (DecorationInstance d : _decorations) {
+            if (d._blocking && d._mapId == getMapId() && d.occupies(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 該格是否已被自己的任何裝飾佔用（不論擋不擋路），供放置時避免重疊。 */
+    public boolean isOccupiedByOwnDecoration(int x, int y) {
+        return isOccupiedByOwnDecoration(x, y, 0L);
+    }
+
+    /**
+     * 同上，但排除指定的一件裝飾。
+     * <p>
+     * 搬動家具時必須排除「正在搬的那一件」，否則往旁邊移一格會撞到自己
+     * 原本的佔格而永遠被拒。放置時傳 {@code 0} 即為不排除任何東西。
+     */
+    public boolean isOccupiedByOwnDecoration(int x, int y, long ignoreObjId) {
+        for (DecorationInstance d : _decorations) {
+            if (d._objId == ignoreObjId) {
+                continue;
+            }
+            if (d._mapId == getMapId() && d.occupies(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

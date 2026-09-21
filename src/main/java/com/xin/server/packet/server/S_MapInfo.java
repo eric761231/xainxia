@@ -10,6 +10,8 @@ import com.xin.server.packet.ServerBasePacket;
 import com.xin.server.packet.ServerOpcodes;
 import com.xin.server.template.MapTemplate;
 import com.xin.server.template.PortalTemplate;
+import com.xin.server.world.MapGrid;
+import com.xin.server.world.WorldMapGrid;
 
 /**
  * 地圖資訊（對應 opcode {@code S_MAP_INFO}）。
@@ -26,6 +28,7 @@ import com.xin.server.template.PortalTemplate;
  *   "data": {
  *     "mapId": 1,
  *     "mapName": "青雲洞府",
+ *     "gfxid": 2004,
  *     "width": 30,
  *     "height": 30,
  *     "portals": [
@@ -45,6 +48,8 @@ public class S_MapInfo extends ServerBasePacket {
 
         // 地圖尺寸（格數）：供前端小地圖把傳送點格座標正規化到圓形範圍
         MapTemplate map = MapTable.get().getMap(mapId);
+        // 場景底圖編號：對應前端 object_catalog.json 的物件 id（與 property.pngid 同一套編號）
+        put("gfxid",  map != null ? map._gfxid : 0);
         put("width",  map != null ? map._maxX - map._minX + 1 : 0);
         put("height", map != null ? map._maxY - map._minY + 1 : 0);
 
@@ -60,6 +65,19 @@ public class S_MapInfo extends ServerBasePacket {
             arr.add(node);
         }
         putArray("portals", arr);
+
+        // 地形碰撞搭進來一起送，省一次往返；格式與 S_MapCollision 相同
+        ArrayNode blocked = newArray();
+        MapGrid grid = WorldMapGrid.get().get(mapId);
+        if (grid != null) {
+            for (int[] c : grid.getTerrainBlockedCells()) {
+                ArrayNode pair = newArray();
+                pair.add(c[0]);
+                pair.add(c[1]);
+                blocked.add(pair);
+            }
+        }
+        putArray("blocked", blocked);
     }
 
     /**

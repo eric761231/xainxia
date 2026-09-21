@@ -39,6 +39,11 @@ public abstract class ServerBasePacket {
     }
 
     // 給子類別建立 ArrayNode 用
+    /** 放一個巢狀物件（例如「編號 → 檔名」這種對照表）。 */
+    protected void putObject(String key, ObjectNode obj) {
+        data.set(key, obj);
+    }
+
     protected ArrayNode newArray() {
         return mapper.createArrayNode();
     }

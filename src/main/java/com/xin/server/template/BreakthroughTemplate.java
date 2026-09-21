@@ -1,7 +1,9 @@
 package com.xin.server.template;
 
 import com.xin.server.datatables.BreakthroughTable;
+import com.xin.server.inventory.InventoryManager;
 import com.xin.server.model.instance.PcInstance;
+import com.xin.server.network.Client;
 
 /**
  * 境界突破條件查詢門面（資料來自 DB {@code breakthrough_requirement} 表）。
@@ -10,6 +12,9 @@ import com.xin.server.model.instance.PcInstance;
  * 方便策劃在不重啟伺服器的情況下熱更新突破條件。
  */
 public final class BreakthroughTemplate {
+
+    private static final org.slf4j.Logger LOG =
+            org.slf4j.LoggerFactory.getLogger(BreakthroughTemplate.class);
 
     /**
      * 單次突破所需條件（封裝類，對外透過 getter 存取）。
@@ -107,19 +112,52 @@ public final class BreakthroughTemplate {
     /**
      * 檢查並消耗突破所需道具。
      * <p>
-     * 物品系統尚未就緒（Inventory 無持久化、無 has/consume 方法），先永遠回傳 {@code true}。
-     * TODO: 待 character_items 表與 Inventory has/consume 方法完成後，改為真實檢查並扣除道具。
+     * <b>先全部檢查、再一次扣除。</b>需要三種丹藥而只有兩種時，如果邊檢查邊扣，
+     * 玩家會白白損失前兩種 —— 付了代價卻沒拿到結果，比直接失敗糟糕得多。
+     *
+     * @param client 用來推送背包變動；離線流程可傳 {@code null}
+     * @return 道具齊全並已扣除回 {@code true}；不足則<b>什麼都不扣</b>回 {@code false}
      */
-    public static boolean checkAndConsumeItems(PcInstance pc, Requirement req) {
+    public static boolean checkAndConsumeItems(Client client, PcInstance pc,
+            Requirement req) {
+        if (req == null) {
+            return false;
+        }
+        int[] need = req.getRequiredItemIds();
+        if (need == null || need.length == 0) {
+            return true;
+        }
+
+        for (int itemId : need) {
+            if (!pc.getInventory().has(itemId, 1)) {
+                return false;
+            }
+        }
+        for (int itemId : need) {
+            if (!InventoryManager.consume(client, pc, itemId, 1)) {
+                // 上面才剛檢查過，走到這裡代表狀態被別的地方改動了
+                LOG.error("突破扣道具失敗（檢查時還在）：char={} item={}",
+                        pc.getName(), itemId);
+                return false;
+            }
+        }
         return true;
     }
 
-    /**
-     * 檢查角色是否持有護體道具（用於計算是否套用護體機率加成）。
-     * <p>
-     * TODO: 同上，待 Inventory 完成後實作真實邏輯。
-     */
+    /** 角色是否持有護體道具（用於計算是否套用護體機率加成）。 */
     public static boolean hasProtectItem(PcInstance pc, Requirement req) {
+        if (req == null) {
+            return false;
+        }
+        int[] protect = req.getProtectItemIds();
+        if (protect == null) {
+            return false;
+        }
+        for (int itemId : protect) {
+            if (pc.getInventory().has(itemId, 1)) {
+                return true;
+            }
+        }
         return false;
     }
 }

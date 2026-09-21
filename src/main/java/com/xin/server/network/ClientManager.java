@@ -4,6 +4,8 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.xin.server.model.CharacterSaveTask;
+import com.xin.server.model.instance.PcInstance;
 import com.xin.server.packet.server.S_ServerShutdown;
 import com.xin.server.packet.server.S_SystemMessage;
 import com.xin.server.service.AccountLogoutService;
@@ -73,8 +75,12 @@ public class ClientManager {
         for (Client client : clients.values()) {
             futures.add(executor.submit(() -> {
                 try {
-                    if (client.getActiveChar() != null) {
-                        logger.info("已儲存角色：{}", client.getActiveChar().getName());
+                    // 以前這裡只寫 log、沒有真的存檔；移動與挨打改為定期存檔後，
+                    // 關服時不寫回就會丟掉最後一輪的座標與血量。
+                    PcInstance pc = client.getActiveChar();
+                    if (pc != null) {
+                        CharacterSaveTask.flush(pc);
+                        logger.info("已儲存角色：{}", pc.getName());
                     }
                 } catch (Exception e) {
                     logger.error("角色儲存失敗：{}", client, e);

@@ -11,6 +11,18 @@ import com.xin.server.packet.client.C_Face;
 import com.xin.server.packet.client.C_GainExp;
 import com.xin.server.packet.client.C_MapInfo;
 import com.xin.server.packet.client.C_Move;
+import com.xin.server.packet.client.C_PlaceProperty;
+import com.xin.server.packet.client.C_RemoveProperty;
+import com.xin.server.packet.client.C_Attack;
+import com.xin.server.packet.client.C_Challenge;
+import com.xin.server.packet.client.C_Party;
+import com.xin.server.packet.client.C_DropItem;
+import com.xin.server.packet.client.C_GmCollision;
+import com.xin.server.packet.client.C_UseItem;
+import com.xin.server.packet.client.C_MoveProperty;
+import com.xin.server.packet.client.C_PlaceableList;
+import com.xin.server.packet.client.C_Chat;
+import com.xin.server.packet.client.C_GmCommand;
 import com.xin.server.packet.client.C_ObjectList;
 import com.xin.server.packet.client.C_CharList;
 import com.xin.server.packet.client.C_CreateCharacter;
@@ -139,6 +151,103 @@ public class PacketDispatcher {
                     return;
                 }
                 new C_ObjectList(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_GM_COMMAND:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_GM_COMMAND");
+                    return;
+                }
+                new C_GmCommand(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_CHAT:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_CHAT");
+                    return;
+                }
+                new C_Chat(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_PLACE_PROPERTY:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_PLACE_PROPERTY");
+                    return;
+                }
+                new C_PlaceProperty(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_REMOVE_PROPERTY:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_REMOVE_PROPERTY");
+                    return;
+                }
+                new C_RemoveProperty(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_PLACEABLE_LIST:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_PLACEABLE_LIST");
+                    return;
+                }
+                new C_PlaceableList(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_MOVE_PROPERTY:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_MOVE_PROPERTY");
+                    return;
+                }
+                new C_MoveProperty(raw).run(client);
+                break;
+
+            // 權限在 C_GmCollision.run() 內檢查（同 C_GM_COMMAND 的作法）
+            case ClientOpcodes.C_CHALLENGE:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_CHALLENGE");
+                    return;
+                }
+                new C_Challenge(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_PARTY:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_PARTY");
+                    return;
+                }
+                new C_Party(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_ATTACK:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_ATTACK");
+                    return;
+                }
+                new C_Attack(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_USE_ITEM:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_USE_ITEM");
+                    return;
+                }
+                new C_UseItem(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_DROP_ITEM:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_DROP_ITEM");
+                    return;
+                }
+                new C_DropItem(raw).run(client);
+                break;
+
+            case ClientOpcodes.C_GM_COLLISION:
+                if (!client.hasActiveChar()) {
+                    logger.warn("狀態錯誤，收到 C_GM_COLLISION");
+                    return;
+                }
+                new C_GmCollision(raw).run(client);
                 break;
             default:
 	                logger.warn("未知封包 opcode：{}", op);

@@ -45,4 +45,40 @@ public final class ClientOpcodes {
     /** 請求地圖物件清單（NPC／怪物／採集點／場景物件） */
     public static final String C_OBJECT_LIST = "C_OBJECT_LIST";
 
+    /** GM 指令（文字指令，伺服器端解析與分發） */
+    public static final String C_GM_COMMAND = "C_GM_COMMAND";
+
+    /** 聊天發言（頻道 + 內容，私聊另帶 target） */
+    public static final String C_CHAT = "C_CHAT";
+
+    /** 放置家具（洞府布置） */
+    public static final String C_PLACE_PROPERTY = "C_PLACE_PROPERTY";
+
+    /** 移除家具（洞府布置） */
+    public static final String C_REMOVE_PROPERTY = "C_REMOVE_PROPERTY";
+
+    /** 請求可放置家具清單 */
+    public static final String C_PLACEABLE_LIST = "C_PLACEABLE_LIST";
+
+    /** 搬動已放置的家具 */
+    public static final String C_MOVE_PROPERTY = "C_MOVE_PROPERTY";
+
+    /** GM 編輯地形碰撞（單格切換） */
+    public static final String C_GM_COLLISION = "C_GM_COLLISION";
+
+    /** 使用道具 */
+    public static final String C_USE_ITEM = "C_USE_ITEM";
+
+    /** 丟棄道具 */
+    public static final String C_DROP_ITEM = "C_DROP_ITEM";
+
+    /** 攻擊目標 */
+    public static final String C_ATTACK = "C_ATTACK";
+
+    /** 隊伍操作（invite／accept／decline／leave／kick／promote） */
+    public static final String C_PARTY = "C_PARTY";
+
+    /** 秘境挑戰進出（enter／leave） */
+    public static final String C_CHALLENGE = "C_CHALLENGE";
+
 }

@@ -7,6 +7,7 @@ import com.xin.server.datatables.MapPortalTable;
 import com.xin.server.datatables.lock.CharacterR;
 import com.xin.server.model.instance.PcInstance;
 import com.xin.server.network.Client;
+import com.xin.server.network.PacketSender;
 import com.xin.server.packet.ClientBasePacket;
 import com.xin.server.packet.server.S_MapChange;
 import com.xin.server.packet.server.S_MapInfo;
@@ -97,5 +98,7 @@ public class C_EnterPortal extends ClientBasePacket {
         // 通知前端切換地圖，並推送新地圖的傳送點列表（小地圖藍色光點）
         client.sendPacket(S_MapChange.of(portal._destMapId, portal._destX, portal._destY, arrivalFacing));
         client.sendPacket(S_MapInfo.of(portal._destMapId));
+        PacketSender.sendMapObjects(client, portal._destMapId);
+        PacketSender.broadcastPcPackForMove(prevMap, portal._destMapId);
     }
 }

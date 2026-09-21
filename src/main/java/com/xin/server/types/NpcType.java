@@ -4,7 +4,7 @@ package com.xin.server.types;
  * NPC／地圖物件分類（對應 DB {@code npc.type_name} 的英文代號字串）。
  * <p>
  * DB 存易讀的英文代號，載入時由 {@link #of(String)} 轉成 int 常數，
- * 封包一律傳 int（見 {@code S_OBJECT_LIST} 的 {@code type} 欄位）。
+ * 封包一律傳 int（見 {@code S_NPC_PACK} 的 {@code type} 欄位）。
  *
  * <table border="1">
  *   <tr><th>代號</th><th>常數</th><th>說明</th></tr>

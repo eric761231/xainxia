@@ -60,7 +60,7 @@ public class C_Breakthrough extends ClientBasePacket {
         }
 
         // 檢查並消耗突破所需道具
-        if (!BreakthroughTemplate.checkAndConsumeItems(pc, req)) {
+        if (!BreakthroughTemplate.checkAndConsumeItems(client, pc, req)) {
             client.sendPacket(S_BreakthroughResult.fail(
                     S_BreakthroughResult.REASON_MISSING_ITEM, "缺少突破所需道具"));
             return;

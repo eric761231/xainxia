@@ -9,6 +9,7 @@ import com.xin.server.model.Object;
 import com.xin.server.model.instance.ItemInstance;
 import com.xin.server.model.instance.NpcInstance;
 import com.xin.server.model.instance.PcInstance;
+import com.xin.server.model.instance.PropertyInstance;
 import com.xin.util.PerformanceTimer;
 
 /**
@@ -48,6 +49,18 @@ public class World {
         }
         if (object instanceof NpcInstance npc) {
             WorldNpc.get().put(npc.getId(), npc);
+            // NPC／怪物站上格子：AI 移動與生成都靠這層判斷「有沒有人站著」
+            MapGrid grid = WorldMapGrid.get().get(npc.getMapId());
+            if (grid != null) {
+                grid.enterMover(npc.getId(), npc.getX(), npc.getY());
+            }
+        }
+        if (object instanceof PropertyInstance property) {
+            WorldProperty.get().put(property.getId(), property);
+            MapGrid grid = WorldMapGrid.get().get(property.getMapId());
+            if (grid != null) {
+                grid.place(property);
+            }
         }
         if (object instanceof ItemInstance item) {
             WorldItem.get().put(item.getId(), item);
@@ -65,6 +78,17 @@ public class World {
         }
         if (object instanceof NpcInstance npc) {
             WorldNpc.get().remove(npc.getId());
+            MapGrid grid = WorldMapGrid.get().get(npc.getMapId());
+            if (grid != null) {
+                grid.leaveMover(npc.getId(), npc.getX(), npc.getY());
+            }
+        }
+        if (object instanceof PropertyInstance property) {
+            WorldProperty.get().remove(property.getId());
+            MapGrid grid = WorldMapGrid.get().get(property.getMapId());
+            if (grid != null) {
+                grid.remove(property.getId());
+            }
         }
         if (object instanceof ItemInstance item) {
             WorldItem.get().remove(item.getId());
